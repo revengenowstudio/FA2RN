@@ -8,7 +8,7 @@
 #pragma region Global Variables
 // Global Variables
 
-logger g_logger; // logger
+logger g_logger = logger(".\\FA2Ext.log"); // logger
 
 HWND g_FA2Wnd; // Final Alert 2 Window Handle
 HMODULE g_hModule;// Final Alert 2 HModule, HInstance as well

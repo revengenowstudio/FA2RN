@@ -7,5 +7,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <RESOURCE_FILE>FA2Copy.rc</RESOURCE_FILE>
+    <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
 </Project>
