@@ -1991,6 +1991,8 @@ __declspec(dllexport) void FA2CopyImportFunc()
 
 DEFINE_HOOK(0, Dummy_Hook, 5)
 {
+	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__0Dummy_Hook);
+
 	return 0;
 }
 

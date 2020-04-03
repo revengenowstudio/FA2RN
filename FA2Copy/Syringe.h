@@ -243,6 +243,7 @@ struct SyringeHandshakeInfo
 #pragma pack(push, 16)
 #pragma warning(push)
 #pragma warning( disable : 4324)
+
 __declspec(align(16)) struct hookdecl {
 	unsigned int hookAddr;
 	unsigned int hookSize;
