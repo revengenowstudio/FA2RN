@@ -4,11 +4,12 @@
 // In fact I was about to program a MFC dll
 // but then found it unnecessary XD
 #include "stdafx.h"
+#include "Syringe.h"
 
 #pragma region Global Variables
 // Global Variables
 
-logger g_logger = logger(".\\FA2Ext.log"); // logger
+logger g_logger; // logger
 
 HWND g_FA2Wnd; // Final Alert 2 Window Handle
 HMODULE g_hModule;// Final Alert 2 HModule, HInstance as well
@@ -123,6 +124,8 @@ BOOL EndHook()
 // Hook Proc
 LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+	//g_logger.Info("nCode = " + std::to_string(nCode));
+
 	if (nCode >= 0)
 	{
 		CWPSTRUCT* cwps = (CWPSTRUCT*)lParam;
@@ -130,6 +133,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		{
 			INT wmId = LOWORD(cwps->wParam);
 			INT wmHi = HIWORD(cwps->wParam);
+			g_logger.Info("nCode = " + std::to_string(nCode));
+			g_logger.Info("wmId = " + std::to_string(wmId));
 			switch (wmId)
 			{
 
@@ -137,7 +142,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			//9970 - 9999
 			
 			//House
-			case 9973: {//Allies Manager
+			case WND_Houses::Button: {//Allies Manager
 				HWND HouseWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.HouseWnd.c_str()
@@ -213,7 +218,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}*/
 			//Terrain Group
-			case 9975: {//Sub ComboBox
+			case IDC_Terrain_Sort::ComboBox_Sub: {//Sub ComboBox
 				switch (wmHi) {
 				case CBN_SELCHANGE: {
 					g_logger.Info("Terrain Sub SELCHANGE");
@@ -222,7 +227,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 					HWND& TerrainWnd = g_TerrainWnd;
 					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, 9975);
+					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
 					HWND ComboReal = GetDlgItem(TerrainWnd, 1366);
 					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
 					if (MainCount <= 0)	break;
@@ -253,7 +258,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 					HWND& TerrainWnd = g_TerrainWnd;
 					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, 9975);
+					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
 
 					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
 					if (MainCount <= 0)	break;
@@ -266,7 +271,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					for (register int i = 0; i < SubCount; ++i)
 						SendMessage(ComboSub, CB_ADDSTRING, NULL, (LPARAM)g_TerrainSorts[MainIndex][i]->first.c_str());
 					SendMessage(ComboSub, CB_SETCURSEL, 0, NULL);
-					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(9975, CBN_SELCHANGE), (LPARAM)ComboSub);
+					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(IDC_Terrain_Sort::ComboBox_Sub, CBN_SELCHANGE), (LPARAM)ComboSub);
 					break;
 				}
 				default:
@@ -298,7 +303,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 				HWND& TerrainWnd = g_TerrainWnd;
 				HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-				HWND ComboSub = GetDlgItem(TerrainWnd, 9975);
+				HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
 
 				SendMessage(ComboMain, CB_RESETCONTENT, NULL, NULL);
 				SendMessage(ComboSub, CB_RESETCONTENT, NULL, NULL);
@@ -340,7 +345,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			//INI
-			case 9971: {
+			case WND_INI_Editor::Button_Search: {
 				HWND INIWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.IniWnd.c_str()
@@ -1517,6 +1522,7 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam) {
 		RegisterHotKey(g_FA2Wnd, g_CTRL_O, MOD_CONTROL, 0x4f);
 		RegisterHotKey(g_FA2Wnd, g_CTRL_N, MOD_CONTROL, 0x4e);
 		int result = GetLastError();
+		g_logger.Info("hotkey register result = " + std::to_string(result));
 
 		g_oldProc = (WNDPROC)SetWindowLong(g_FA2Wnd, GWL_WNDPROC, (LONG)HotkeyWndProc);
 	}
@@ -1872,7 +1878,7 @@ void LoadINI() {
 	}
 }
 void LoadFA2CopyConfig() {
-	g_logger.Info("FA2Copy Config Loaded");
+	g_logger.Info("Loading FA2Copy Config");
 
 	//g_FindWindowConfig
 	g_FindWindowConfig.AITriggerWnd = g_ini.Read("FindWindowConfig", "AITriggerWnd");
@@ -1978,4 +1984,14 @@ __declspec(dllexport) void FA2CopyImportFunc()
 {
 	//Do nothing
 }
+#pragma endregion
+
+
+#pragma region Inline Hooks
+
+DEFINE_HOOK(0, Dummy_Hook, 5)
+{
+	return 0;
+}
+
 #pragma endregion
