@@ -1,6 +1,9 @@
 #include "logger.h"
 #include <Windows.h>
 
+logger logger::g_logger = logger("FA2Copy.log");
+
+
 logger::logger() {
 	fout.close();
 }

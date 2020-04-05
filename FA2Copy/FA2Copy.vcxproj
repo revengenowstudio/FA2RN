@@ -136,6 +136,7 @@
       </AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,14 +158,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="FA2Expand.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />
+    <ClCompile Include="RunTime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="logger.h" />
+    <ClInclude Include="Macro.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RunTime.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Syringe.h" />
   </ItemGroup>

@@ -24,6 +24,12 @@
     <ClCompile Include="logger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RunTime.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FA2Expand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -42,6 +48,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Syringe.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RunTime.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2Expand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

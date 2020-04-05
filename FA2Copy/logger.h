@@ -7,6 +7,9 @@
 class logger
 {
 public:
+	
+	static logger g_logger;
+
 	logger();
 	logger(std::string Name);
 	void Warn(std::string Reason);
