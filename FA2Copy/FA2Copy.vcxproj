@@ -125,6 +125,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;FA2COPY_EXPORTS;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,7 +178,13 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Copy.rc" />
+    <ResourceCompile Include="UI\AboutDialog.rc" />
     <ResourceCompile Include="UI\InitializeDialog.rc" />
+    <ResourceCompile Include="UI\TerrainListDialog.rc" />
+    <ResourceCompile Include="UI\TriggerActionDialog.rc" />
+    <ResourceCompile Include="UI\TriggerEventDialog.rc" />
+    <ResourceCompile Include="UI\TriggerMainDialog.rc" />
+    <ResourceCompile Include="UI\TriggerTypeDialog.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

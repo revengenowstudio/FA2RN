@@ -1,6 +1,7 @@
 #pragma once
 #include "RunTime.h"
 #include "Macro.h"
+#include "UI/Resource.h"
 
 class FA2Expand
 {

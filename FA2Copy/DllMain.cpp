@@ -2012,5 +2012,112 @@ DEFINE_HOOK(537208, ExeTerminate, 9)
 	ExitProcess(result); //teehee
 }
 
+DEFINE_HOOK(551B07, FetchResource, 6)
+{
+	//GET(AFX_MODULE_STATE* const, pAfxModule, EAX);
+	//GET(HMODULE, hModule, ESI);
+	//GET(LPCTSTR, lpName, EBX);
+	GET_STACK(LPCSTR, lpName, STACK_OFFS(0xC, -4));
+	//GET(LPCTSTR, lpType, EDX);
+	const LPCTSTR lpType = (LPCTSTR)5;
+	const HMODULE hModule = g_hModule;
+
+	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__551B07FetchResource);
+
+
+	if (IS_INTRESOURCE(lpName)) {
+		logger::g_logger.Info(__FUNCTION__" lpName ID = " + std::to_string(LOWORD(lpName)));
+	}
+	else {
+		logger::g_logger.Info(__FUNCTION__" lpName = " + std::string(lpName));
+	}
+
+	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
+		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
+			LockResource(hResData);
+			R->EAX(hResData);
+
+			return 0x551B27; //Resource locked and loaded (omg what a pun), return!
+		}
+	}
+	return 0; //Nothing was found, try the game's own resources.
+}
+
+DEFINE_HOOK(551E57, sub_551E20_LoadResource, 5)
+{
+	const LPCSTR lpName = *(LPCSTR*)(R->ESI() + 0x40);
+
+	logger::g_logger.Info("lpName = " + std::string(lpName));
+
+	return 0;
+}
+
+DEFINE_HOOK(552147, sub_55212E, 5)
+{
+	const LPCSTR lpName = *(LPCSTR*)(R->EDI() + 0x40);
+
+	logger::g_logger.Info("lpName = " + std::string(lpName));
+
+	return 0;
+}
+
+DEFINE_HOOK(554C8A, CWnd_ExecuteDlgInit, 9)
+{
+	GET_STACK(LPCSTR, lpName, STACK_OFFS(0xC, -4));
+	logger::g_logger.Info(std::string(__FUNCTION__));
+	logger::g_logger.Info("lpName = " + std::string(lpName));
+
+	return 0;
+}
+
+DEFINE_HOOK(56537B, sub_56536A, 5)
+{
+	GET_BASE(LPCSTR, lpName, 0x8);
+	logger::g_logger.Info(std::string(__FUNCTION__));
+	logger::g_logger.Info("lpName = " + std::string(lpName));
+
+	return 0;
+}
+
+DEFINE_HOOK(551A82, sub_551A5B, 5)
+{
+	GET(LPCSTR, lpName, EBX);
+
+	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__551A82sub_551A5B);
+
+	//logger::g_logger.Info(std::string(__FUNCTION__));
+
+	const HMODULE hModule = g_hModule;
+	const LPCTSTR lpType = RT_DIALOG;
+
+	if (IS_INTRESOURCE(lpName)) {
+		logger::g_logger.Info(__FUNCTION__" lpName ID = " + std::to_string(LOWORD(lpName)));
+	} else {
+		logger::g_logger.Info(__FUNCTION__" lpName = " + std::string(lpName));
+	}
+
+	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
+		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
+			//if (lpName == (LPCTSTR)IDC_INITDIAG) {
+			R->ESI(hModule);
+			//}
+
+			R->EAX(hResData);
+
+			return 0x551A97; //Resource locked and loaded (omg what a pun), return!
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(426B77, sub_426AC0, 5)
+{
+	logger::g_logger.Info(std::string(__FUNCTION__));
+
+	return 0;
+}
+
+
 
 #pragma endregion

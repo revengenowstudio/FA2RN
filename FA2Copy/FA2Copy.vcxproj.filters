@@ -70,5 +70,23 @@
     <ResourceCompile Include="UI\InitializeDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="UI\TriggerActionDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TriggerEventDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TriggerTypeDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TriggerMainDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TerrainListDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\AboutDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
