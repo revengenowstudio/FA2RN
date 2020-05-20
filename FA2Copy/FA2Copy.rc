@@ -106,6 +106,17 @@ BEGIN
     EDITTEXT        IDC_EDIT2,135,7,40,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_VISIBLE
 END
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+"S", 57603, VIRTKEY, CONTROL, NOINVERT
+"O", 40001, VIRTKEY, CONTROL, NOINVERT
+"N", 57600, VIRTKEY, CONTROL, NOINVERT
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

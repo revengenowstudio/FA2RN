@@ -1,4 +1,4 @@
-// FA2Copy DllMain.cpp
+﻿// FA2Copy DllMain.cpp
 // Programed by SEC-SOME
 
 // In fact I was about to program a MFC dll
@@ -22,10 +22,10 @@ BOOL g_GetMsgHooked;
 BOOL g_TaskforcesRead;
 BOOL g_TaskforceComboFlag;
 BOOL g_TerrainTheaterFlag;
-BOOL g_AllowHotKey;
 
-ATOM g_CTRL_S, g_CTRL_O, g_CTRL_N; // Hot Keys
-WNDPROC g_oldProc; // Save old Proc for Hot Keys
+WNDPROC g_oldProc; // Save old Main Window Proc
+
+HACCEL g_hAccel; // Accelerator
 
 // Some Handle needs to be global for some reason XD
 HWND g_TerrainWnd;
@@ -85,7 +85,7 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 
 // Replace for Hotkeys
-LRESULT CALLBACK HotkeyWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Get Window
 HWND GetWindowHandle();
@@ -128,6 +128,12 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 	if (nCode >= 0)
 	{
 		CWPSTRUCT* cwps = (CWPSTRUCT*)lParam;
+
+		logger::g_logger.Info("CallWndProc : message = " + std::to_string(cwps->message) 
+			+ ", wParam =  " + std::to_string(cwps->wParam)
+			+ ", lParam =  " + std::to_string(cwps->lParam)
+		);
+
 		if (cwps->message == WM_COMMAND)
 		{
 			INT wmId = LOWORD(cwps->wParam);
@@ -209,6 +215,11 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				
 				SetWindowText(Edit, AlliedText.c_str());
 				
+				SendMessage(HouseWnd, WM_COMMAND, MAKEWPARAM(1099, EN_SETFOCUS), (LPARAM)Edit);
+				SendMessage(HouseWnd, WM_COMMAND, MAKEWPARAM(1099, EN_KILLFOCUS), (LPARAM)Edit);
+				SendMessage(HouseWnd, WM_COMMAND, MAKEWPARAM(1091, CBN_DROPDOWN), (LPARAM)ComboBox);
+				SendMessage(HouseWnd, WM_COMMAND, MAKEWPARAM(1091, CBN_CLOSEUP), (LPARAM)ComboBox);
+
 				break;
 			}
 			//Tree View Debug
@@ -944,7 +955,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				int ScriptCount = SendMessage(AllScriptCombo, CB_GETCOUNT, 0, 0);
 				std::vector<TCHAR*> ScriptDictionary(ScriptCount);
 				for (register int i = 0; i < ScriptCount; ++i) {
-					int strLen = SendMessage(AllScriptCombo, CB_GETLBTEXTLEN, NULL, NULL) + 1;
+					int strLen = SendMessage(AllScriptCombo, CB_GETLBTEXTLEN, i, NULL) + 1;
 					ScriptDictionary[i] = new TCHAR[strLen];
 					SendMessage(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)ScriptDictionary[i]);
 				}
@@ -955,9 +966,14 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 				register int i;
 				for (i = 0; i < ScriptCount; ++i) {
-					TCHAR str[256];
+					int strLen = SendMessage(AllScriptCombo, CB_GETLBTEXTLEN, i, NULL) + 1;
+					TCHAR* str = new TCHAR[strLen];
 					SendMessage(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)str);
-					if (strcmp(str, ScriptDictionary[i]) != 0)	break;
+					if (strcmp(str, ScriptDictionary[i]) != 0) {
+						delete[] str;
+						break;
+					}
+					delete[] str;
 				}
 
 				SendMessage(AllScriptCombo, CB_SETCURSEL, i, NULL);
@@ -1503,6 +1519,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 	}
 	return CallNextHookEx(g_CallWndHook, nCode, wParam, lParam);
 }
+
 LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	if (!g_GetMsgHooked) {
 		g_GetMsgHooked = TRUE;
@@ -1513,73 +1530,21 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam) {
 		//GetTreeViewHwnd();
 		LoadINI();
 		LoadFA2CopyConfig();
-		
-		g_CTRL_S = GlobalAddAtom("Ctrl+S");
-		g_CTRL_O = GlobalAddAtom("Ctrl+O");
-		g_CTRL_N = GlobalAddAtom("Ctrl+N");
-		RegisterHotKey(g_FA2Wnd, g_CTRL_S, MOD_CONTROL, 0x53);
-		RegisterHotKey(g_FA2Wnd, g_CTRL_O, MOD_CONTROL, 0x4f);
-		RegisterHotKey(g_FA2Wnd, g_CTRL_N, MOD_CONTROL, 0x4e);
-		int result = GetLastError();
-		logger::g_logger.Info("hotkey register result = " + std::to_string(result));
 
-		g_oldProc = (WNDPROC)SetWindowLong(g_FA2Wnd, GWL_WNDPROC, (LONG)HotkeyWndProc);
+		g_hAccel = LoadAccelerators(g_hModule, MAKEINTRESOURCE(IDR_ACCELERATOR1));
+		g_oldProc = (WNDPROC)SetWindowLong(g_FA2Wnd, GWL_WNDPROC, (LONG)HookedWndProc);
+	} else {
+		TranslateAccelerator(g_FA2Wnd, g_hAccel, (MSG*)lParam);
 	}
-	MSG curMsg = *(MSG*)lParam;
-	switch (curMsg.message) {
-	case WM_SETFOCUS:
-		if ((HWND)(curMsg.wParam) == g_FA2Wnd)
-			g_AllowHotKey = TRUE;
-		break;
-	case WM_KILLFOCUS:
-		if ((HWND)(curMsg.wParam) == g_FA2Wnd)
-			g_AllowHotKey = FALSE;
-		break;
-	default:
-		break;
-	}
+
+	//MSG curMsg = *(MSG*)lParam;
+	//logger::g_logger.Info("GetMsgProc : message = " + std::to_string(curMsg.message) + ", lParam =  " + std::to_string(curMsg.lParam));
 	return CallNextHookEx(g_GetMsgHook, nCode, wParam, lParam);
 }
 
 // Replace for Hotkeys
-LRESULT CALLBACK HotkeyWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if (uMsg == WM_HOTKEY && g_AllowHotKey == TRUE)
-		if (wParam == g_CTRL_S) {
-			logger::g_logger.Info("Ctrl+S Hotkey pressed");
-			HWND SaveWnd = FindWindow(
-				g_FindWindowConfig.DialogClass.c_str(),
-				g_FindWindowConfig.SaveWnd.c_str()
-			);
-			if(SaveWnd==NULL)
-				SendMessage(g_FA2Wnd, WM_COMMAND, MAKEWPARAM(57603, BN_CLICKED), NULL);
-		}
-		else if (wParam == g_CTRL_O) {
-			logger::g_logger.Info("Ctrl+O Hotkey pressed");
-			HWND LoadWnd = FindWindow(
-				g_FindWindowConfig.DialogClass.c_str(),
-				g_FindWindowConfig.LoadWnd.c_str()
-			);
-			if(LoadWnd==NULL)
-				SendMessage(g_FA2Wnd, WM_COMMAND, MAKEWPARAM(40001, BN_CLICKED), NULL);
-		}
-		else if (wParam == g_CTRL_N) {
-			logger::g_logger.Info("Ctrl+N Hotkey pressed");
-			HWND NewWnd1 = FindWindow(
-				g_FindWindowConfig.DialogClass.c_str(),
-				g_FindWindowConfig.NewWnd1.c_str()
-			);
-			HWND NewWnd2 = FindWindow(
-				g_FindWindowConfig.DialogClass.c_str(),
-				g_FindWindowConfig.NewWnd2.c_str()
-			);
-			HWND NewWnd3 = FindWindow(
-				g_FindWindowConfig.DialogClass.c_str(),
-				g_FindWindowConfig.NewWnd3.c_str()
-			);
-			if (NewWnd1 == NULL && NewWnd2 == NULL && NewWnd3 == NULL)
-				SendMessage(g_FA2Wnd, WM_COMMAND, MAKEWPARAM(57600, BN_CLICKED), NULL);
-		}
-	
+LRESULT CALLBACK HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
 	return g_oldProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -1729,7 +1694,7 @@ std::string GetPath() {
 	std::string ret;
 	if (path != NULL)
 		ret = path;
-	free(path);
+	delete[] path;
 	logger::g_logger.Custom("", "Dll Path :" + ret, false);
 	return ret;
 }
@@ -1952,9 +1917,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 		);
 		if (g_GetMsgHooked) {
 			logger::g_logger.Info("Unregistering hot keys...");
-			UnregisterHotKey(g_FA2Wnd, g_CTRL_S);
-			UnregisterHotKey(g_FA2Wnd, g_CTRL_O);
-			UnregisterHotKey(g_FA2Wnd, g_CTRL_N);
 		}
 		if (EndHook() == FALSE)
 		{

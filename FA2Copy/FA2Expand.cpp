@@ -1,4 +1,5 @@
 #include "FA2Expand.h"
+#include <iostream>
 #include <stdio.h>
 
 typedef  HRSRC
@@ -61,6 +62,7 @@ void __stdcall FA2Expand::ExeRun()
 #endif
 
 #endif
+	//std::locale::global(std::locale(""));
 
 	constexpr char title[] = "Final Alert for \"Revenge Now !\"";
 	constexpr char delWarn[] = "确定要删除这个脚本吗？不要忘记删除调用这个脚本的小队";
