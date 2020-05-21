@@ -129,10 +129,10 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		CWPSTRUCT* cwps = (CWPSTRUCT*)lParam;
 
-		logger::g_logger.Info("CallWndProc : message = " + std::to_string(cwps->message) 
-			+ ", wParam =  " + std::to_string(cwps->wParam)
-			+ ", lParam =  " + std::to_string(cwps->lParam)
-		);
+		//logger::g_logger.Info("CallWndProc : message = " + std::to_string(cwps->message) 
+		//	+ ", wParam =  " + std::to_string(cwps->wParam)
+		//	+ ", lParam =  " + std::to_string(cwps->lParam)
+		//);
 
 		if (cwps->message == WM_COMMAND)
 		{
@@ -795,16 +795,18 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					);
 					HWND NewType = GetDlgItem(TaskforceWnd, 9985);
 					HWND OldType = GetDlgItem(TaskforceWnd, 1149);
-					TCHAR *t_Type;
-					int tLen = GetWindowTextLength(NewType) + 1;
-					t_Type = new TCHAR[tLen];
-					GetWindowText(NewType, t_Type, tLen);
-					//logger::g_logger.Info("Set current taskforce member to " + (std::string)t_Type);
-					int Index = SendMessage(OldType, CB_FINDSTRING, NULL, (LPARAM)t_Type);
-					delete[] t_Type;
-					SendMessage(OldType, CB_SETCURSEL, Index, NULL);
-					g_TaskforceComboFlag = TRUE;
-					SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1149, CBN_EDITCHANGE), (LPARAM)OldType);
+					//int tLen = GetWindowTextLength(NewType);
+					//logger::g_logger.Info("Set current taskforce member len : " + std::to_string(tLen));
+					TCHAR t_Type[64];
+					t_Type[0] = _T('\0');
+					GetWindowTextA(NewType, t_Type, sizeof(t_Type) - 1);
+					if (strlen(t_Type)) {
+						//logger::g_logger.Info("Set current taskforce member to " + (std::string)t_Type);
+						int Index = SendMessage(OldType, CB_FINDSTRING, NULL, (LPARAM)t_Type);
+						SendMessage(OldType, CB_SETCURSEL, Index, NULL);
+						g_TaskforceComboFlag = TRUE;
+						SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1149, CBN_EDITCHANGE), (LPARAM)OldType);
+					}
 					break;
 				}
 				default:
