@@ -16,6 +16,14 @@
 
 //for usual FA2:
 #ifdef COMMON_FA2
+
+namespace WND_TaskForce
+{
+	constexpr int ListBox = 1145;
+	constexpr int NewComboBox = 9985;
+	constexpr int RefreshButton = 9986;
+}
+
 namespace WND_Houses
 {
 	constexpr int Button = 9973;
@@ -54,7 +62,7 @@ namespace Tag
 
 特遣部队 Taskforce
 9985 ComboBox 特遣部队输入 Input string
-9986 Button 刷新（可能没啥用，但还是留个备用）Reload(maybe not necessary)
+WND_TaskForce::RefreshButton Button 刷新（可能没啥用，但还是留个备用）Reload(maybe not necessary)
 9995 Button 复制特遣部队成员  Copy Taskforce member
 9998 Button 复制特遣部队 Copy Taskforce
 
@@ -123,7 +131,7 @@ namespace Tag
 
 特遣部队 Taskforce
 9985 ComboBox 特遣部队输入 Input string
-9986 Button 刷新（可能没啥用，但还是留个备用）Reload(maybe not necessary)
+WND_TaskForce::RefreshButton Button 刷新（可能没啥用，但还是留个备用）Reload(maybe not necessary)
 9995 Button 复制特遣部队成员  Copy Taskforce member
 9998 Button 复制特遣部队 Copy Taskforce
 

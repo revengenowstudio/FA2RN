@@ -1,10 +1,6 @@
 #include "RunTime.h"
 #include "logger.h"
 
-#include <windows.h>
-
-
-
 RunTime::RunTime()
 {
 }

@@ -81,6 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)$(ProjectName)\FA2PP;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -166,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FA2Expand.h" />
+    <ClInclude Include="FA2PP\CTaskForce.h" />
+    <ClInclude Include="FA2PP\FA2PP.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Macro.h" />
@@ -180,6 +183,7 @@
     <ResourceCompile Include="FA2Copy.rc" />
     <ResourceCompile Include="UI\AboutDialog.rc" />
     <ResourceCompile Include="UI\InitializeDialog.rc" />
+    <ResourceCompile Include="UI\TaskForceDialog.rc" />
     <ResourceCompile Include="UI\TerrainListDialog.rc" />
     <ResourceCompile Include="UI\TriggerActionDialog.rc" />
     <ResourceCompile Include="UI\TriggerEventDialog.rc" />

@@ -142,7 +142,21 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			//logger::g_logger.Info("wmId = " + std::to_string(wmId));
 			switch (wmId)
 			{
-
+#if 0
+			case WND_TaskForce::ListBox: {
+				if (wmHi == CBN_SETFOCUS) {
+					logger::g_logger.Info("Taskforce ListBox SETFOCUS");
+					HWND TaskforceWnd = FindWindow(
+						g_FindWindowConfig.DialogClass.c_str(),
+						g_FindWindowConfig.TaskforceWnd.c_str()
+					);
+					auto TFList = GetDlgItem(TaskforceWnd, WND_TaskForce::ListBox);
+					int selectedIdx = SendMessage(TFList, LB_GETCURSEL, 0, NULL);
+					SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(WND_TaskForce::NewComboBox, CBN_SELCHANGE), (LPARAM)NewType);
+				}
+				break;
+			}
+#endif
 			//Used ID
 			//9970 - 9999
 			
@@ -744,7 +758,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			//Taskforces
-			case 9985: {//Override Combobox
+			case WND_TaskForce::NewComboBox: {//Override Combobox
 				switch (wmHi) {
 				case CBN_SETFOCUS: {
 					logger::g_logger.Info("Taskforce SETFOCUS");
@@ -760,7 +774,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 						cur = new TCHAR[curLen];
 						GetWindowText(OldType, cur, curLen);
 						SetWindowText(NewType, cur);
-						SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(9985, CBN_SELCHANGE), (LPARAM)NewType);
+						SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(WND_TaskForce::NewComboBox, CBN_SELCHANGE), (LPARAM)NewType);
 						delete[] cur;
 						break;
 					}
@@ -793,7 +807,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 						g_FindWindowConfig.DialogClass.c_str(),
 						g_FindWindowConfig.TaskforceWnd.c_str()
 					);
-					HWND NewType = GetDlgItem(TaskforceWnd, 9985);
+					HWND NewType = GetDlgItem(TaskforceWnd, WND_TaskForce::NewComboBox);
 					HWND OldType = GetDlgItem(TaskforceWnd, 1149);
 					//int tLen = GetWindowTextLength(NewType);
 					//logger::g_logger.Info("Set current taskforce member len : " + std::to_string(tLen));
@@ -814,13 +828,13 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				}				
 				break;
 			}
-			case 9986: {
+			case WND_TaskForce::RefreshButton: {
 				logger::g_logger.Info("Reload Taskforces Units");
 				HWND TaskforceWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TaskforceWnd.c_str()
 				);
-				HWND NewType = GetDlgItem(TaskforceWnd, 9985);
+				HWND NewType = GetDlgItem(TaskforceWnd, WND_TaskForce::NewComboBox);
 				HWND OldType = GetDlgItem(TaskforceWnd, 1149);
 				int Count = SendMessage(OldType, CB_GETCOUNT, NULL, NULL);
 				logger::g_logger.Info(std::to_string(Count) + " Unit types read");
@@ -851,24 +865,21 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				HWND EditNum = GetDlgItem(TaskforceWnd, 1148);
 				HWND ComboType = GetDlgItem(TaskforceWnd, 1149);
 				HWND ListBox = GetDlgItem(TaskforceWnd, 1145);
-				TCHAR *CurNum, *CurType;
-				int numLen = GetWindowTextLength(EditNum) + 1;
-				int typeLen = GetWindowTextLength(ComboType) + 1;
-				CurNum = new TCHAR[numLen];
-				CurType = new TCHAR[typeLen];
-				GetWindowText(ComboType, CurType, typeLen);
-				GetWindowText(EditNum, CurNum, numLen);
-				logger::g_logger.Info("Currect (Type,Number) :(" + (std::string)CurType + ',' + (std::string)CurNum);
-				SendMessage(BtnAdd, WM_LBUTTONDOWN, 1146, 0);
-				SendMessage(BtnAdd, WM_LBUTTONUP, 1146, 0);
-				int Count = SendMessage(ListBox, LB_GETCOUNT, NULL, NULL);
-				SendMessage(ListBox, LB_SETCURSEL, Count - 1, NULL);
-				SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1145, LBN_SELCHANGE), (LPARAM)ListBox);
-				SetWindowText(ComboType, CurType);
-				SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1149, CBN_SELCHANGE), (LPARAM)ComboType);
-				SetWindowText(EditNum, CurNum);
-				delete[] CurNum;
-				delete[] CurType;
+				TCHAR CurNum[0x10], CurType[0x20];
+				GetWindowText(ComboType, CurType, sizeof(CurType) - 1);
+				GetWindowText(EditNum, CurNum, sizeof(CurNum) - 1);
+				logger::g_logger.Info("Currect (Type,Number) :[" + (std::string)CurType + ',' + CurNum + "]");
+				//safe guard
+				if (strlen(CurType)  && strlen(CurType)) {
+					SendMessage(BtnAdd, WM_LBUTTONDOWN, 1146, 0);
+					SendMessage(BtnAdd, WM_LBUTTONUP, 1146, 0);
+					int Count = SendMessage(ListBox, LB_GETCOUNT, NULL, NULL);
+					SendMessage(ListBox, LB_SETCURSEL, Count - 1, NULL);
+					SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1145, LBN_SELCHANGE), (LPARAM)ListBox);
+					SetWindowText(ComboType, CurType);
+					SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1149, CBN_SELCHANGE), (LPARAM)ComboType);
+					SetWindowText(EditNum, CurNum);
+				}
 				break;
 			}
 			case 9998: {//Copy Taskforce

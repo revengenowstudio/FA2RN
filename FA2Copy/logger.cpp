@@ -1,5 +1,5 @@
 #include "logger.h"
-#include <Windows.h>
+#include <FA2PP.h>
 
 logger logger::g_logger = logger("FA2Copy.log");
 

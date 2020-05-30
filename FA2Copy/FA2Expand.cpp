@@ -1,6 +1,7 @@
 #include "FA2Expand.h"
 #include <iostream>
 #include <stdio.h>
+#include <CTaskForce.h>
 
 typedef  HRSRC
 (WINAPI *FindResourceProc)(
@@ -70,7 +71,6 @@ void __stdcall FA2Expand::ExeRun()
 	RunTime::ResetMemoryContentAt(0X5D15A0, delWarn, sizeof(delWarn));
 	//auto const pStr = reinterpret_cast<const char*>(0x5CD808);
 	//logger::g_logger.Info(__FUNCTION__" " + std::string(pStr));
-
 	//DWORD oldProtect, newProtect = 0;
 	//auto ret = VirtualProtectEx(process, &pplContent[offset], size, PAGE_READWRITE, &oldProtect);
 	//g_FA2FindResourceProc = *reinterpret_cast<FindResourceProc*>(0x5911D8);

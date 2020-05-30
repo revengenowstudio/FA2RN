@@ -62,6 +62,12 @@
     <ClInclude Include="UI\Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\FA2PP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTaskForce.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Copy.rc">
@@ -86,6 +92,9 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
     <ResourceCompile Include="UI\AboutDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TaskForceDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
