@@ -1972,33 +1972,26 @@ __declspec(dllexport) void FA2CopyImportFunc()
 
 DEFINE_HOOK(537129, ExeRun, 9)
 {
-	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__537129ExeRun);
-
 	FA2Expand::ExeRun();
 	return 0;
 }
 
 DEFINE_HOOK(537208, ExeTerminate, 9)
 {
-	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__537208ExeTerminate);
-
 	//FA2Ext::ExeTerminate();
 	GET(UINT, result, EAX);
 	ExitProcess(result); //teehee
 }
 
-DEFINE_HOOK(551B07, FetchResource, 6)
+DEFINE_HOOK(551B07, CWnd_CreateDlg_FetchResource, 6)
 {
 	//GET(AFX_MODULE_STATE* const, pAfxModule, EAX);
 	//GET(HMODULE, hModule, ESI);
 	//GET(LPCTSTR, lpName, EBX);
 	GET_STACK(LPCSTR, lpName, STACK_OFFS(0xC, -4));
 	//GET(LPCTSTR, lpType, EDX);
-	const LPCTSTR lpType = (LPCTSTR)5;
 	const HMODULE hModule = g_hModule;
-
-	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__551B07FetchResource);
-
+	const LPCTSTR lpType = RT_DIALOG;
 
 	if (IS_INTRESOURCE(lpName)) {
 		logger::g_logger.Info(__FUNCTION__" lpName ID = " + std::to_string(LOWORD(lpName)));
@@ -2009,10 +2002,9 @@ DEFINE_HOOK(551B07, FetchResource, 6)
 
 	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
 		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
-			LockResource(hResData);
+			R->ESI(hModule);
 			R->EAX(hResData);
-
-			return 0x551B27; //Resource locked and loaded (omg what a pun), return!
+			return 0x551B20; //Resource locked and loaded (omg what a pun), return!
 		}
 	}
 	return 0; //Nothing was found, try the game's own resources.
@@ -2022,7 +2014,8 @@ DEFINE_HOOK(551E57, sub_551E20_LoadResource, 5)
 {
 	const LPCSTR lpName = *(LPCSTR*)(R->ESI() + 0x40);
 
-	logger::g_logger.Info("lpName = " + std::string(lpName));
+	logger::g_logger.Info(std::string(__FUNCTION__));
+	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
 
 	return 0;
 }
@@ -2031,25 +2024,40 @@ DEFINE_HOOK(552147, sub_55212E, 5)
 {
 	const LPCSTR lpName = *(LPCSTR*)(R->EDI() + 0x40);
 
-	logger::g_logger.Info("lpName = " + std::string(lpName));
+	logger::g_logger.Info(std::string(__FUNCTION__));
+	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
+
+	const HMODULE hModule = g_hModule;
+	const LPCTSTR lpType = RT_DIALOG;
+
+	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
+		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
+			R->EBX(hModule);
+			R->EAX(hResData);
+			return 0x552153; //Resource locked and loaded (omg what a pun), return!
+		}
+	}
+
 
 	return 0;
 }
 
+#if 0
 DEFINE_HOOK(554C8A, CWnd_ExecuteDlgInit, 9)
 {
 	GET_STACK(LPCSTR, lpName, STACK_OFFS(0xC, -4));
 	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::string(lpName));
+	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
 
 	return 0;
 }
+#endif
 
 DEFINE_HOOK(56537B, sub_56536A, 5)
 {
 	GET_BASE(LPCSTR, lpName, 0x8);
 	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::string(lpName));
+	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
 
 	return 0;
 }
@@ -2057,8 +2065,6 @@ DEFINE_HOOK(56537B, sub_56536A, 5)
 DEFINE_HOOK(551A82, sub_551A5B, 5)
 {
 	GET(LPCSTR, lpName, EBX);
-
-	UNREFERENCED_PARAMETER(SyringeData::Hooks::_hk__551A82sub_551A5B);
 
 	//logger::g_logger.Info(std::string(__FUNCTION__));
 
@@ -2073,10 +2079,7 @@ DEFINE_HOOK(551A82, sub_551A5B, 5)
 
 	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
 		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
-			//if (lpName == (LPCTSTR)IDC_INITDIAG) {
 			R->ESI(hModule);
-			//}
-
 			R->EAX(hResData);
 
 			return 0x551A97; //Resource locked and loaded (omg what a pun), return!

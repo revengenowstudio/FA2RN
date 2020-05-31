@@ -97,5 +97,8 @@
     <ResourceCompile Include="UI\TaskForceDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="UI\SaveOptionDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
