@@ -1,3 +1,3 @@
 #pragma once
 
-#include <afxwin.h>
+#include <AFXWIN.H>

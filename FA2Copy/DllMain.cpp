@@ -2049,6 +2049,11 @@ DEFINE_HOOK(554C8A, CWnd_ExecuteDlgInit, 9)
 	logger::g_logger.Info(std::string(__FUNCTION__));
 	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
 
+	if (IS_INTRESOURCE(lpName)) {
+		if ((DWORD)lpName) {
+		}
+	}
+
 	return 0;
 }
 #endif
