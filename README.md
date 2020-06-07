@@ -1,13 +1,12 @@
-## About FA2Copy
+## About FA2Copy - RN Specific Version
 FA2Copy is an extension DLL which provide some fixes for FinalAlert 2. With it, you can use FA2 more conveniently.
 
-FA2Copy only uses hook and Windows API to achieve its functions, no memory hook.
+FA2Copy uses message hook and Windows API to achieve its functions, and Zero Fanker introduced inline hook method from YR-Ares syringe way .
 
 ## How to use
 1. Prepare the dll. Simply, you can pull this project and compile it with X86. I had compiled one, you can just find it in the **examples** folder.
-2. Import this dll using a PE Editor (like Stud_PE) as I didn't make an injector for it.
-3. Modify your FinalAlert2 with exeScope or Resource Hacker to add functions. (If you need an example, there's an example in Simplified Chinese called **FA2MO.DAT** I've done for Mental Omega, you can simply modify a few things on it and it will fit your own MOD well.)
-4. You can also combine this dll with **FA2Ext.dll** which is developed by AlexB, that one needs an injector to launch but really helpful.
+2. Not ready for the public to use yet, currently designed for YRMOD - Revenge Now only .
+3. Work along with **FA2Ext.dll** properly, which is developed by AlexB.
 5. You should configure 'FA2CopyData.ini' correctly, as FA2Copy uses functions like FindWindow and will get window's handle by its name, it's really necessary. Also I will provide you a sample ini file just in the **examples** folder, if something works wrong while using FA2Copy, always remember to check your configure file before reporting the bug.
 
 ## More information
