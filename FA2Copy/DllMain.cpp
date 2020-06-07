@@ -4,7 +4,6 @@
 // In fact I was about to program a MFC dll
 // but then found it unnecessary XD
 #include "stdafx.h"
-#include "Syringe.h"
 #include "FA2Expand.h"
 
 #pragma region Global Variables

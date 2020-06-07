@@ -30,6 +30,9 @@
     <ClCompile Include="FA2Expand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Misc\BugFix.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
