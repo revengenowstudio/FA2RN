@@ -1,5 +1,6 @@
 #pragma region Includes
 #include "Ini.h"
+#include <Windows.h>
 #pragma endregion
 
 #pragma region TerrainSort
@@ -102,11 +103,11 @@ std::string Ini::Read(std::string section, std::string key) {
 	return Split(ret, ';')[0];
 }
 
-BOOL Ini::Write(std::string section, std::string key, std::string value) {
+bool Ini::Write(std::string section, std::string key, std::string value) {
 	return WritePrivateProfileString((LPCSTR)section.c_str(), (LPCSTR)key.c_str(), (LPCSTR)value.c_str(), (LPCSTR)Path.c_str());
 }
 
-BOOL Ini::Exist() {
+bool Ini::Exist() {
 	std::ifstream file(Path);
 	if (file.is_open())	return TRUE;
 	file.close();

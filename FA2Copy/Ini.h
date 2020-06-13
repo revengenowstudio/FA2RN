@@ -3,7 +3,7 @@
 
 #pragma region Includes
 
-#include <Windows.h>
+//#include <Windows.h>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -49,9 +49,9 @@ private:
 public:
 	Ini();
 	Ini(std::string path);
-	BOOL Write(std::string section, std::string key, std::string value);
+	bool Write(std::string section, std::string key, std::string value);
 	std::string Read(std::string section, std::string key);
-	BOOL Exist();
+	bool Exist();
 	std::vector<std::string> Split(std::string str, char ch);
 	std::string& Trim(std::string& s);
 };
