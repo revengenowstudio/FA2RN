@@ -1,4 +1,6 @@
 #pragma once
+#include "ini.h"
+#include "logger.h"
 #include "RunTime.h"
 #include "Macro.h"
 #include "UI/Resource.h"

@@ -30,8 +30,9 @@ namespace WND_Houses
 }
 
 //地形列表
-namespace IDC_Terrain_Sort
+namespace IDC_TerrainListWindow
 {
+	constexpr int Window = 227;
 	constexpr int ComboBox_Sub = 9975;// 子类别 
 	constexpr int ComboBox_Main = 9983;//主类别
 	constexpr int Button_Reload = 9984;//刷新 

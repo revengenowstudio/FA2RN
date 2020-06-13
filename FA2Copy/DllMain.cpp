@@ -141,21 +141,6 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			//logger::g_logger.Info("wmId = " + std::to_string(wmId));
 			switch (wmId)
 			{
-#if 0
-			case WND_TaskForce::ListBox: {
-				if (wmHi == CBN_SETFOCUS) {
-					logger::g_logger.Info("Taskforce ListBox SETFOCUS");
-					HWND TaskforceWnd = FindWindow(
-						g_FindWindowConfig.DialogClass.c_str(),
-						g_FindWindowConfig.TaskforceWnd.c_str()
-					);
-					auto TFList = GetDlgItem(TaskforceWnd, WND_TaskForce::ListBox);
-					int selectedIdx = SendMessage(TFList, LB_GETCURSEL, 0, NULL);
-					SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(WND_TaskForce::NewComboBox, CBN_SELCHANGE), (LPARAM)NewType);
-				}
-				break;
-			}
-#endif
 			//Used ID
 			//9970 - 9999
 			
@@ -241,7 +226,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}*/
 			//Terrain Group
-			case IDC_Terrain_Sort::ComboBox_Sub: {//Sub ComboBox
+			case IDC_TerrainListWindow::ComboBox_Sub: {//Sub ComboBox
 				switch (wmHi) {
 				case CBN_SELCHANGE: {
 					logger::g_logger.Info("Terrain Sub SELCHANGE");
@@ -250,7 +235,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 					HWND& TerrainWnd = g_TerrainWnd;
 					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
+					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
 					HWND ComboReal = GetDlgItem(TerrainWnd, 1366);
 					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
 					if (MainCount <= 0)	break;
@@ -281,7 +266,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 					HWND& TerrainWnd = g_TerrainWnd;
 					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
+					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
 
 					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
 					if (MainCount <= 0)	break;
@@ -294,7 +279,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					for (register int i = 0; i < SubCount; ++i)
 						SendMessage(ComboSub, CB_ADDSTRING, NULL, (LPARAM)g_TerrainSorts[MainIndex][i]->first.c_str());
 					SendMessage(ComboSub, CB_SETCURSEL, 0, NULL);
-					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(IDC_Terrain_Sort::ComboBox_Sub, CBN_SELCHANGE), (LPARAM)ComboSub);
+					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(IDC_TerrainListWindow::ComboBox_Sub, CBN_SELCHANGE), (LPARAM)ComboSub);
 					break;
 				}
 				default:
@@ -326,7 +311,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
 				HWND& TerrainWnd = g_TerrainWnd;
 				HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-				HWND ComboSub = GetDlgItem(TerrainWnd, IDC_Terrain_Sort::ComboBox_Sub);
+				HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
 
 				SendMessage(ComboMain, CB_RESETCONTENT, NULL, NULL);
 				SendMessage(ComboSub, CB_RESETCONTENT, NULL, NULL);
@@ -757,103 +742,6 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			//Taskforces
-			case WND_TaskForce::NewComboBox: {//Override Combobox
-				switch (wmHi) {
-				case CBN_SETFOCUS: {
-					logger::g_logger.Info("Taskforce SETFOCUS");
-					HWND TaskforceWnd = FindWindow(
-						g_FindWindowConfig.DialogClass.c_str(),
-						g_FindWindowConfig.TaskforceWnd.c_str()
-					);
-					HWND NewType = GetDlgItem(TaskforceWnd, 9985);
-					HWND OldType = GetDlgItem(TaskforceWnd, 1149);
-					if (g_TaskforcesRead) {
-						TCHAR *cur;
-						int curLen = GetWindowTextLength(OldType) + 1;
-						cur = new TCHAR[curLen];
-						GetWindowText(OldType, cur, curLen);
-						SetWindowText(NewType, cur);
-						SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(WND_TaskForce::NewComboBox, CBN_SELCHANGE), (LPARAM)NewType);
-						delete[] cur;
-						break;
-					}
-					g_TaskforcesRead = TRUE;
-					int Count = SendMessage(OldType, CB_GETCOUNT, NULL, NULL);
-					logger::g_logger.Info(std::to_string(Count) + " Unit/Infantry types read");
-					if (Count <= 0)	break;
-					int CurSel = SendMessage(OldType, CB_GETCURSEL, NULL, NULL);
-					SendMessage(NewType, CB_RESETCONTENT, NULL, NULL);
-					SendMessage(NewType, CB_SETCURSEL, -1, NULL);
-					for (register int i = 0; i < Count; ++i) {
-						TCHAR* cur;
-						int curLen = 4 * GetWindowTextLength(OldType) + 1;
-						cur = new TCHAR[curLen];
-						SendMessage(OldType, CB_SETCURSEL, i, NULL);
-						GetWindowText(OldType, cur, curLen);
-						SendMessage(NewType, CB_ADDSTRING, NULL, (LPARAM)cur);
-
-						delete[] cur;
-					}
-					SendMessage(OldType, CB_SETCURSEL, CurSel, NULL);
-
-					break;
-				}
-				case CBN_EDITCHANGE:
-				case CBN_EDITUPDATE:
-				case CBN_KILLFOCUS:{
-					logger::g_logger.Info("Taskforce Update");
-					HWND TaskforceWnd = FindWindow(
-						g_FindWindowConfig.DialogClass.c_str(),
-						g_FindWindowConfig.TaskforceWnd.c_str()
-					);
-					HWND NewType = GetDlgItem(TaskforceWnd, WND_TaskForce::NewComboBox);
-					HWND OldType = GetDlgItem(TaskforceWnd, 1149);
-					//int tLen = GetWindowTextLength(NewType);
-					//logger::g_logger.Info("Set current taskforce member len : " + std::to_string(tLen));
-					TCHAR t_Type[64];
-					t_Type[0] = _T('\0');
-					GetWindowTextA(NewType, t_Type, sizeof(t_Type) - 1);
-					if (strlen(t_Type)) {
-						//logger::g_logger.Info("Set current taskforce member to " + (std::string)t_Type);
-						int Index = SendMessage(OldType, CB_FINDSTRING, NULL, (LPARAM)t_Type);
-						SendMessage(OldType, CB_SETCURSEL, Index, NULL);
-						g_TaskforceComboFlag = TRUE;
-						SendMessage(TaskforceWnd, WM_COMMAND, MAKEWPARAM(1149, CBN_EDITCHANGE), (LPARAM)OldType);
-					}
-					break;
-				}
-				default:
-					break;
-				}				
-				break;
-			}
-			case WND_TaskForce::RefreshButton: {
-				logger::g_logger.Info("Reload Taskforces Units");
-				HWND TaskforceWnd = FindWindow(
-					g_FindWindowConfig.DialogClass.c_str(),
-					g_FindWindowConfig.TaskforceWnd.c_str()
-				);
-				HWND NewType = GetDlgItem(TaskforceWnd, WND_TaskForce::NewComboBox);
-				HWND OldType = GetDlgItem(TaskforceWnd, 1149);
-				int Count = SendMessage(OldType, CB_GETCOUNT, NULL, NULL);
-				logger::g_logger.Info(std::to_string(Count) + " Unit types read");
-				if (Count <= 0)	break;
-				int CurSel = SendMessage(OldType, CB_GETCURSEL, NULL, NULL);
-				SendMessage(NewType, CB_RESETCONTENT, NULL, NULL);
-				SendMessage(NewType, CB_SETCURSEL, -1, NULL);
-				for (register int i = 0; i < Count; ++i) {
-					TCHAR *cur;
-					int curLen = 4 * GetWindowTextLength(OldType) + 1;
-					cur = new TCHAR[curLen];
-					SendMessage(OldType, CB_SETCURSEL, i, NULL);
-					GetWindowText(OldType, cur, curLen);
-
-					SendMessage(NewType, CB_ADDSTRING, NULL, (LPARAM)cur);
-					delete[] cur;
-				}
-				g_TaskforcesRead = TRUE;
-				break;
-			}
 			case 9995: {//Copy Taskforce Member
 				logger::g_logger.Info("Copy Taskforce Member");
 				HWND TaskforceWnd = FindWindow(
@@ -2099,6 +1987,8 @@ DEFINE_HOOK(426B77, sub_426AC0, 5)
 
 	return 0;
 }
+
+
 
 
 
