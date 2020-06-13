@@ -1,7 +1,7 @@
 #include "FA2Expand.h"
 #include <iostream>
 #include <stdio.h>
-#include <CTaskForce.h>
+#include "Replacement/CTaskForceExt.h"
 
 typedef  HRSRC
 (WINAPI *FindResourceProc)(
@@ -67,10 +67,9 @@ void __stdcall FA2Expand::ExeRun()
 
 	constexpr char title[] = "Final Alert for \"Revenge Now !\"";
 	constexpr char delWarn[] = "确定要删除这个脚本吗？不要忘记删除调用这个脚本的小队";
-	auto constexpr taskforceCBMemberTypeMsg = CBN_KILLFOCUS;
 	RunTime::ResetMemoryContentAt(0x5CD808, title, sizeof(title));
 	RunTime::ResetMemoryContentAt(0x5D15A0, delWarn, sizeof(delWarn));
-	RunTime::ResetMemoryContentAt(0x596B50 + sizeof(taskforceCBMemberTypeMsg), &taskforceCBMemberTypeMsg, sizeof(taskforceCBMemberTypeMsg));
+	CTaskForceExt::ProgramStarupInit();
 	//auto const pStr = reinterpret_cast<const char*>(0x5CD808);
 	//logger::g_logger.Info(__FUNCTION__" " + std::string(pStr));
 	//DWORD oldProtect, newProtect = 0;

@@ -1,7 +1,7 @@
 #pragma once
 #include <FA2PP.h>
 
-class NOVTABLE CTaskForce : CDialog
+class NOVTABLE CTaskForce : public FA2CDialog
 {
 public:
 	CTaskForce() = default;
@@ -9,6 +9,9 @@ public:
 	void UpdateMemberTypeComboBox()
 		{ JMP_THIS(0x4E1A10); }
 
+	//event handlers
+	void OnMemberTypeChanged()
+		{ JMP_THIS(0x4E41A0); }
 
 	//member properties
 	CComboBox	CCBMemberType;

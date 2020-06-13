@@ -168,6 +168,9 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <ConformanceMode>false</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
+      <OmitFramePointers>true</OmitFramePointers>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableSpecificWarnings>4731;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,6 +199,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
       <AdditionalOptions>/d1reportAllClassLayout %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4731;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -253,6 +257,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
+    <ClCompile Include="Replacement\CTaskForceExt.cpp" />
     <ClCompile Include="RunTime.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +270,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="logger.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Replacement\CTaskForceExt.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RunTime.h" />
     <ClInclude Include="stdafx.h" />
