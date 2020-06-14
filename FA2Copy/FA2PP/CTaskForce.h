@@ -6,11 +6,11 @@ class NOVTABLE CTaskForce : public FA2CDialog
 public:
 	CTaskForce() = default;
 
-	void UpdateMemberTypeComboBox()
+	void UpdateMemberType()
 		{ JMP_THIS(0x4E1A10); }
 
 	//event handlers
-	void OnMemberTypeChanged()
+	void OnMemberEditChanged()
 		{ JMP_THIS(0x4E41A0); }
 
 	//member properties
