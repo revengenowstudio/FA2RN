@@ -1904,6 +1904,17 @@ DEFINE_HOOK(551E57, sub_551E20_LoadResource, 5)
 	logger::g_logger.Info(std::string(__FUNCTION__));
 	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
 
+	const HMODULE hModule = g_hModule;
+	const LPCTSTR lpType = RT_DIALOG;
+
+	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
+		if (HGLOBAL hResData = LoadResource(hModule, hResInfo)) {
+			R->EBX(hModule);
+			R->EDI(hResData);
+			return 0x551E6D; //Resource locked and loaded (omg what a pun), return!
+		}
+	}
+
 	return 0;
 }
 
