@@ -1,5 +1,5 @@
 #include "CTaskForceExt.h"
-
+#include <functional>
 CTaskForce* CTaskForceExt::Instance = nullptr;
 
 void CTaskForceExt::ProgramStarupInit()

@@ -5,7 +5,6 @@
 class NOVTABLE CTaskForceExt : public CTaskForce
 {
 public:
-	typedef BOOL(*FuncT_PTM)(MSG* pMsg);
 
 	static CTaskForce* Instance;
 

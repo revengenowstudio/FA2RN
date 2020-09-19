@@ -83,6 +83,18 @@
     <ClInclude Include="Replacement\CTaskForceExt.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\INI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\FA2String.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\Helper\INIParser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\Helper\Parser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Copy.rc">

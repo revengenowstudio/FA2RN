@@ -24,6 +24,24 @@ public:
 
 };
 
+class NOVTABLE CTreeView : public CCtrlView
+{
+public:
+	afx_msg void OnDestroy()
+		{ JMP_THIS(0x563E04); }
+
+
+};
+
+class NOVTABLE CViewObjects : public CCtrlView
+{
+public:
+
+
+	DWORD unk1;
+	DWORD unk2;
+};
+
 class NOVTABLE FA2CWinApp : public CWinApp
 {
 
