@@ -263,6 +263,8 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="FA2PP\ASMMacros.h" />
     <ClInclude Include="FA2PP\CTaskForce.h" />
+    <ClInclude Include="FA2PP\CTileSetBrowerFrame.h" />
+    <ClInclude Include="FA2PP\CTileSetBrowserView.h" />
     <ClInclude Include="FA2PP\FA2PP.h" />
     <ClInclude Include="FA2PP\FA2PPCore.h" />
     <ClInclude Include="FA2PP\FA2String.h" />

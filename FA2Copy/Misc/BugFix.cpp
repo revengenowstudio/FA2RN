@@ -50,6 +50,12 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	GET_STACK(int, overlayIdx, 0x24);
 	// GET(CString, name, ECX);
 
+	//logger::g_logger.Warn(__FUNCTION__" overlayIdx:" + std::to_string(overlayIdx));
+
+	if (overlayIdx > 255) {
+		return 0x4F1695;
+	}
+
 	char buf[8];
 	_itoa_s(overlayIdx, buf, 10);
 	auto const& overlayName = rules.GetString("OverlayTypes", buf);
