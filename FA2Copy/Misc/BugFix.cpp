@@ -70,3 +70,42 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	R->ECX<const char*>(name);
 	return 0;
 }
+
+__declspec(naked) void ret_func()
+{
+	__asm
+	{
+		push    ecx
+		mov     ecx, esi
+		mov dword ptr[esp + 18h], 0
+		mov eax, 0x553134
+		call  eax
+		mov     eax, [esp + 20h]
+		cmp     eax, 1Dh
+		push esi
+		mov ecx, 0x43CE96
+		mov esi, 0x43D037
+		cmova ecx,esi
+		pop esi
+		jmp ecx
+	};
+}
+
+DEFINE_HOOK(43CE79, sub_43CE50_SkipHack, B)
+{
+	//GET(const FAString*, string, ECX);
+
+	//logger::g_logger.Warn(std::string(__FUNCTION__" :") + string->c_str());
+	return  reinterpret_cast<DWORD>(ret_func);
+}
+
+#if 0
+DEFINE_HOOK(43CE8D, sub_43CE50, 9)
+{
+	REF_STACK(const FAString, string, 0x8);
+
+	logger::g_logger.Warn(std::string("__FUNCTION__ ") + string.c_str());
+
+	return 0;
+}
+#endif
