@@ -56,6 +56,10 @@ public:
 		JMP_THIS(0x555C84);
 	}
 
+	FAString& operator=(const char* other) {
+		JMP_THIS(0x556098);
+	}
+
 	~FAString() {
 		JMP_THIS(0x555F0F);
 	}

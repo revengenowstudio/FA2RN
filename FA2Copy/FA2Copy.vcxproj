@@ -252,6 +252,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="Enhancement\SaveOption.cpp" />
     <ClCompile Include="FA2Expand.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />

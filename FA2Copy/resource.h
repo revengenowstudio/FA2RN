@@ -1,6 +1,6 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ Éú³ÉµÄ°üº¬ÎÄ¼ş¡£
-// ¹© FA2Copy.rc Ê¹ÓÃ
+ï»¿//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ ç”Ÿæˆçš„åŒ…å«æ–‡ä»¶ã€‚
+// ä¾› FA2Copy.rc ä½¿ç”¨
 //
 #define IDD_DIALOG1                     111
 #define IDR_ACCELERATOR1                113
@@ -29,63 +29,69 @@ namespace WND_Houses
 	constexpr int Button = 9973;
 }
 
-//µØĞÎÁĞ±í
+
+namespace WND_SaveOption
+{
+	constexpr int Edit_MinPlayer = 10001;
+}
+
+//åœ°å½¢åˆ—è¡¨
 namespace IDC_TerrainListWindow
 {
 	constexpr int Window = 227;
-	constexpr int ComboBox_Sub = 9975;// ×ÓÀà±ğ 
-	constexpr int ComboBox_Main = 9983;//Ö÷Àà±ğ
-	constexpr int Button_Reload = 9984;//Ë¢ĞÂ 
+	constexpr int ComboBox_Sub = 9975;// å­ç±»åˆ« 
+	constexpr int ComboBox_Main = 9983;//ä¸»ç±»åˆ«
+	constexpr int Button_Reload = 9984;//åˆ·æ–° 
 }
 
 
-//INI±à¼­Æ÷
+//INIç¼–è¾‘å™¨
 namespace  WND_INI_Editor
 {
 	constexpr int Dialog = 1031;
-	constexpr int Button_Search = 9971;// ²éÕÒ 
-	constexpr int Edit_Input = 9972;//²éÕÒÊäÈë
-	constexpr int Button_Add = 9982;//Ìí¼Ó
+	constexpr int Button_Search = 9971;// æŸ¥æ‰¾ 
+	constexpr int Edit_Input = 9972;//æŸ¥æ‰¾è¾“å…¥
+	constexpr int Button_Add = 9982;//æ·»åŠ 
 }
 
-//±êÇ© 
+//æ ‡ç­¾ 
 namespace Tag
 {
-	constexpr int Copy_Button = 9970;//¸´ÖÆ±êÇ©
+	constexpr int Copy_Button = 9970;//å¤åˆ¶æ ‡ç­¾
 }
 /*
-´¥·¢±à¼­Æ÷ Trigger
-9987 Button ¸´ÖÆ´¥·¢ Copy Trigger, override
-9988 Button Ìí¼ÓÊÂ¼ş Add Event, override
-9989 Button Ìí¼ÓĞĞÎª Add Action, override
-9990 Button ¸´ÖÆÊÂ¼ş Copy Event
-9991 Button ¸´ÖÆĞĞÎª Copy Action
+è§¦å‘ç¼–è¾‘å™¨ Trigger
+9987 Button å¤åˆ¶è§¦å‘ Copy Trigger, override
+9988 Button æ·»åŠ äº‹ä»¶ Add Event, override
+9989 Button æ·»åŠ è¡Œä¸º Add Action, override
+9990 Button å¤åˆ¶äº‹ä»¶ Copy Event
+9991 Button å¤åˆ¶è¡Œä¸º Copy Action
 
-ÌØÇ²²¿¶Ó Taskforce
-9985 ComboBox ÌØÇ²²¿¶ÓÊäÈë Input string
-WND_TaskForce::RefreshButton Button Ë¢ĞÂ£¨¿ÉÄÜÃ»É¶ÓÃ£¬µ«»¹ÊÇÁô¸ö±¸ÓÃ£©Reload(maybe not necessary)
-9995 Button ¸´ÖÆÌØÇ²²¿¶Ó³ÉÔ±  Copy Taskforce member
-9998 Button ¸´ÖÆÌØÇ²²¿¶Ó Copy Taskforce
+ç‰¹é£éƒ¨é˜Ÿ Taskforce
+9985 ComboBox ç‰¹é£éƒ¨é˜Ÿè¾“å…¥ Input string
+WND_TaskForce::RefreshButton Button åˆ·æ–°ï¼ˆå¯èƒ½æ²¡å•¥ç”¨ï¼Œä½†è¿˜æ˜¯ç•™ä¸ªå¤‡ç”¨ï¼‰Reload(maybe not necessary)
+9995 Button å¤åˆ¶ç‰¹é£éƒ¨é˜Ÿæˆå‘˜  Copy Taskforce member
+9998 Button å¤åˆ¶ç‰¹é£éƒ¨é˜Ÿ Copy Taskforce
 
-½Å±¾ Script
-9976 Button Ìí¼Ó½Å±¾ Add Script, override
-9977 Button Ë¢ĞÂ½Å±¾Ä£°å Reload Template
-9978 ComboBox ½Å±¾Ä£°å Select Template
-9992 Button Ìí¼Ó½Å±¾³ÉÔ± Add Script member
-9993 CheckBox ²åÈëÄ£Ê½ Insert Mode
-9996 Button ¸´ÖÆ½Å±¾³ÉÔ± Copy Script member
-9999 Button ¸´ÖÆ½Å±¾ Copy Script
+è„šæœ¬ Script
+9976 Button æ·»åŠ è„šæœ¬ Add Script, override
+9977 Button åˆ·æ–°è„šæœ¬æ¨¡æ¿ Reload Template
+9978 ComboBox è„šæœ¬æ¨¡æ¿ Select Template
+9992 Button æ·»åŠ è„šæœ¬æˆå‘˜ Add Script member
+9993 CheckBox æ’å…¥æ¨¡å¼ Insert Mode
+9996 Button å¤åˆ¶è„šæœ¬æˆå‘˜ Copy Script member
+9999 Button å¤åˆ¶è„šæœ¬ Copy Script
 
-×÷Õ½Ğ¡¶Ó Team
-9979 Button ĞÂ½¨×÷Õ½Ğ¡¶Ó New Team, override
-9980 ComboBox ×÷Õ½Ğ¡¶ÓÄ£°å Team Template
-9981 Button Ë¢ĞÂ×÷Õ½Ğ¡¶ÓÄ£°å Reload Template
-9997 Button ¸´ÖÆ×÷Õ½Ğ¡¶Ó Copy Team
+ä½œæˆ˜å°é˜Ÿ Team
+9979 Button æ–°å»ºä½œæˆ˜å°é˜Ÿ New Team, override
+9980 ComboBox ä½œæˆ˜å°é˜Ÿæ¨¡æ¿ Team Template
+9981 Button åˆ·æ–°ä½œæˆ˜å°é˜Ÿæ¨¡æ¿ Reload Template
+9997 Button å¤åˆ¶ä½œæˆ˜å°é˜Ÿ Copy Team
 
-AI´¥·¢ AI Trigger
-9994 Button ¸´ÖÆAI´¥·¢ Copy AI Trigger
+AIè§¦å‘ AI Trigger
+9994 Button å¤åˆ¶AIè§¦å‘ Copy AI Trigger
 
-Object Viewer£¨·ÏÆú£© Unused
+Object Viewerï¼ˆåºŸå¼ƒï¼‰ Unused
 9974 Button for debug use, but unused now
 */
 
@@ -93,68 +99,68 @@ Object Viewer£¨·ÏÆú£© Unused
 
 
 //for mo.dat
-//Ê¹ÓÃµÄID£º9970 - 9999
+//ä½¿ç”¨çš„IDï¼š9970 - 9999
 
 namespace WND_Houses
 {
 	constexpr int Button = 9973;
 }
 
-//µØĞÎÁĞ±í
+//åœ°å½¢åˆ—è¡¨
 namespace IDC_Terrain_Sort
 {
-	constexpr int ComboBox_Sub = 9975;// ×ÓÀà±ğ 
-	constexpr int ComboBox_Main = 9983;//Ö÷Àà±ğ
-	constexpr int Button_Reload = 9984;//Ë¢ĞÂ 
+	constexpr int ComboBox_Sub = 9975;// å­ç±»åˆ« 
+	constexpr int ComboBox_Main = 9983;//ä¸»ç±»åˆ«
+	constexpr int Button_Reload = 9984;//åˆ·æ–° 
 }
 
 
-//INI±à¼­Æ÷
+//INIç¼–è¾‘å™¨
 namespace  WND_INI_Editor
 {
-	constexpr int Button_Search=9971;// ²éÕÒ 
-	constexpr int Edit_Input = 9972;//²éÕÒÊäÈë
-	constexpr int Button_Add = 9982;//Ìí¼Ó
+	constexpr int Button_Search=9971;// æŸ¥æ‰¾ 
+	constexpr int Edit_Input = 9972;//æŸ¥æ‰¾è¾“å…¥
+	constexpr int Button_Add = 9982;//æ·»åŠ 
 }
 
-//±êÇ© 
+//æ ‡ç­¾ 
 namespace Tag
 {
-	constexpr int Copy_Button = 9970;//¸´ÖÆ±êÇ©
+	constexpr int Copy_Button = 9970;//å¤åˆ¶æ ‡ç­¾
 }
 /*
-´¥·¢±à¼­Æ÷ Trigger
-9987 Button ¸´ÖÆ´¥·¢ Copy Trigger, override
-9988 Button Ìí¼ÓÊÂ¼ş Add Event, override
-9989 Button Ìí¼ÓĞĞÎª Add Action, override
-9990 Button ¸´ÖÆÊÂ¼ş Copy Event
-9991 Button ¸´ÖÆĞĞÎª Copy Action
+è§¦å‘ç¼–è¾‘å™¨ Trigger
+9987 Button å¤åˆ¶è§¦å‘ Copy Trigger, override
+9988 Button æ·»åŠ äº‹ä»¶ Add Event, override
+9989 Button æ·»åŠ è¡Œä¸º Add Action, override
+9990 Button å¤åˆ¶äº‹ä»¶ Copy Event
+9991 Button å¤åˆ¶è¡Œä¸º Copy Action
 
-ÌØÇ²²¿¶Ó Taskforce
-9985 ComboBox ÌØÇ²²¿¶ÓÊäÈë Input string
-WND_TaskForce::RefreshButton Button Ë¢ĞÂ£¨¿ÉÄÜÃ»É¶ÓÃ£¬µ«»¹ÊÇÁô¸ö±¸ÓÃ£©Reload(maybe not necessary)
-9995 Button ¸´ÖÆÌØÇ²²¿¶Ó³ÉÔ±  Copy Taskforce member
-9998 Button ¸´ÖÆÌØÇ²²¿¶Ó Copy Taskforce
+ç‰¹é£éƒ¨é˜Ÿ Taskforce
+9985 ComboBox ç‰¹é£éƒ¨é˜Ÿè¾“å…¥ Input string
+WND_TaskForce::RefreshButton Button åˆ·æ–°ï¼ˆå¯èƒ½æ²¡å•¥ç”¨ï¼Œä½†è¿˜æ˜¯ç•™ä¸ªå¤‡ç”¨ï¼‰Reload(maybe not necessary)
+9995 Button å¤åˆ¶ç‰¹é£éƒ¨é˜Ÿæˆå‘˜  Copy Taskforce member
+9998 Button å¤åˆ¶ç‰¹é£éƒ¨é˜Ÿ Copy Taskforce
 
-½Å±¾ Script
-9976 Button Ìí¼Ó½Å±¾ Add Script, override
-9977 Button Ë¢ĞÂ½Å±¾Ä£°å Reload Template
-9978 ComboBox ½Å±¾Ä£°å Select Template
-9992 Button Ìí¼Ó½Å±¾³ÉÔ± Add Script member
-9993 CheckBox ²åÈëÄ£Ê½ Insert Mode
-9996 Button ¸´ÖÆ½Å±¾³ÉÔ± Copy Script member
-9999 Button ¸´ÖÆ½Å±¾ Copy Script
+è„šæœ¬ Script
+9976 Button æ·»åŠ è„šæœ¬ Add Script, override
+9977 Button åˆ·æ–°è„šæœ¬æ¨¡æ¿ Reload Template
+9978 ComboBox è„šæœ¬æ¨¡æ¿ Select Template
+9992 Button æ·»åŠ è„šæœ¬æˆå‘˜ Add Script member
+9993 CheckBox æ’å…¥æ¨¡å¼ Insert Mode
+9996 Button å¤åˆ¶è„šæœ¬æˆå‘˜ Copy Script member
+9999 Button å¤åˆ¶è„šæœ¬ Copy Script
 
-×÷Õ½Ğ¡¶Ó Team
-9979 Button ĞÂ½¨×÷Õ½Ğ¡¶Ó New Team, override
-9980 ComboBox ×÷Õ½Ğ¡¶ÓÄ£°å Team Template
-9981 Button Ë¢ĞÂ×÷Õ½Ğ¡¶ÓÄ£°å Reload Template
-9997 Button ¸´ÖÆ×÷Õ½Ğ¡¶Ó Copy Team
+ä½œæˆ˜å°é˜Ÿ Team
+9979 Button æ–°å»ºä½œæˆ˜å°é˜Ÿ New Team, override
+9980 ComboBox ä½œæˆ˜å°é˜Ÿæ¨¡æ¿ Team Template
+9981 Button åˆ·æ–°ä½œæˆ˜å°é˜Ÿæ¨¡æ¿ Reload Template
+9997 Button å¤åˆ¶ä½œæˆ˜å°é˜Ÿ Copy Team
 
-AI´¥·¢ AI Trigger
-9994 Button ¸´ÖÆAI´¥·¢ Copy AI Trigger
+AIè§¦å‘ AI Trigger
+9994 Button å¤åˆ¶AIè§¦å‘ Copy AI Trigger
 
-Object Viewer£¨·ÏÆú£© Unused
+Object Viewerï¼ˆåºŸå¼ƒï¼‰ Unused
 9974 Button for debug use, but unused now
 */
 #endif

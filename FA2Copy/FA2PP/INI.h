@@ -149,8 +149,12 @@ public:
 class INIClass : private INIClassHelpers
 {
 public:
-	static constexpr reference<INIClass, 0x7EDDDCu> const RulesIni{};
+	static constexpr reference<INIClass, 0x7EDDDCu> const RulesIni{}; 
+	static constexpr reference<INIClass, 0x72CBF8u> const CurrentMap{};
+	static constexpr reference<INIClass, 0x72CBF8u + 0x8008Cu> const CurrentMapSetting{};
+	static constexpr reference<INIClass, 0x72CBF8u + 0x80088u> const CurrentMapEx{};
 
+	
 	INISection* GetSection(const char* const &section) {
 		return Query<INISection, UnknownA, 0x4026D0>(section).Value; /*GetSectionDescriptor(section).Value;*/
 	}
@@ -175,9 +179,9 @@ public:
 	}
 
 	int GetInteger(const char* pSection, const char* pKey, int nDefault = 0) {
-		auto const pStr = this->GetString(pSection, pKey);
+		auto const& pStr = this->GetString(pSection, pKey);
 		int ret = 0;
-		if (sscanf_s(pStr, "%d", &ret) == 1)
+		if (!pStr.IsEmpty() && sscanf_s(pStr, "%d", &ret) == 1)
 			return ret;
 		return nDefault;
 	}
