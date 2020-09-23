@@ -15,7 +15,7 @@ FONT 8, "Tahoma"
 		CONTROL "不保存任何预览", 1421, BUTTON, BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 19, 66, 141, 12
 		CONTROL "Compression", -1, BUTTON, BS_GROUPBOX | ~WS_VISIBLE | WS_CHILD, 70, 25, 156, 10
 		CONTROL "预览", -1, BUTTON, BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 7, 29, 219, 56
-		CONTROL "如想联机使用该地图，则应尽可能使地图文件尺寸更小，比如可以取消地图预览以减小地图尺寸。\n\n需要注意的是，用于DTA客户端（像MO3.3）的多人地图只能用MAP格式保存在Maps里的Customs位置下（通常如此），否则不会被客户端识别。", -1, STATIC, SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 155, 219, 51
+		CONTROL "如想联机使用该地图，则应尽可能使地图文件尺寸更小，比如可以取消地图预览以减小地图尺寸。\n\n需要注意的是，用于Cncnet客户端的多人地图只能用MAP格式保存在Maps里的Customs位置下，否则不会被客户端识别。", -1, STATIC, SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 155, 219, 51
 		CONTROL "地图名称:", -1, STATIC, SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 7, 63, 13
 		CONTROL "", 1220, EDIT, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 73, 7, 153, 12
 		CONTROL "2", 10001, EDIT, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 53, 89, 34, 12
