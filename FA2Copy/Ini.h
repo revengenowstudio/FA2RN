@@ -1,4 +1,4 @@
-#ifndef __FA2COPY_INI__
+﻿#ifndef __FA2COPY_INI__
 #define __FA2COPY_INI__
 
 #pragma region Includes
@@ -11,18 +11,7 @@
 #pragma endregion
 
 #pragma region Classes
-class TerrainSort {
-private:
-	std::vector<std::pair<std::string, std::string>> Data;
-	std::string Name;
-public:
-	TerrainSort();
-	TerrainSort(std::vector<std::string> init);
-	std::pair<std::string, std::string>* operator[](int index);
-	int Count();
-	void Resize(int size);
-	std::string GetName();
-};
+
 class TeamTemplate {
 private:
 	std::string Data[27];
@@ -41,12 +30,12 @@ public:
 	int Count();
 	void Resize(int size);
 };
+
 class Ini
 {
-private:
-	std::string Path;
-
 public:
+	static Ini ConfigIni; // Ini Config file
+
 	Ini();
 	Ini(std::string path);
 	bool Write(std::string section, std::string key, std::string value);
@@ -54,6 +43,10 @@ public:
 	bool Exist();
 	std::vector<std::string> Split(std::string str, char ch);
 	std::string& Trim(std::string& s);
+
+
+private:
+	std::string Path;
 };
 #pragma endregion
 

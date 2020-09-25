@@ -1,41 +1,9 @@
-#pragma region Includes
+﻿#pragma region Includes
 #include "Ini.h"
 #include <Windows.h>
 #pragma endregion
 
-#pragma region TerrainSort
-//Class TerrainSort
-TerrainSort::TerrainSort() {
-	Data.clear();
-}
-
-TerrainSort::TerrainSort(std::vector<std::string> init) {
-	Name = init[0];
-	int count = atoi(init[1].c_str());
-	Data.resize(count);
-	for (register int i = 0; i < count; ++i) {
-		Data[i].first = init[i * 2 + 2];
-		Data[i].second = init[i * 2 + 3];
-	}
-}
-
-int TerrainSort::Count() {
-	return Data.size();
-}
-
-void TerrainSort::Resize(int size) {
-	Data.resize(size);
-	return;
-}
-
-std::pair<std::string, std::string>* TerrainSort::operator[] (int index) {
-	return &Data[index];
-}
-
-std::string TerrainSort::GetName() {
-	return Name;
-}
-#pragma endregion
+Ini Ini::ConfigIni;
 
 #pragma region ScriptTemplate
 //Class ScriptTemplate

@@ -1,4 +1,5 @@
-#include "CTaskForceExt.h"
+﻿#include "CTaskForceExt.h"
+#include "../FA2Expand.h"
 #include <functional>
 CTaskForce* CTaskForceExt::Instance = nullptr;
 

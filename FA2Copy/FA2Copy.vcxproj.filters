@@ -39,6 +39,12 @@
     <ClCompile Include="Enhancement\SaveOption.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Replacement\CTileSetDialogBarExt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -102,6 +108,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FA2PP\CTileSetBrowserView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTileSetDialogBar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Replacement\CTileSetDialogBarExt.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,5 @@
-#pragma once
+﻿#pragma once
 #include <CTaskForce.h>
-#include "../FA2Expand.h"
 
 class NOVTABLE CTaskForceExt : public CTaskForce
 {

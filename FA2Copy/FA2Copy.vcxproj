@@ -178,13 +178,14 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);legacy_stdio_definitions.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <MinimumRequiredVersion>
       </MinimumRequiredVersion>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LayoutRelease|Win32'">
@@ -251,6 +252,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="Enhancement\SaveOption.cpp" />
     <ClCompile Include="FA2Expand.cpp" />
@@ -258,14 +260,17 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
     <ClCompile Include="Replacement\CTaskForceExt.cpp" />
+    <ClCompile Include="Replacement\CTileSetDialogBarExt.cpp" />
     <ClCompile Include="RunTime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="FA2PP\ASMMacros.h" />
     <ClInclude Include="FA2PP\CTaskForce.h" />
     <ClInclude Include="FA2PP\CTileSetBrowerFrame.h" />
     <ClInclude Include="FA2PP\CTileSetBrowserView.h" />
+    <ClInclude Include="FA2PP\CTileSetDialogBar.h" />
     <ClInclude Include="FA2PP\FA2PP.h" />
     <ClInclude Include="FA2PP\FA2PPCore.h" />
     <ClInclude Include="FA2PP\FA2String.h" />
@@ -277,6 +282,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Macro.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Replacement\CTaskForceExt.h" />
+    <ClInclude Include="Replacement\CTileSetDialogBarExt.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RunTime.h" />
     <ClInclude Include="stdafx.h" />

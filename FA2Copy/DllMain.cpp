@@ -5,6 +5,9 @@
 // but then found it unnecessary XD
 #include "stdafx.h"
 #include "FA2Expand.h"
+#include "Config.h"
+#include "Replacement/CTileSetDialogBarExt.h"
+#include <INI.h>
 
 #pragma region Global Variables
 // Global Variables
@@ -20,7 +23,7 @@ HHOOK g_CallWndHook, g_GetMsgHook;
 BOOL g_GetMsgHooked;
 BOOL g_TaskforcesRead;
 BOOL g_TaskforceComboFlag;
-BOOL g_TerrainTheaterFlag;
+bool g_TerrainTheaterFlag = false;
 
 WNDPROC g_oldProc; // Save old Main Window Proc
 
@@ -33,42 +36,20 @@ HWND g_SysTreeView;
 // Store templates
 std::vector<TeamTemplate> g_TeamTemplates;
 std::vector<ScriptTemplate> g_ScriptTemplates;
-std::vector<TerrainSort> g_TerrainSorts;
 
 // Global strings for further use
 std::string g_TerrainTheater;
 std::string g_Path;
 
-Ini g_ini; // Ini Config file
-
 // Necessary items for FindWindow
 struct FindWindowConfig {
 	std::string DialogClass, MapWnd, IniWnd, HouseWnd, TriggerWnd, TagWnd, 
 		TriggerGlobalWnd, TriggerEventWnd, TriggerActionWnd,
-		TaskforceWnd, ScriptWnd, TeamWnd, AITriggerWnd, TerrainWnd,
+		TaskforceWnd, ScriptWnd, TeamWnd, AITriggerWnd,
 		SaveWnd, LoadWnd, NewWnd1, NewWnd2, NewWnd3;
 }g_FindWindowConfig;
 
-// Necessary items for MessageBox
-class MessageBoxConfig {
-private:
-	struct s_Captain {
-		std::string Hint, Error, Warning;
-	};
-	struct s_Message {
-		std::string HookFailed, UnHookFailed, IniNotExist, TerrainDisabled,
-			TerrainMapUnloaded, TerrainMapUnknown, TriggerEventFull, TriggerActionFull,
-			HouseWndNotFound, INISectionNotFound;
-	};
-public:
-	MessageBoxConfig() {
-		Message.HookFailed = "FA2Copy failed to hook!";
-		Message.UnHookFailed = "FA2Copy failed to unhook!";
-		Message.IniNotExist = "Cannot read FA2CopyData.ini!";
-	}
-	s_Captain Captain;
-	s_Message Message;
-}g_MessageBoxConfig;
+
 #pragma endregion
 
 #pragma region Function Definations
@@ -96,7 +77,7 @@ BOOL CALLBACK HouseDlgProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 // Functionality Functions
 std::string GetPath();
-void LoadTerrainGroups(std::string Theater);
+
 void LoadTeamTemplates();
 void LoadScriptTemplates();
 void GetTreeViewHwnd();
@@ -154,8 +135,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					logger::g_logger.Error("Cannot locate the House window.");
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.HouseWndNotFound.c_str(),
-						g_MessageBoxConfig.Captain.Error.c_str(),
+						MessageBoxConfig::Instance.Message.HouseWndNotFound.c_str(),
+						MessageBoxConfig::Instance.Captain.Error.c_str(),
 						MB_OK
 					);
 					break;
@@ -173,7 +154,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				str = new TCHAR[strLen];
 				GetWindowText(ComboBox, str, strLen);
 				std::string CurHouseStr = str;
-				g_ini.Trim(CurHouseStr);
+				Ini::ConfigIni.Trim(CurHouseStr);
 
 				std::unordered_map<std::string, bool> Houses;
 				for (int i = 0; i < HouseCount; ++i) {
@@ -194,9 +175,9 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				std::string AlliedText = AllieStr;
 				delete[] AllieStr;
 
-				std::vector<std::string> AllieStrs = g_ini.Split(AlliedText, ',');
+				std::vector<std::string> AllieStrs = Ini::ConfigIni.Split(AlliedText, ',');
 				for (int i = 0, cnt = AllieStrs.size(); i < cnt; ++i) {
-					g_ini.Trim(AllieStrs[i]);
+					Ini::ConfigIni.Trim(AllieStrs[i]);
 					if (Houses.find(AllieStrs[i]) != Houses.end()) //House Exists
 						Houses[AllieStrs[i]] = true;
 				}
@@ -229,27 +210,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			case IDC_TerrainListWindow::ComboBox_Sub: {//Sub ComboBox
 				switch (wmHi) {
 				case CBN_SELCHANGE: {
-					logger::g_logger.Info("Terrain Sub SELCHANGE");
-					HWND TerrainWnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
-					HWND TerrainWnd2 = FindWindowEx(TerrainWnd1, NULL, "AfxMDIFrame42s", NULL);
-					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
-					HWND& TerrainWnd = g_TerrainWnd;
-					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
-					HWND ComboReal = GetDlgItem(TerrainWnd, 1366);
-					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
-					if (MainCount <= 0)	break;
-					int MainIndex = SendMessage(ComboMain, CB_GETCURSEL, NULL, NULL);
-					if (MainIndex < 0)	break;
-					int SubCount = g_TerrainSorts[MainIndex].Count();
-					if (SubCount <= 0)	break;
-					int SubIndex = SendMessage(ComboSub, CB_GETCURSEL, NULL, NULL);
-					if (SubIndex < 0)	break;
-					std::string TerrainId = g_TerrainSorts[MainIndex][SubIndex]->second;
-					int FindIndex = SendMessage(ComboReal, CB_FINDSTRING, -1, (LPARAM)TerrainId.c_str());
-					if (FindIndex == CB_ERR)	FindIndex = 0;
-					SendMessage(ComboReal, CB_SETCURSEL, FindIndex, NULL);
-					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(1366, CBN_SELCHANGE), (LPARAM)ComboReal);
+					CTileSetDialogBarExt::OnSubTypeComboboxSelectionChanged();
 					break;
 				}
 				default:
@@ -257,29 +218,10 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			}
-			case 9983: {//Main ComboBox
+			case  IDC_TerrainListWindow::ComboBox_Main: {//Main ComboBox
 				switch (wmHi) {
 				case CBN_SELCHANGE: {
-					logger::g_logger.Info("Terrain Main SELCHANGE");
-					HWND TerrainWnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
-					HWND TerrainWnd2 = FindWindowEx(TerrainWnd1, NULL, "AfxMDIFrame42s", NULL);
-					EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
-					HWND& TerrainWnd = g_TerrainWnd;
-					HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-					HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
-
-					int MainCount = SendMessage(ComboMain, CB_GETCOUNT, NULL, NULL);
-					if (MainCount <= 0)	break;
-					int MainIndex = SendMessage(ComboMain, CB_GETCURSEL, NULL, NULL);
-					if (MainIndex < 0)	break;
-					int SubCount = g_TerrainSorts[MainIndex].Count();
-					SendMessage(ComboSub, CB_RESETCONTENT, NULL, NULL);
-					SendMessage(ComboSub, CB_SETCURSEL, -1, NULL);
-					if (SubCount <= 0)	break;
-					for (int i = 0; i < SubCount; ++i)
-						SendMessage(ComboSub, CB_ADDSTRING, NULL, (LPARAM)g_TerrainSorts[MainIndex][i]->first.c_str());
-					SendMessage(ComboSub, CB_SETCURSEL, 0, NULL);
-					SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(IDC_TerrainListWindow::ComboBox_Sub, CBN_SELCHANGE), (LPARAM)ComboSub);
+					CTileSetDialogBarExt::OnGroupComboboxSelectionChanged();
 					break;
 				}
 				default:
@@ -287,69 +229,9 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			}
-			case 9984: {//Reload Button
-				logger::g_logger.Info("Reload Terrain Group");
-				if (!g_TerrainTheaterFlag) {
-					g_TerrainTheaterFlag = TRUE;
-					SendMessage(g_FA2Wnd, WM_COMMAND, MAKEWPARAM(40040, BN_CLICKED), NULL);
-					HWND MapWnd = FindWindow(
-						g_FindWindowConfig.DialogClass.c_str(),
-						g_FindWindowConfig.MapWnd.c_str()
-					);
-					HWND ComboTerrain = GetDlgItem(MapWnd, 1046);
-					TCHAR* str;
-					int strLen = GetWindowTextLength(ComboTerrain) + 1;
-					str = new TCHAR[strLen];
-					GetWindowText(ComboTerrain, str, strLen);
-					g_TerrainTheater = str;
-					SendMessage(MapWnd, WM_CLOSE, NULL, NULL);
-					delete[] str;
-					break;
-				}
-				HWND TerrainWnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
-				HWND TerrainWnd2 = FindWindowEx(TerrainWnd1, NULL, "AfxMDIFrame42s", NULL);
-				EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
-				HWND& TerrainWnd = g_TerrainWnd;
-				HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-				HWND ComboSub = GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);
-
-				SendMessage(ComboMain, CB_RESETCONTENT, NULL, NULL);
-				SendMessage(ComboSub, CB_RESETCONTENT, NULL, NULL);
-				SendMessage(ComboMain, CB_SETCURSEL, -1, NULL);
-				SendMessage(ComboSub, CB_SETCURSEL, -1, NULL);
-
-				g_TerrainTheaterFlag = FALSE;
-				std::string StandardTheater[7] = { "","TEMPERATE","SNOW","URBAN","NEWURBAN","LUNAR","DESERT" };
-				if (g_TerrainTheater == StandardTheater[0]) {
-					logger::g_logger.Info("No map has been loaded while reading");
-					MessageBox(
-						NULL,
-						g_MessageBoxConfig.Message.TerrainMapUnloaded.c_str(),
-						g_MessageBoxConfig.Captain.Hint.c_str(),
-						MB_OK
-					);
-					break;
-				}
-
-				BOOL Flag = FALSE;
-
-				for (int i = 1; i <= 6; ++i)
-					if (g_TerrainTheater == StandardTheater[i]) {
-						logger::g_logger.Info("Start to load terrain groups: " + g_TerrainTheater);
-						LoadTerrainGroups(StandardTheater[i]);
-						Flag = TRUE;
-						break;
-					}
-				if (!Flag)
-				{
-					logger::g_logger.Error("Loaded unknown terrain threater");
-					MessageBox(
-						NULL,
-						g_MessageBoxConfig.Message.TerrainMapUnknown.c_str(),
-						g_MessageBoxConfig.Captain.Error.c_str(),
-						MB_OK
-					);
-				}
+			case IDC_TerrainListWindow::Button_Reload: {//Reload Button
+				logger::g_logger.Info(" wmHi:" + std::to_string(wmHi));
+				CTileSetDialogBarExt::ReloadTileSets(g_TerrainTheater);
 				break;
 			}
 			//INI
@@ -377,8 +259,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				if (FindResult == CB_ERR || (FindResult < FindStartIndex && FindStartIndex >= 0))
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.INISectionNotFound.c_str(),
-						g_MessageBoxConfig.Captain.Hint.c_str(),
+						MessageBoxConfig::Instance.Message.INISectionNotFound.c_str(),
+						MessageBoxConfig::Instance.Captain.Hint.c_str(),
 						MB_OK
 					);
 				else {
@@ -545,8 +427,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					logger::g_logger.Warn("Current trigger's event is full");
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.TriggerEventFull.c_str(),
-						g_MessageBoxConfig.Captain.Warning.c_str(),
+						MessageBoxConfig::Instance.Message.TriggerEventFull.c_str(),
+						MessageBoxConfig::Instance.Captain.Warning.c_str(),
 						MB_OK
 					);
 				}
@@ -587,8 +469,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					logger::g_logger.Warn("Current trigger's action is full");
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.TriggerActionFull.c_str(),
-						g_MessageBoxConfig.Captain.Warning.c_str(),
+						MessageBoxConfig::Instance.Message.TriggerActionFull.c_str(),
+						MessageBoxConfig::Instance.Captain.Warning.c_str(),
 						MB_OK
 					);
 				}
@@ -623,8 +505,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					logger::g_logger.Warn("Current trigger's event is full");
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.TriggerEventFull.c_str(),
-						g_MessageBoxConfig.Captain.Warning.c_str(),
+						MessageBoxConfig::Instance.Message.TriggerEventFull.c_str(),
+						MessageBoxConfig::Instance.Captain.Warning.c_str(),
 						MB_OK
 					);
 					break;
@@ -694,8 +576,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					logger::g_logger.Warn("Current trigger's action is full");
 					MessageBox(
 						NULL,
-						g_MessageBoxConfig.Message.TriggerActionFull.c_str(),
-						g_MessageBoxConfig.Captain.Warning.c_str(),
+						MessageBoxConfig::Instance.Message.TriggerActionFull.c_str(),
+						MessageBoxConfig::Instance.Captain.Warning.c_str(),
 						MB_OK
 					);
 					break;
@@ -1474,12 +1356,6 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 
 	return TRUE;
 }
-BOOL CALLBACK EnumChildWindowsProc(HWND hwnd, LPARAM lParam) {
-	HWND Result = FindWindowEx(hwnd, NULL,
-		g_FindWindowConfig.DialogClass.c_str(), g_FindWindowConfig.TerrainWnd.c_str());
-	if (Result != NULL)	g_TerrainWnd = Result;
-	return 1;
-}
 
 // Dialog Proc
 BOOL CALLBACK HouseDlgProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -1599,60 +1475,8 @@ std::string GetPath() {
 	return ret;
 }
 
-// Templates
-void LoadTerrainGroups(std::string Theater) {
-	using std::string;
-	string::iterator itr = Theater.begin();	++itr;
-	transform(itr, Theater.end(), itr, tolower);
-	string IniSectionName = "Terrain" + Theater;
-	g_TeamTemplates.clear();
-	Ini& ini = g_ini;
-	if (!ini.Exist()) {
-		MessageBox(
-			NULL,
-			g_MessageBoxConfig.Message.IniNotExist.c_str(),
-			g_MessageBoxConfig.Captain.Error.c_str(),
-			MB_OK
-		);
-		return;
-	}
-	string Enable = ini.Read(IniSectionName, "Enable");
-	if (Enable != "yes") {
-		MessageBox(
-			NULL,
-			g_MessageBoxConfig.Message.TerrainDisabled.c_str(),
-			g_MessageBoxConfig.Captain.Hint.c_str(),
-			MB_OK
-		);
-		return;
-	}
-	int Count = atoi(ini.Read(IniSectionName, "Counts").c_str());
-	if (Count <= 0)	return;
-	logger::g_logger.Info(std::to_string(Count) + " Terrain Groups Loading");
-	g_TerrainSorts.resize(Count);
-	for (int i = 0; i < Count; ++i) {
-		string str = ini.Read(IniSectionName, std::to_string(i+1));
-		TerrainSort terrainsort = ini.Split(str, ',');
-		g_TerrainSorts[i] = terrainsort;
-	}
-
-	HWND TerrainWnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
-	HWND TerrainWnd2 = FindWindowEx(TerrainWnd1, NULL, "AfxMDIFrame42s", NULL);
-	EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
-	
-	HWND& TerrainWnd = g_TerrainWnd;
-	HWND ComboMain = GetDlgItem(TerrainWnd, 9983);
-
-	SendMessage(ComboMain, CB_RESETCONTENT, NULL, NULL);
-	for (int i = 0; i < Count; ++i)
-		SendMessage(ComboMain, CB_ADDSTRING, NULL, (LPARAM)(g_TerrainSorts[i].GetName().c_str()));
-
-	SendMessage(ComboMain, CB_SETCURSEL, 0, NULL);
-	SendMessage(TerrainWnd, WM_COMMAND, MAKEWPARAM(9983, CBN_SELCHANGE), (LPARAM)ComboMain);
-	return;
-}
 void LoadTeamTemplates() {
-	Ini& ini = g_ini;
+	Ini& ini = Ini::ConfigIni;
 	g_TeamTemplates.clear();
 
 	//Read Team Templates
@@ -1660,8 +1484,8 @@ void LoadTeamTemplates() {
 	if (ini.Exist() == FALSE) {
 		MessageBox(
 			NULL,
-			g_MessageBoxConfig.Message.IniNotExist.c_str(),
-			g_MessageBoxConfig.Captain.Error.c_str(),
+			MessageBoxConfig::Instance.Message.IniNotExist.c_str(),
+			MessageBoxConfig::Instance.Captain.Error.c_str(),
 			MB_OK
 		);
 		TeamTemplatesCount = 0;
@@ -1687,7 +1511,7 @@ void LoadTeamTemplates() {
 	return;
 }
 void LoadScriptTemplates() {
-	Ini& ini = g_ini;
+	Ini& ini = Ini::ConfigIni;
 	g_ScriptTemplates.clear();
 
 	//Read Team Templates
@@ -1695,8 +1519,8 @@ void LoadScriptTemplates() {
 	if (ini.Exist() == FALSE) {
 		MessageBox(
 			NULL,
-			g_MessageBoxConfig.Message.IniNotExist.c_str(),
-			g_MessageBoxConfig.Captain.Error.c_str(),
+			MessageBoxConfig::Instance.Message.IniNotExist.c_str(),
+			MessageBoxConfig::Instance.Captain.Error.c_str(),
 			MB_OK
 		);
 		ScriptTemplatesCount = 0;
@@ -1730,12 +1554,12 @@ void LoadINI() {
 	logger::g_logger.Info("INI is loading...");
 	std::string FA2CopyDataPath = g_Path;
 	FA2CopyDataPath += "\\FA2CopyData.ini";
-	g_ini = FA2CopyDataPath;
-	if (!g_ini.Exist()) {
+	Ini::ConfigIni = FA2CopyDataPath;
+	if (!Ini::ConfigIni.Exist()) {
 		MessageBox(
 			NULL,
-			g_MessageBoxConfig.Message.IniNotExist.c_str(),
-			g_MessageBoxConfig.Captain.Error.c_str(),
+			MessageBoxConfig::Instance.Message.IniNotExist.c_str(),
+			MessageBoxConfig::Instance.Captain.Error.c_str(),
 			MB_OK
 		);
 		SendMessage(g_FA2Wnd, WM_CLOSE, NULL, NULL);
@@ -1745,41 +1569,40 @@ void LoadFA2CopyConfig() {
 	logger::g_logger.Info("Loading FA2Copy Config");
 
 	//g_FindWindowConfig
-	g_FindWindowConfig.AITriggerWnd = g_ini.Read("FindWindowConfig", "AITriggerWnd");
-	g_FindWindowConfig.DialogClass = g_ini.Read("FindWindowConfig", "DialogClass");
-	g_FindWindowConfig.MapWnd = g_ini.Read("FindWindowConfig", "MapWnd");
-	g_FindWindowConfig.IniWnd = g_ini.Read("FindWindowConfig", "IniWnd");
-	g_FindWindowConfig.HouseWnd = g_ini.Read("FindWindowConfig", "HouseWnd");
-	g_FindWindowConfig.TriggerWnd = g_ini.Read("FindWindowConfig", "TriggerWnd");
-	g_FindWindowConfig.TagWnd = g_ini.Read("FindWindowConfig", "TagWnd");
-	g_FindWindowConfig.TriggerGlobalWnd = g_ini.Read("FindWindowConfig", "TriggerGlobalWnd");
-	g_FindWindowConfig.TriggerEventWnd = g_ini.Read("FindWindowConfig", "TriggerEventWnd");
-	g_FindWindowConfig.TriggerActionWnd = g_ini.Read("FindWindowConfig", "TriggerActionWnd");
-	g_FindWindowConfig.TaskforceWnd = g_ini.Read("FindWindowConfig", "TaskforceWnd");
-	g_FindWindowConfig.ScriptWnd = g_ini.Read("FindWindowConfig", "ScriptWnd");
-	g_FindWindowConfig.TeamWnd = g_ini.Read("FindWindowConfig", "TeamWnd");
-	g_FindWindowConfig.TerrainWnd = g_ini.Read("FindWindowConfig", "TerrainWnd");
-	g_FindWindowConfig.SaveWnd = g_ini.Read("FindWindowConfig", "SaveWnd");
-	g_FindWindowConfig.LoadWnd = g_ini.Read("FindWindowConfig", "LoadWnd");
-	g_FindWindowConfig.NewWnd1 = g_ini.Read("FindWindowConfig", "NewWnd1");
-	g_FindWindowConfig.NewWnd2 = g_ini.Read("FindWindowConfig", "NewWnd2");
-	g_FindWindowConfig.NewWnd3 = g_ini.Read("FindWindowConfig", "NewWnd3");
+	g_FindWindowConfig.AITriggerWnd = Ini::ConfigIni.Read("FindWindowConfig", "AITriggerWnd");
+	g_FindWindowConfig.DialogClass = Ini::ConfigIni.Read("FindWindowConfig", "DialogClass");
+	g_FindWindowConfig.MapWnd = Ini::ConfigIni.Read("FindWindowConfig", "MapWnd");
+	g_FindWindowConfig.IniWnd = Ini::ConfigIni.Read("FindWindowConfig", "IniWnd");
+	g_FindWindowConfig.HouseWnd = Ini::ConfigIni.Read("FindWindowConfig", "HouseWnd");
+	g_FindWindowConfig.TriggerWnd = Ini::ConfigIni.Read("FindWindowConfig", "TriggerWnd");
+	g_FindWindowConfig.TagWnd = Ini::ConfigIni.Read("FindWindowConfig", "TagWnd");
+	g_FindWindowConfig.TriggerGlobalWnd = Ini::ConfigIni.Read("FindWindowConfig", "TriggerGlobalWnd");
+	g_FindWindowConfig.TriggerEventWnd = Ini::ConfigIni.Read("FindWindowConfig", "TriggerEventWnd");
+	g_FindWindowConfig.TriggerActionWnd = Ini::ConfigIni.Read("FindWindowConfig", "TriggerActionWnd");
+	g_FindWindowConfig.TaskforceWnd = Ini::ConfigIni.Read("FindWindowConfig", "TaskforceWnd");
+	g_FindWindowConfig.ScriptWnd = Ini::ConfigIni.Read("FindWindowConfig", "ScriptWnd");
+	g_FindWindowConfig.TeamWnd = Ini::ConfigIni.Read("FindWindowConfig", "TeamWnd");
+	g_FindWindowConfig.SaveWnd = Ini::ConfigIni.Read("FindWindowConfig", "SaveWnd");
+	g_FindWindowConfig.LoadWnd = Ini::ConfigIni.Read("FindWindowConfig", "LoadWnd");
+	g_FindWindowConfig.NewWnd1 = Ini::ConfigIni.Read("FindWindowConfig", "NewWnd1");
+	g_FindWindowConfig.NewWnd2 = Ini::ConfigIni.Read("FindWindowConfig", "NewWnd2");
+	g_FindWindowConfig.NewWnd3 = Ini::ConfigIni.Read("FindWindowConfig", "NewWnd3");
 
-	// g_MessageBoxConfig
-	g_MessageBoxConfig.Captain.Error = g_ini.Read("MessageBoxCaptain", "Error");
-	g_MessageBoxConfig.Captain.Warning = g_ini.Read("MessageBoxCaptain", "Warning");
-	g_MessageBoxConfig.Captain.Hint = g_ini.Read("MessageBoxCaptain", "Hint");
+	// MessageBoxConfig
+	MessageBoxConfig::Instance.Captain.Error = Ini::ConfigIni.Read("MessageBoxCaptain", "Error");
+	MessageBoxConfig::Instance.Captain.Warning = Ini::ConfigIni.Read("MessageBoxCaptain", "Warning");
+	MessageBoxConfig::Instance.Captain.Hint = Ini::ConfigIni.Read("MessageBoxCaptain", "Hint");
 
-	g_MessageBoxConfig.Message.HookFailed = g_ini.Read("MessageBoxMessage", "HookFailed");
-	g_MessageBoxConfig.Message.UnHookFailed = g_ini.Read("MessageBoxMessage", "UnHookFailed");
-	g_MessageBoxConfig.Message.IniNotExist = g_ini.Read("MessageBoxMessage", "IniNotExist");
-	g_MessageBoxConfig.Message.TerrainDisabled = g_ini.Read("MessageBoxMessage", "TerrainDisabled");
-	g_MessageBoxConfig.Message.TerrainMapUnloaded = g_ini.Read("MessageBoxMessage", "TerrainMapUnloaded");
-	g_MessageBoxConfig.Message.TerrainMapUnknown = g_ini.Read("MessageBoxMessage", "TerrainMapUnknown");
-	g_MessageBoxConfig.Message.TriggerEventFull = g_ini.Read("MessageBoxMessage", "TriggerEventFull");
-	g_MessageBoxConfig.Message.TriggerActionFull = g_ini.Read("MessageBoxMessage", "TriggerActionFull");
-	g_MessageBoxConfig.Message.HouseWndNotFound = g_ini.Read("MessageBoxMessage", "HouseWndNotFound");
-	g_MessageBoxConfig.Message.INISectionNotFound = g_ini.Read("MessageBoxMessage", "INISectionNotFound");
+	MessageBoxConfig::Instance.Message.HookFailed = Ini::ConfigIni.Read("MessageBoxMessage", "HookFailed");
+	MessageBoxConfig::Instance.Message.UnHookFailed = Ini::ConfigIni.Read("MessageBoxMessage", "UnHookFailed");
+	MessageBoxConfig::Instance.Message.IniNotExist = Ini::ConfigIni.Read("MessageBoxMessage", "IniNotExist");
+	MessageBoxConfig::Instance.Message.TerrainDisabled = Ini::ConfigIni.Read("MessageBoxMessage", "TerrainDisabled");
+	MessageBoxConfig::Instance.Message.TerrainMapUnloaded = Ini::ConfigIni.Read("MessageBoxMessage", "TerrainMapUnloaded");
+	MessageBoxConfig::Instance.Message.TerrainMapUnknown = Ini::ConfigIni.Read("MessageBoxMessage", "TerrainMapUnknown");
+	MessageBoxConfig::Instance.Message.TriggerEventFull = Ini::ConfigIni.Read("MessageBoxMessage", "TriggerEventFull");
+	MessageBoxConfig::Instance.Message.TriggerActionFull = Ini::ConfigIni.Read("MessageBoxMessage", "TriggerActionFull");
+	MessageBoxConfig::Instance.Message.HouseWndNotFound = Ini::ConfigIni.Read("MessageBoxMessage", "HouseWndNotFound");
+	MessageBoxConfig::Instance.Message.INISectionNotFound = Ini::ConfigIni.Read("MessageBoxMessage", "INISectionNotFound");
 	
 }
 #pragma endregion
@@ -1801,8 +1624,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 			logger::g_logger.Error("Failed to set hooks!");
 			MessageBox(
 				NULL,
-				g_MessageBoxConfig.Message.HookFailed.c_str(),
-				g_MessageBoxConfig.Captain.Error.c_str(),
+				MessageBoxConfig::Instance.Message.HookFailed.c_str(),
+				MessageBoxConfig::Instance.Captain.Error.c_str(),
 				MB_OK
 			);
 			return FALSE;
@@ -1823,8 +1646,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 			logger::g_logger.Error("Failed to release hooks!");
 			MessageBox(
 				NULL,
-				g_MessageBoxConfig.Message.UnHookFailed.c_str(),
-				g_MessageBoxConfig.Captain.Error.c_str(),
+				MessageBoxConfig::Instance.Message.UnHookFailed.c_str(),
+				MessageBoxConfig::Instance.Captain.Error.c_str(),
 				MB_OK
 			);
 			return FALSE;
@@ -1999,6 +1822,18 @@ DEFINE_HOOK(426B77, sub_426AC0, 5)
 	return 0;
 }
 
+DEFINE_HOOK(49EDC9, LoadMap_Initialize, 9)
+{
+	//GET(INIClass*, pINI, EBX);
+	auto& mapFile = INIClass::CurrentMapSetting();
+
+	auto const theater = mapFile.GetString("Map", "Theater", "TEMPERATE");
+
+	g_TerrainTheater = theater;
+	//logger::g_logger.Warn(__FUNCTION__" Value:" + std::string(static_cast<LPCTSTR>(theater)));
+
+	return 0;
+}
 
 
 
