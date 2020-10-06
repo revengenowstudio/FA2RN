@@ -91,12 +91,21 @@ __declspec(naked) void ret_func()
 	};
 }
 
+//disable FA2 action hack
 DEFINE_HOOK(43CE79, sub_43CE50_SkipHack, B)
 {
 	//GET(const FAString*, string, ECX);
 
 	//logger::g_logger.Warn(std::string(__FUNCTION__" :") + string->c_str());
 	return  reinterpret_cast<DWORD>(ret_func);
+}
+
+DEFINE_HOOK(4D6E4D, CScriptTypeClass_OnItemSelectChanged_Houses, 6)
+{
+	R->Stack(0x0, true);
+	R->Stack(0x4, true);
+
+	return 0;
 }
 
 #if 0
