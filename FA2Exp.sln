@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FA2Copy", "FA2Copy\FA2Copy.vcxproj", "{6F901551-EAE7-4869-96A3-AAB97B0B6386}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FA2Exp", "FA2Exp\FA2Exp.vcxproj", "{6F901551-EAE7-4869-96A3-AAB97B0B6386}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

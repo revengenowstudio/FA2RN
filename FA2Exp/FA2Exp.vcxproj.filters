@@ -121,7 +121,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="FA2Copy.rc">
+    <ResourceCompile Include="FA2Exp.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
     <ResourceCompile Include="UI\InitializeDialog.rc">
