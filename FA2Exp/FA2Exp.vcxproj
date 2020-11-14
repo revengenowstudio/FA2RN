@@ -170,7 +170,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
       <OmitFramePointers>true</OmitFramePointers>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
       <DisableSpecificWarnings>4731;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -275,9 +275,15 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="FA2PP\FA2PP.h" />
     <ClInclude Include="FA2PP\FA2PPCore.h" />
     <ClInclude Include="FA2PP\FA2String.h" />
+    <ClInclude Include="FA2PP\FAMemory.h" />
+    <ClInclude Include="FA2PP\GlobalVars.h" />
+    <ClInclude Include="FA2PP\Helper\ASMMacros.h" />
+    <ClInclude Include="FA2PP\Helper\CompileTime.h" />
     <ClInclude Include="FA2PP\Helper\INIParser.h" />
     <ClInclude Include="FA2PP\Helper\Parser.h" />
     <ClInclude Include="FA2PP\INI.h" />
+    <ClInclude Include="FA2PP\Structure\FAMap.h" />
+    <ClInclude Include="FA2PP\Structure\FATree.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Macro.h" />

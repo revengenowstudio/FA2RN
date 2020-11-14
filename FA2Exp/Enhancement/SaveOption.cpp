@@ -1,6 +1,6 @@
 ﻿#include "../FA2Expand.h"
 #include "../resource.h"
-#include <INI.h>
+#include <GlobalVars.h>
 
 int MinPlayer = 2;
 
@@ -8,7 +8,7 @@ DEFINE_HOOK(4D57D2, SaveMapOption_OnInitDialog, 5)
 {
 	GET(const CDialog*, pThis, ESI);
 
-	auto& mapFile = INIClass::CurrentMapSetting();
+	auto& mapFile = GlobalVars::INIFiles::CurrentDocument();
 
 	auto const MinPlayer = mapFile.GetInteger("Basic", "MinPlayer", 2);
 	auto const hwnd = GetDlgItem(pThis->m_hWnd, WND_SaveOption::Edit_MinPlayer);
@@ -36,10 +36,11 @@ DEFINE_HOOK(4D56E0, SaveMapOption_DoDataExchange, 8)
 
 DEFINE_HOOK(428229, SaveMap_MinPlayer, 8)
 {
-	GET(INIEntry* const, pEntry, ESI);
+	using SectionPair = std::pair<FAString, FAString>;
+	GET(SectionPair*, pEntry, ESI);
 
 	auto const minPlayerStr = std::to_string(MinPlayer);
-	pEntry->Value = minPlayerStr.c_str();
+	pEntry->second = minPlayerStr.c_str();
 
 	//logger::g_logger.Warn(__FUNCTION__" " + std::string(pEntry->Value.c_str()));
 

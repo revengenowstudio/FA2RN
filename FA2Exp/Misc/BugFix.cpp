@@ -1,6 +1,6 @@
 ﻿#include "../FA2Expand.h"
 #include <CTaskForce.h>
-#include <INI.h>
+#include <GlobalVars.h>
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -45,7 +45,7 @@ DEFINE_HOOK(41FDDB, FA2Main_GetFilePath_2, 6)
 
 DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 {
-	auto& rules = INIClass::RulesIni();
+	auto& rules = GlobalVars::INIFiles::Rules();
 
 	GET_STACK(int, overlayIdx, 0x24);
 	// GET(CString, name, ECX);

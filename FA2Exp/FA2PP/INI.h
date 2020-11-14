@@ -5,189 +5,147 @@
 #include <FA2PPCore.h>
 #include <FA2String.h>
 #include <Helper/CompileTime.h>
+#include <Structure/FAMap.h>
+#include <fstream>
 //#include <minwindef.h>
 
-// presumed ini section?
-class UnknownA
+// We can only use C++14 standard for now since our FATree & FAMap
+// was a mess, and higher standards are more strict and we cannot
+// pass the complie for some reason.
+// secsome - 2020/11/3
+
+// Remember that we cannot call CTOR or DTOR for any FAMap/FATree
+// cause nil & nilrefs haven't been analysed yet.
+// Consider to use : auto& iRules = GlobalVars::INIFiles::Rules();
+
+class INIMapFieldUpdate
 {
-public:
-	UnknownA()
-	{ JMP_THIS(0x452880); }
-
-	UnknownA(const UnknownA& other) {
-		*this = other;
-	}
-
-	UnknownA& operator=(const UnknownA& other) {
-		JMP_THIS(0x4021C0);
-	}
-
-	~UnknownA()
-	{ JMP_THIS(0x452B20); }
-
-	char unknown_0[36];
-};
-
-template <typename T>
-class INIClassQuery
-{
-public:
-	INIClassQuery(const FAString &query) : Query(query), Data(T()) {}
-
-	INIClassQuery(const FAString &query, const T& data) : Query(query), Data(data) {}
-
-	~INIClassQuery() {
-		// member destructors called automatically
-	}
-
-	operator const char* const & () {
-		return Query;
-	}
-
 private:
-	FAString Query;
-	T Data;
-};
-
-template <typename T>
-struct INIQueryResult
-{
-	INIQueryResult() : Value(nullptr), Found(false) {}
-
-	T* Value;
-	bool Found;
-};
-
-template <typename T>
-class FALink
-{
-public:
-	T unknown_0;
-	T unknown_4;
-	T unknown_8;
-};
-
-class INIClassHelpers
-{
-protected:
-	template <typename T, typename Helper, DWORD FuncAddr>
-	INIQueryResult<T> Query(const char* const &section) {
-		INIQueryResult<T> desc;
-		INIClassQuery<Helper> query(section);
-		return *Query<T, FuncAddr>(desc, query);
-	}
-
-	template <typename T, DWORD FuncAddr>
-	INIQueryResult<T>* Query(INIQueryResult<T> &unk, const char* const &section)
+	static constexpr DWORD _H = 0x72CBF8;
+	struct _S
 	{
-		static const DWORD FuncAddr_ = FuncAddr;
-		JMP_THIS(FuncAddr_);
+		static void UpdateMapFieldData(int flag)
+		{
+			JMP_THIS(0x49C280);
+		}
+	};
+
+public:
+	static void UpdateMapFieldData(int flag)
+	{
+		_S* _X = (_S*)_H;
+		_X->UpdateMapFieldData(flag);
 	}
 };
 
-class INIEntry {
-public:
-	DWORD unknown_0[4];
-	FAString Value;
-};
-
-class INIEntries : private INIClassHelpers
+class INISectionEntriesComparator
 {
 public:
-	INIEntry* GetItem(const char* const &section) {
-		return Query<INIEntry, FAString, 0x40A010>(section).Value; // GetSectionDescriptor(section).Value;
+
+	static bool __stdcall __compare(CString* a1, CString* a2)
+	{
+		JMP_STD(0x452230);
 	}
 
-	DWORD unknown_0;
+	bool operator()(const CString& s1, const CString& s2) const
+	{
+		return __compare((CString*)&s1, (CString*)&s2);
+	}
 };
 
-struct INIEntrListHead
-{
-	DWORD Node;
-	BYTE Color;
+class NOVTABLE INISection {
+public:
+	virtual ~INISection() 
+		{ JMP_THIS(0x4023B0); }
+
+
+	std::FAMap<CString, CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator> EntriesDictionary;
+
+	// Be careful, better not to use this one for some reason.
+	// Cause I've never tested it.
+	// secsome - 2020/11/3
+	std::FAMap<unsigned int, CString, 0x5D8CA8, 0x5D8CA4> IndicesDictionary;
 };
 
-class INIEntryList
+class NOVTABLE INIClass
 {
 public:
-	FAString* GetValue(int index)
-		{ JMP_THIS(0x453590); }
+	INIClass() 
+		{ JMP_THIS(0x452880); }
 
-	FAString* GetKey(int index)
-		{ JMP_THIS(0x453650); }
+	virtual ~INIClass() = default;
 
-	INIEntrListHead ListHead;
-	DWORD unknown_8;
-	DWORD unknown_C;
-	int Count;
-};
-
-class INISection : public FALink<void*>
-{
-public:
-	INISection(const char* text) : Text(text) {}
-
-	operator const char* const & () {
-		return Text;
+	static INIClass* GetMapDocument(bool bUpdateMapField = false)
+	{
+		if (bUpdateMapField)
+			INIMapFieldUpdate::UpdateMapFieldData(1);
+		return reinterpret_cast<INIClass*>(0x7ACC80);
 	}
 
-public:
-	const char* Text;
-	INIEntryList Entries;
-};
-
-class INIUnknown
-{
-public:
-	DWORD unknown_0[5];
-	INIEntries Items;
-};
-
-
-
-
-class INIClass : private INIClassHelpers
-{
-public:
-	static constexpr reference<INIClass, 0x7EDDDCu> const RulesIni{}; 
-	static constexpr reference<INIClass, 0x72CBF8u> const CurrentMap{};
-	static constexpr reference<INIClass, 0x72CBF8u + 0x8008Cu> const CurrentMapSetting{};
-	static constexpr reference<INIClass, 0x72CBF8u + 0x80088u> const CurrentMapEx{};
-
-	
-	INISection* GetSection(const char* const &section) {
-		return Query<INISection, UnknownA, 0x4026D0>(section).Value; /*GetSectionDescriptor(section).Value;*/
+	// Debug function
+	std::FAMap<CString, INISection, 0x5D8CB4, 0>& GetMap()
+	{
+		return data;
 	}
 
-	bool HasSection(const char* const &section) {
-		return Query<INISection, UnknownA, 0x4026D0>(section).Found; //GetSectionDescriptor(section).Found;
+	bool DebugToFile(const char* path)
+	{
+		std::ofstream fout;
+		fout.open(path, std::ios::out);
+		if (!fout.is_open())
+			return false;
+		for (auto& itrsec : data)
+		{
+			fout << "[" << itrsec.first << "]\n";
+			for (auto& entries : itrsec.second.EntriesDictionary)
+			{
+				fout << entries.first << "=" << entries.second << "\n";
+			}
+			fout << "\n";
+		}
+		fout.flush();
+		fout.close();
+		return true;
 	}
 
-	INIUnknown* GetEntries(const char* const &section) {
-		return Query<INIUnknown, UnknownA, 0x407DA0>(section).Value; /*XXX(section).Value;*/
+
+	bool SectionExists(const char* pSection)
+	{
+		return data.find(pSection) != data.end();
 	}
 
-	// Several helper wrappers
+	// use it like this to avoid CTOR and crash:
+	// auto &iSection = iINI.GetSection("E1");
+	// secsome - 2020/11/3
+	INISection& GetSection(const char* pSection)
+	{
+		auto itr = data.find(pSection);
+		if (itr != data.end())
+			return itr->second;
+		return data.begin()->second;
+	}
+
 	CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") {
-		CString res;
-		if (auto const& pEntries = this->GetEntries(pSection))
-			if (auto const& pItem = pEntries->Items.GetItem(pKey))
-				res = pItem->Value;
-		if (res.IsEmpty())
-			return pDefault;
-		return res;
+		auto itrSection = data.find(pSection);
+		if (itrSection != data.end()) {
+			auto pEntries = &itrSection->second.EntriesDictionary;
+			auto itrKey = pEntries->find(pKey);
+			if (itrKey != pEntries->end())
+				return itrKey->second;
+		}
+		return pDefault;
 	}
 
 	int GetInteger(const char* pSection, const char* pKey, int nDefault = 0) {
-		auto const& pStr = this->GetString(pSection, pKey);
+		CString& pStr = this->GetString(pSection, pKey, "");
 		int ret = 0;
-		if (!pStr.IsEmpty() && sscanf_s(pStr, "%d", &ret) == 1)
+		if (sscanf_s(pStr, "%d", &ret) == 1)
 			return ret;
 		return nDefault;
 	}
 
 	float GetSingle(const char* pSection, const char* pKey, float nDefault = 0) {
-		auto const pStr = this->GetString(pSection, pKey);
+		CString& pStr = this->GetString(pSection, pKey, "");
 		float ret = 0;
 		if (sscanf_s(pStr, "%f", &ret) == 1)
 			return ret;
@@ -195,7 +153,7 @@ public:
 	}
 
 	double GetDouble(const char* pSection, const char* pKey, double nDefault = 0) {
-		auto const pStr = this->GetString(pSection, pKey);
+		CString& pStr = this->GetString(pSection, pKey, "");
 		double ret = 0;
 		if (sscanf_s(pStr, "%lf", &ret) == 1)
 			return ret;
@@ -203,7 +161,7 @@ public:
 	}
 
 	bool GetBool(const char* pSection, const char* pKey, bool nDefault = false) {
-		auto const pStr = this->GetString(pSection, pKey);
+		CString& pStr = this->GetString(pSection, pKey, "");
 		switch (toupper(static_cast<unsigned char>(*pStr)))
 		{
 		case '1':
@@ -220,4 +178,5 @@ public:
 	}
 
 private:
+		std::FAMap<CString, INISection, 0x5D8CB4, 0> data; // no idea about the nilrefs
 };

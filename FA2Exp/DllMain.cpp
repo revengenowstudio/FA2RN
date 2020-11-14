@@ -7,7 +7,7 @@
 #include "FA2Expand.h"
 #include "Config.h"
 #include "Replacement/CTileSetDialogBarExt.h"
-#include <INI.h>
+#include <GlobalVars.h>
 
 #pragma region Global Variables
 // Global Variables
@@ -1825,7 +1825,7 @@ DEFINE_HOOK(426B77, sub_426AC0, 5)
 DEFINE_HOOK(49EDC9, LoadMap_Initialize, 9)
 {
 	//GET(INIClass*, pINI, EBX);
-	auto& mapFile = INIClass::CurrentMapSetting();
+	auto& mapFile =  GlobalVars::INIFiles::CurrentDocument();
 
 	auto const theater = mapFile.GetString("Map", "Theater", "TEMPERATE");
 
