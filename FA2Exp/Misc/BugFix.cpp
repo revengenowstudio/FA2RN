@@ -108,6 +108,21 @@ DEFINE_HOOK(4D6E4D, CScriptTypeClass_OnItemSelectChanged_Houses, 6)
 	return 0;
 }
 
+DEFINE_HOOK(473E46, CIsoView_UpdatePaint_InfantryFacing, 9)
+{
+	//LEA_STACK(const char*, pID, STACK_OFFS(0x18, 0x770));
+
+	GET(int, Facing, EAX);
+
+	//logger::g_logger.Info(std::string(__FUNCTION__" : item ") + pID + " facing : " + std::to_string(Facing));
+
+	R->EAX(7 - Facing / 32);
+
+	R->ECX(R->lea_Stack<DWORD>(0x590));
+
+	return 0x473E52;
+}
+
 #if 0
 DEFINE_HOOK(43CE8D, sub_43CE50, 9)
 {
