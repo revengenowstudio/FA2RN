@@ -7,7 +7,7 @@
 #endif  /* _MSC_VER */
 
 namespace std{
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr,
+	template<class _K, class _Ty, DWORD nil_addr = 0, DWORD nilrefs_addr = 0,
 		class _Pr = less<_K>,class _A = allocator<_Ty> >
 		class FAMap {
 		public:

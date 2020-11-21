@@ -19,10 +19,10 @@ namespace std {
         typename key_getter_type,
         typename comparator_type,
         typename allocator_type,
-        DWORD nil_addr,
-        DWORD nilrefs_addr
+        DWORD nil_addr = 0,
+        DWORD nilrefs_addr = 0
     >
-        class FATree
+    class FATree
     {
     protected:
         using _Myt =
