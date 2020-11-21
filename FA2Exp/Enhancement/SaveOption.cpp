@@ -36,8 +36,8 @@ DEFINE_HOOK(4D56E0, SaveMapOption_DoDataExchange, 8)
 
 DEFINE_HOOK(428229, SaveMap_MinPlayer, 8)
 {
-	using SectionPair = std::pair<FAString, FAString>;
-	GET(SectionPair*, pEntry, ESI);
+	using ItemIterator = std::FAMap<CString, CString>::iterator;
+	GET(ItemIterator, pEntry, ESI);
 
 	auto const minPlayerStr = std::to_string(MinPlayer);
 	pEntry->second = minPlayerStr.c_str();
