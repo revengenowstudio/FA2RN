@@ -36,7 +36,7 @@ DEFINE_HOOK(4D56E0, SaveMapOption_DoDataExchange, 8)
 
 DEFINE_HOOK(428229, SaveMap_MinPlayer, 8)
 {
-	using ItemIterator = std::FAMap<CString, CString>::iterator;
+	using ItemIterator = std::FAMap<FAString, FAString>::iterator;
 	GET(ItemIterator, pEntry, ESI);
 
 	auto const minPlayerStr = std::to_string(MinPlayer);
