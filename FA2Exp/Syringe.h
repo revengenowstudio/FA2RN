@@ -218,7 +218,7 @@ public:
 
 //Use this for DLL export functions
 //e.g. EXPORT FunctionName(REGISTERS* R)
-#define EXPORT extern "C" __declspec(dllexport) DWORD __cdecl
+#define DLL_EXPORT extern "C" __declspec(dllexport) DWORD __cdecl
 #define EXPORT_FUNC(name) extern "C" __declspec(dllexport) DWORD __cdecl name (REGISTERS *R)
 
 
