@@ -15,7 +15,7 @@
 // secsome - 2020/11/3
 
 // Remember that we cannot call CTOR or DTOR for any FAMap/FATree
-// cause nil & nilrefs haven't been analysed yet.
+// because nil & nilrefs haven't been analysed yet.
 // Consider to use : auto& iRules = GlobalVars::INIFiles::Rules();
 
 class INIMapFieldUpdate
@@ -58,13 +58,19 @@ public:
 	virtual ~INISection() 
 		{ JMP_THIS(0x4023B0); }
 
+	int GetItemCount(FAString Key)//0 means section exists but no content, -1 means section not exists
+		{ JMP_THIS(0x4023B0); }
 
+	const FAString& GetValue(const FAString& Key)
+		{ JMP_THIS(0x407CA0);}
+
+//private:
 	std::FAMap<CString, CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator> EntriesDictionary;
 
 	// Be careful, better not to use this one for some reason.
 	// Cause I've never tested it.
 	// secsome - 2020/11/3
-	std::FAMap<unsigned int, CString, 0x5D8CA8, 0x5D8CA4> IndicesDictionary;
+	std::FAMap<CString, unsigned int, 0x5D8CA8, 0x5D8CA4> IndicesDictionary;
 };
 
 class NOVTABLE INIClass
@@ -124,6 +130,10 @@ public:
 			return itr->second;
 		return data.begin()->second;
 	}
+	//this may cause insert of new section
+	INISection& GetSection(const FAString& SectionName)
+		{ JMP_THIS(0x4020A0); }
+
 
 	CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") {
 		auto itrSection = data.find(pSection);
@@ -174,6 +184,25 @@ public:
 			return false;
 		default:
 			return nDefault;
+		}
+	}
+
+	bool GetBoolean(const FAString& Section, const FAString& Key, bool Default = false)
+	{
+		auto& section = this->GetSection(Section);
+		auto const& value = section.GetValue(Key);
+		switch (toupper(static_cast<unsigned char>(value[0])))
+		{
+		case '1':
+		case 'T':
+		case 'Y':
+			return true;
+		case '0':
+		case 'F':
+		case 'N':
+			return false;
+		default:
+			return Default;
 		}
 	}
 
