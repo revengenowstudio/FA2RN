@@ -8,14 +8,18 @@ class logger
 {
 public:
 	
+	static inline void info(const std::string& message) { return g_logger.Info(message); }
+	static inline void warn(const std::string& message) { return g_logger.Warn(message); }
+	static inline void error(const std::string& message) { return g_logger.Error(message); }
+
 	static logger g_logger;
 
 	logger();
-	logger(std::string Name);
-	void Warn(std::string Reason);
-	void Info(std::string Reason);
-	void Error(std::string Reason);
-	void Custom(std::string Prefix, std::string Reason, bool ShowTime);
+	logger(const std::string& Name);
+	void Warn(const std::string& Reason);
+	void Info(const std::string& Reason);
+	void Error(const std::string& Reason);
+	void Custom(const std::string& Prefix, const std::string& Reason, bool ShowTime);
 
 private:
 	std::string CurrentTime();

@@ -8,28 +8,28 @@ logger::logger() {
 	fout.close();
 }
 
-logger::logger(std::string Name) {
+logger::logger(const std::string& Name) {
 	fout.close();
 	DebugName = Name;
 	fout.open(DebugName, std::ios::out);
 }
 
-void logger::Warn(std::string Reason) {
+void logger::Warn(const std::string& Reason) {
 	std::string out = "[Warn] " + CurrentTime() + ": " + Reason;
 	fout << out << std::endl;
 }
 
-void logger::Info(std::string Reason) {
+void logger::Info(const std::string& Reason) {
 	std::string out = "[Info] " + CurrentTime() + ": " + Reason;
 	fout << out << std::endl;
 }
 
-void logger::Error(std::string Reason) {
+void logger::Error(const std::string& Reason) {
 	std::string out = "[Error] " + CurrentTime() + ": " + Reason;
 	fout << out << std::endl;
 }
 
-void logger::Custom(std::string Prefix,std::string Reason,bool ShowTime) {
+void logger::Custom(const std::string& Prefix,const std::string& Reason,bool ShowTime) {
 	std::string out=Prefix;
 	if (ShowTime)	out += CurrentTime() + ' ';
 	out += Reason;
