@@ -170,27 +170,27 @@ namespace std{
 		return (!(_X == _Y));
 	}
 	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator<(const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+		bool operator<(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
+			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
 	{
 		return (lexicographical_compare(_X.begin(), _X.end(),
 			_Y.begin(), _Y.end()));
 	}
 	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator>(const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+		bool operator>(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
+			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
 	{
 		return (_Y < _X);
 	}
 	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator<=(const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+		bool operator<=(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
+			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
 	{
 		return (!(_Y < _X));
 	}
 	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator>=(const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+		bool operator>=(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
+			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
 	{
 		return (!(_X < _Y));
 	}
