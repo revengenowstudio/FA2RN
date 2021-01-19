@@ -2,6 +2,7 @@
 
 #include <CTileSetDialogBar.h>
 #include <vector>
+#include <string>
 
 class TerrainSort {
 private:
