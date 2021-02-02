@@ -45,6 +45,12 @@
     <ClCompile Include="Replacement\CTileSetDialogBarExt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Replacement\CScriptTypesExt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Replacement\CTeamTypesExt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -137,6 +143,15 @@
     <ClInclude Include="FA2PP\Helper\ASMMacros.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\ObjectOptions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Replacement\CScriptTypesExt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Replacement\CTeamTypesExt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">
@@ -167,6 +182,9 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
     <ResourceCompile Include="UI\SaveOptionDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\INIEditorDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
