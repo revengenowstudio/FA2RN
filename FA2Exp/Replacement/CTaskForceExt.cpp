@@ -1,14 +1,17 @@
 ﻿#include "CTaskForceExt.h"
-#include "../FA2Expand.h"
+#include "Helpers.h"
 #include <functional>
 CTaskForce* CTaskForceExt::Instance = nullptr;
 
 void CTaskForceExt::ProgramStarupInit()
 {
-	auto constexpr taskforceCBMemberTypeMsg = CBN_KILLFOCUS;
 	auto taskforcePreTranslateAddr = &CTaskForceExt::PreTranslateMessageHook;
 
-	RunTime::ResetMemoryContentAt(0x596B50 + sizeof(taskforceCBMemberTypeMsg), &taskforceCBMemberTypeMsg, sizeof(taskforceCBMemberTypeMsg));
+	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B50), CBN_KILLFOCUS);// member type update
+	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B38), EN_KILLFOCUS); // name update
+	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B20), EN_KILLFOCUS); // member count update
+	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596BC8), EN_KILLFOCUS); // group update
+
 	RunTime::ResetMemoryContentAt(0x596C88, &taskforcePreTranslateAddr, sizeof(taskforcePreTranslateAddr));
 }
 
