@@ -31,6 +31,15 @@ BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
 				if (pMsg->hwnd == pEdit->m_hWnd) {
 					this->OnMemberEditChanged();
 				}
+
+				switch (::GetDlgCtrlID(pMsg->hwnd)) {
+					case DLG_TaskForce_Edit_Name: this->OnTaskForceNameChanged();
+					case DLG_TaskForce_Edit_MemberCount: this->OnMemberCountChanged();
+					case DLG_TaskForce_Edit_GroupID: this->OnGroupIDChanged();
+				default:
+					break;
+				}
+
 			}
 
 			//do not exit dialog when enter key pressed
