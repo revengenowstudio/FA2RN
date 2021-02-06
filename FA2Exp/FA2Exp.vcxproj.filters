@@ -77,12 +77,6 @@
     <ClInclude Include="Macro.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="FA2PP\FA2PP.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -159,6 +153,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FA2PP\CTeamTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include "resource.h"
+#include "UI/resource.h"
 #include <locale.h>
 #include <direct.h>
 #include <vector>

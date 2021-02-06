@@ -386,11 +386,10 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Replacement\CTeamTypesExt.h" />
     <ClInclude Include="Replacement\CTileSetDialogBarExt.h" />
     <ClInclude Include="Replacement\Helpers.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="RunTime.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Syringe.h" />
-    <ClInclude Include="UI\Resource.h" />
+    <ClInclude Include="UI\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc" />

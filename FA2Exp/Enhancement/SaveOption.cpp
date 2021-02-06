@@ -1,5 +1,5 @@
 ﻿#include "../FA2Expand.h"
-#include "../resource.h"
+#include "../UI/resource.h"
 #include <GlobalVars.h>
 
 int MinPlayer = 2;
