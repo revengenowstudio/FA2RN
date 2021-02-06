@@ -2,6 +2,6 @@
 class CScriptTypesExt
 {
 public:
-	void ProgramStartupInit();
+	static void ProgramStartupInit();
 
 };

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdio.h>
 #include "Replacement/CTaskForceExt.h"
+#include "Replacement/CScriptTypesExt.h"
+#include "Replacement/CTeamTypesExt.h"
 
 typedef  HRSRC
 (WINAPI *FindResourceProc)(
@@ -70,6 +72,8 @@ void __stdcall FA2Expand::ExeRun()
 	RunTime::ResetMemoryContentAt(0x5CD808, title, sizeof(title));
 	RunTime::ResetMemoryContentAt(0x5D15A0, delWarn, sizeof(delWarn));
 	CTaskForceExt::ProgramStarupInit();
+	CScriptTypesExt::ProgramStartupInit();
+	CTeamTypesExt::ProgramStartupInit();
 	//auto const pStr = reinterpret_cast<const char*>(0x5CD808);
 	//logger::g_logger.Info(__FUNCTION__" " + std::string(pStr));
 	//DWORD oldProtect, newProtect = 0;

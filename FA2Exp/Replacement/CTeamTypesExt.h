@@ -1,5 +1,7 @@
 #pragma once
-class CTeamTypesExt
+#include <CTeamTypes.h>
+
+class CTeamTypesExt : public CTeamTypes
 {
 public:
 	static void ProgramStartupInit();

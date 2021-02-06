@@ -359,6 +359,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="FA2PP\ASMMacros.h" />
     <ClInclude Include="FA2PP\CTaskForce.h" />
+    <ClInclude Include="FA2PP\CTeamTypes.h" />
     <ClInclude Include="FA2PP\CTileSetBrowerFrame.h" />
     <ClInclude Include="FA2PP\CTileSetBrowserView.h" />
     <ClInclude Include="FA2PP\CTileSetDialogBar.h" />
@@ -366,6 +367,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="FA2PP\FA2PPCore.h" />
     <ClInclude Include="FA2PP\FA2String.h" />
     <ClInclude Include="FA2PP\FAMemory.h" />
+    <ClInclude Include="FA2PP\GlobalDefinitions.h" />
     <ClInclude Include="FA2PP\GlobalVars.h" />
     <ClInclude Include="FA2PP\Helper\ASMMacros.h" />
     <ClInclude Include="FA2PP\Helper\CompileTime.h" />
@@ -383,6 +385,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Replacement\CTaskForceExt.h" />
     <ClInclude Include="Replacement\CTeamTypesExt.h" />
     <ClInclude Include="Replacement\CTileSetDialogBarExt.h" />
+    <ClInclude Include="Replacement\Helpers.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RunTime.h" />
     <ClInclude Include="stdafx.h" />
