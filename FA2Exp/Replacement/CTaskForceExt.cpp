@@ -5,14 +5,12 @@ CTaskForce* CTaskForceExt::Instance = nullptr;
 
 void CTaskForceExt::ProgramStarupInit()
 {
-	auto taskforcePreTranslateAddr = &CTaskForceExt::PreTranslateMessageHook;
-
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B50), CBN_KILLFOCUS);// member type update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B38), EN_KILLFOCUS); // name update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B20), EN_KILLFOCUS); // member count update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596BC8), EN_KILLFOCUS); // group update
 
-	RunTime::ResetMemoryContentAt(0x596C88, &taskforcePreTranslateAddr, sizeof(taskforcePreTranslateAddr));
+	HackHelper::ResetVirtualMemberFunction(0x596C88, &CTaskForceExt::PreTranslateMessageHook);
 }
 
 BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
@@ -27,13 +25,13 @@ BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
 #endif
 		switch (pMsg->wParam)
 		{
-		case   VK_RETURN:
-		{
-			auto pEdit = this->CCBMemberType.GetWindow(GW_CHILD);
-			if (pMsg->hwnd == pEdit->m_hWnd) {
-				this->OnMemberEditChanged();
+			case VK_RETURN:
+			{
+				auto pEdit = this->CCBMemberType.GetWindow(GW_CHILD);
+				if (pMsg->hwnd == pEdit->m_hWnd) {
+					this->OnMemberEditChanged();
+				}
 			}
-		}
 
 			//do not exit dialog when enter key pressed
 			return TRUE;
