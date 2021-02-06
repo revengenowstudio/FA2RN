@@ -39,6 +39,10 @@ namespace WND_SaveOption
 #define DLG_TaskForce_Edit_Name 1010
 #define DLG_TaskForce_Edit_MemberCount 1148
 #define DLG_TaskForce_Edit_GroupID 1122
+//TeamTypes
+#define DLG_TeamTypes_Edit_Name 1010
+#define DLG_TeamTypes_ComboBox_Waypoint 1123
+#define DLG_TeamTypes_ComboBox_TransportWaypoint 1126
 
 //地形列表
 namespace IDC_TerrainListWindow

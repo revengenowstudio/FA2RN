@@ -11,10 +11,10 @@ public:
 		{ JMP_STD(0x5971EC); }
 
 	//non-virtual
-	void OnNewButtonClicked()
-		{ JMP_THIS(0x4EEA50); }
-	void OnTeamSelectedCommboBoxChanged()
-		{ JMP_THIS(0x4E7900); }
+	void OnNameEditChanged() { JMP_THIS(0x4E9B20); }
+
+	void OnNewButtonClicked() { JMP_THIS(0x4EEA50); }
+	void OnTeamSelectedCommboBoxChanged() { JMP_THIS(0x4E7900); }
 
 	//member properties
 	CStatic		CSTMindControlDecision; // 92

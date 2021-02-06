@@ -10,7 +10,7 @@ void CTaskForceExt::ProgramStarupInit()
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596B20), EN_KILLFOCUS); // member count update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x596BC8), EN_KILLFOCUS); // group update
 
-	HackHelper::ResetVirtualMemberFunction(0x596C88, &CTaskForceExt::PreTranslateMessageHook);
+	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596C88), &CTaskForceExt::PreTranslateMessageHook);
 }
 
 BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)

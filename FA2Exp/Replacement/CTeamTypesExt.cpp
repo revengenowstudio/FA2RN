@@ -16,4 +16,34 @@ void CTeamTypesExt::ProgramStartupInit()
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x5970C0), CBN_KILLFOCUS); // tag update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x5970F0), CBN_KILLFOCUS); // transport waypoint update
 	HackHelper::ResetMessageType(AFX_MSG_STRUCT(0x597120), CBN_KILLFOCUS); // mind control decision update
+
+	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x5971F8), &CTeamTypesExt::PreTranslateMessageHook);
+}
+
+BOOL CTeamTypesExt::PreTranslateMessageHook(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+		case VK_RETURN:
+		{
+			switch (::GetDlgCtrlID(pMsg->hwnd)) {
+			case DLG_TeamTypes_Edit_Name: this->OnNameEditChanged();
+			//case DLG_TeamTypes_ComboBox_Waypoint: this->OnWaypointCombBoxChanged();
+			//case DLG_TeamTypes_ComboBox_TransportWaypoint: this->OnTransportWaypointCombBoxChanged();
+			default:
+				break;
+			}
+
+		}
+
+		//do not exit dialog when enter key pressed
+		return TRUE;
+		default:
+			break;
+		}
+	}
+
+	return this->FA2CDialog::PreTranslateMessage(pMsg);
 }
