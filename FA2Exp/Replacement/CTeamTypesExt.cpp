@@ -30,8 +30,8 @@ BOOL CTeamTypesExt::PreTranslateMessageHook(MSG * pMsg)
 		{
 			switch (::GetDlgCtrlID(pMsg->hwnd)) {
 			case DLG_TeamTypes_Edit_Name: this->OnNameEditChanged();
-			//case DLG_TeamTypes_ComboBox_Waypoint: this->OnWaypointCombBoxChanged();
-			//case DLG_TeamTypes_ComboBox_TransportWaypoint: this->OnTransportWaypointCombBoxChanged();
+			case DLG_TeamTypes_ComboBox_Waypoint: this->OnWaypointComboBoxChanged();
+			case DLG_TeamTypes_ComboBox_TransportWaypoint: this->OnTransportWaypointComboBoxChanged();
 			default:
 				break;
 			}

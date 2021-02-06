@@ -358,6 +358,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Config.h" />
     <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="FA2PP\ASMMacros.h" />
+    <ClInclude Include="FA2PP\CScriptTypes.h" />
     <ClInclude Include="FA2PP\CTaskForce.h" />
     <ClInclude Include="FA2PP\CTeamTypes.h" />
     <ClInclude Include="FA2PP\CTileSetBrowerFrame.h" />
@@ -393,6 +394,8 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc" />
+    <ResourceCompile Include="UI\ScriptTypesDialog.rc" />
+    <ResourceCompile Include="UI\TeamTypesDialog.rc" />
     <ResourceCompile Include="UI\AboutDialog.rc" />
     <ResourceCompile Include="UI\INIEditorDialog.rc" />
     <ResourceCompile Include="UI\InitializeDialog.rc" />

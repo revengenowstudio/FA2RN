@@ -158,6 +158,9 @@
     <ClInclude Include="UI\resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\CScriptTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">
@@ -191,6 +194,12 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
     <ResourceCompile Include="UI\INIEditorDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\TeamTypesDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\ScriptTypesDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

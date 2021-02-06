@@ -43,6 +43,9 @@ namespace WND_SaveOption
 #define DLG_TeamTypes_Edit_Name 1010
 #define DLG_TeamTypes_ComboBox_Waypoint 1123
 #define DLG_TeamTypes_ComboBox_TransportWaypoint 1126
+//ScriptTypes
+#define DLG_ScriptTypes_Edit_Name 1010
+
 
 //地形列表
 namespace IDC_TerrainListWindow

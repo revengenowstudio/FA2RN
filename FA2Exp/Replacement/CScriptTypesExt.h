@@ -1,7 +1,11 @@
 #pragma once
-class CScriptTypesExt
+
+#include <CScriptTypes.h>
+
+class CScriptTypesExt : public CScriptTypes
 {
 public:
 	static void ProgramStartupInit();
+	BOOL PreTranslateMessageHook(MSG * pMsg);
 
 };

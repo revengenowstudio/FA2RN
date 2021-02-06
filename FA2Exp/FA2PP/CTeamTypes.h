@@ -12,6 +12,13 @@ public:
 
 	//non-virtual
 	void OnNameEditChanged() { JMP_THIS(0x4E9B20); }
+	void OnGroupComboBoxChanged() { JMP_THIS(0x4EAF30); }
+	void OnWaypointComboBoxChanged() { JMP_THIS(0x4EB190); }
+	void OnScriptComboBoxChanged() { JMP_THIS(0x4EB4D0); }
+	void OnTaskforceComboBoxChanged() { JMP_THIS(0x4EB760); }
+	void OnTagComboBoxChanged() { JMP_THIS(0x4EFE20); }
+	void OnTransportWaypointComboBoxChanged() { JMP_THIS(0x4F01B0); }
+	void OnMindControlDecisionComboBoxChanged() { JMP_THIS(0x4F0700); }
 
 	void OnNewButtonClicked() { JMP_THIS(0x4EEA50); }
 	void OnTeamSelectedCommboBoxChanged() { JMP_THIS(0x4E7900); }
