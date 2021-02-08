@@ -1,5 +1,4 @@
 ﻿#include "CTileSetDialogBarExt.h"
-#include "../resource.h"
 #include "../Config.h"
 #include <algorithm>
 #include "../FA2Expand.h"
