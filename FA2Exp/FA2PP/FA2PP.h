@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AFXWIN.H>
+#include <AFXCMN.H>
 #include <FA2PPCore.h>
 
 class NOVTABLE FA2CWnd : public CWnd

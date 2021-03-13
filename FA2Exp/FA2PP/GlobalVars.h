@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FA2PP.h"
+#include <FA2PP.h>
 
 #include <Helper/CompileTime.h>
 #include <INI.h>
