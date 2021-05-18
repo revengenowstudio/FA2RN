@@ -1,6 +1,7 @@
 ﻿#include "../FA2Expand.h"
 #include <CTaskForce.h>
 #include <GlobalVars.h>
+#include <ObjectOptions.h>
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -110,17 +111,286 @@ DEFINE_HOOK(4D6E4D, CScriptTypeClass_OnItemSelectChanged_Houses, 6)
 
 DEFINE_HOOK(473E46, CIsoView_UpdatePaint_InfantryFacing, 9)
 {
-	//LEA_STACK(const char*, pID, STACK_OFFS(0x18, 0x770));
-
 	GET(int, Facing, EAX);
 
-	//logger::g_logger.Info(std::string(__FUNCTION__" : item ") + pID + " facing : " + std::to_string(Facing));
+	//GET_STACK(const CString, ID, 0x590);
+	//logger::g_logger.Info(std::string(__FUNCTION__" : item ") + static_cast<const char*>(ID) + " facing : " + std::to_string(Facing));
 
 	R->EAX(7 - Facing / 32);
 
 	R->ECX(R->lea_Stack<DWORD>(0x590));
 
 	return 0x473E52;
+}
+
+//having problems with patched FA2
+#if 0
+DEFINE_HOOK(45AF03, CIsoView_StatusBar_YXTOXY_YToX_1, 7)
+{
+	GET_STACK(int, nPointX, 0x30);
+	R->EDI(nPointX);
+	R->ECX(R->lea_Stack<DWORD>(0x458));
+	return 0x45AF0A;
+}
+
+DEFINE_HOOK(45AF21, CIsoView_StatusBar_YXTOXY_YToX_2, 7)
+{
+	GET_STACK(int, nPointY, 0x38);
+	R->EDI(nPointY);
+	return 0;
+}
+
+DEFINE_HOOK(45AF44, CIsoView_StatusBar_YXTOXY_XToY_1, 7)
+{
+	GET_STACK(int, nPointY, 0x38);
+	R->EBX(nPointY);
+	R->EAX(R->lea_Stack<DWORD>(0x458));
+	return 0x45AF4B;
+}
+
+DEFINE_HOOK(45AF57, CIsoView_StatusBar_YXTOXY_XToY_2, 7)
+{
+	GET_STACK(int, nPointX, 0x30);
+	R->EBX(nPointX);
+	return 0;
+}
+#endif
+
+//fix Turret check using ImageID rather than own type ID
+DEFINE_HOOK(48341F, CIsoView_LoadImage_TurretAnim, 5)
+{
+	GET_BASE(const FAString, ID, 0x8);
+
+	R->EAX(&ID);
+	return 0;
+}
+
+DEFINE_HOOK(48346B, CIsoView_LoadImage_Turret, 5)
+{
+	//GET_BASE(const CString, ImageID, -0x1C);
+	GET_BASE(const FAString, ID, 0x8);
+
+	R->EDX(&ID);
+	return 0;
+}
+
+DEFINE_HOOK(4834C7, CIsoView_LoadImage_TurretIsVoxel, 5)
+{
+	GET_BASE(const FAString, ID, 0x8);
+
+	R->EDX(&ID);
+	return 0;
+}
+
+#if 0 //GetBoolean do not work
+DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
+{
+	GET_BASE(const CString, ImageID, -0x1C);
+	GET_BASE(const FAString, ID, 0x8);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" "));
+
+
+	bool hasTurret = GlobalVars::INIFiles::Rules->GetBoolean(ID, "Turret", false);
+	logger::g_logger.Info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
+	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(hasTurret));
+
+	R->AL(hasTurret);
+	return 0x483491;
+}
+#endif
+
+//tracers
+DEFINE_HOOK(470B6C, CIsoView_UpdatePaint_Building_Debug, B)
+{
+	GET_STACK(const CString, BuildingID, 0x320);
+
+	logger::info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(BuildingID));
+
+	return 0;
+}
+
+DEFINE_HOOK(4709AC, CIsoView_UpdatePaint_Building_GetFrameInfo, A)
+{
+	GET(int, itemIdx, ESI);
+	REF_STACK(const BuildingOptionValueEx, BuildingID, 0x10C);
+
+	logger::info(std::string(__FUNCTION__" : BuildingID ") + static_cast<const char*>(BuildingID.Name) + " facing : " + std::to_string(BuildingID.FacingValue));
+
+	logger::info(std::string(__FUNCTION__" : itemIdx ") + std::to_string(itemIdx));
+
+	for (auto offset = 0; offset < 8; offset++) {
+		auto const& frame = SHPImageCache[itemIdx].Frames[offset];
+		logger::info(std::string(__FUNCTION__" : cache ") + " offIdx : " + std::to_string(offset) + " ptr " + std::to_string(frame.ptr_0));
+	}
+
+
+
+	return 0;
+}
+
+DEFINE_HOOK(4709CE, CIsoView_UpdatePaint_Building_GetFrameInfo2, 6)
+{
+	REF_STACK(const BuildingOptionValueEx, BuildingID, 0x10C);
+	GET(DWORD, offset, EDI);
+	logger::info(std::string(__FUNCTION__" : fetch again, BuildingID ") + static_cast<const char*>(BuildingID.Name) + " facing : " + std::to_string(BuildingID.FacingValue));
+	logger::info(" offset : " + std::to_string(offset));
+	logger::info(" offset / 0x114 : " + std::to_string(offset / 0x114));
+	return 0;
+}
+
+DEFINE_HOOK(470AD7, CIsoView_UpdatePaint_Building_FirstTimeLoad, 7)
+{
+	GET(const char*, pString, EAX);
+	logger::info(std::string(__FUNCTION__" : ID ") + pString);
+	return 0;
+}
+
+DEFINE_HOOK(4B606D, sub_4B5460, 5)
+{
+	REF_STACK(CString, key, 0x1C);
+	GET(int, frameSeqIdx, EBX);
+
+	logger::info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(key) + " frameSeqIdx : " + std::to_string(frameSeqIdx));
+
+
+	return 0;
+}
+
+
+//DEFINE_HOOK(470BC5, CIsoView_UpdatePaint_Building_Debug2, 7)
+//{
+//	REF_STACK(const BuildingOptionValueEx, BuildingID, 0x10C);
+//
+//	auto const& BuildingInfo = R->ref_Stack<const BuildingFrameInfo>(0x21C);
+//
+//	logger::g_logger.Info(std::string(__FUNCTION__" : BuildingID ") + static_cast<const char*>(BuildingID.Name));
+//
+//	logger::g_logger.Info(std::string(__FUNCTION__" : BuildingInfo ") + reinterpret_cast<const char*>(&BuildingInfo));
+//
+//
+//	return 0;
+//}
+
+DEFINE_HOOK(48344F, CIsoView_LoadImage_Debug, 6)
+{
+	GET_BASE(BOOL, buildingTypeItemExists, -88);
+	GET_BASE(const CString, ImageID, -0x1C);
+	GET_BASE(const CString, TurretAnimID, -0x78);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " BuildingItemCount : " + std::to_string(buildingTypeItemExists));
+	logger::g_logger.Info(std::string(__FUNCTION__" : TurretAnimID ") + static_cast<const char*>(TurretAnimID));
+
+
+	return buildingTypeItemExists ? 0x48345B : 0x483B6D;
+}
+
+DEFINE_HOOK(483670, CIsoView_LoadImage_SHPTurretDebug, 5)
+{
+	GET(int, unk, ESI);
+	GET(const char*, pString, EAX);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : pString ") + pString + " unk : " + std::to_string(unk));
+
+	PUSH_REG(unk);
+	PUSH_REG(pString);
+	CALL(0x525C50);
+
+	return 0x483675;
+}
+
+DEFINE_HOOK(483491, CIsoView_LoadImage_Turret_Debug, 5)
+{
+	GET_BASE(const CString, ImageID, -0x1C);
+	GET_BASE(const CString, ID, 0x8);
+	GET(bool, HasTurret, EAX);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(HasTurret));
+	logger::g_logger.Info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
+
+	return 0;
+}
+
+DEFINE_HOOK(483709, CIsoView_LoadImage_SHPTurret, 6)
+{
+	GET_BASE(const CString, ImageID, -0x1C);
+	GET_BASE(const CString, ID, 0x8);
+	GET(bool, HasTurret, EAX);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(HasTurret));
+	logger::g_logger.Info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
+
+	return 0;
+}
+
+DEFINE_HOOK(4B6BE5, BuildingDrawImage_Debug, 8)
+{
+	GET_STACK(const CString, ImageID, STACK_OFFS(0x580, 0x568));
+	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID));
+
+	if (ImageID == "GAGAP") {
+		R->Stack(0x0, 1);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(4B6C25, BuildingDrawImage_Debug2, 5)
+{
+	GET(int, FrameIndex, EDI);
+	GET(const char*, pID, EDX);
+
+	logger::info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(pID) + " FrameIndex : " + std::to_string(FrameIndex));
+
+	return 0;
+}
+
+DEFINE_HOOK(4B6C33, BuildingDrawImage_FrameID, 5)
+{
+	GET(const CString*, FrameID, EAX);
+
+	logger::info(std::string(__FUNCTION__" : FrameID : ") + static_cast<const char*>(*FrameID));
+
+	return 0;
+}
+
+DEFINE_HOOK(475450, sub475450_Debug, 7)
+{
+	GET_STACK(DWORD, retAddr, 0x0);
+	GET_STACK(const char*, imageID, 0x8);
+
+	char buf[32];
+
+	sprintf_s(buf, "%X", retAddr);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : retAddr ") + buf + " imageID : " + imageID);
+
+	return 0;
+}
+
+DEFINE_HOOK(47AE90, sub_47AB50_FileName, A)
+{
+	GET(const CString*, strFileName, EAX);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : strFileName  ") + static_cast<const char*>(*strFileName));
+
+
+	return 0;
+}
+
+DEFINE_HOOK(47AC7D, sub_47AB50_NoBMPS, 5)
+{
+	logger::g_logger.Info(std::string(__FUNCTION__" : check "));
+	return 0;
+}
+
+DEFINE_HOOK(4956BA, sub_494B60_LoadFile_Debug, 5)
+{
+	GET_BASE(char*, pFileName, -0x14);
+
+	logger::g_logger.Info(std::string(__FUNCTION__" : ") + pFileName);
+
+	return 0;
 }
 
 #if 0
