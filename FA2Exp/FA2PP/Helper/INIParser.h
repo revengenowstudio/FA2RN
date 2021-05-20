@@ -7,6 +7,11 @@
 
 using byte = unsigned char;
 
+namespace FAINIHelper
+{
+
+}
+
 class INI_EX {
 	INIClass* IniFile;
 
@@ -15,31 +20,17 @@ public:
 		: IniFile(pIniFile)
 	{ }
 
-	char* value() const {
-		return INI_EX::readBuffer;
+	CString& value() {
+		return Buffer;
 	}
-
-	size_t max_size() const {
-		return INI_EX::readLength;
-	}
-
-	bool empty() const {
-		return !INI_EX::readBuffer[0];
+	const CString& value() const {
+		return Buffer;
 	}
 
 	// basic string reader
 	size_t ReadString(const char* pSection, const char* pKey) {
-		auto const pEntries = IniFile->GetEntries(pSection);
-		if (!pEntries) return 0;
-		auto const pItem = pEntries->Items.GetItem(pKey);
-		if (!pItem) return 0;
-		CString* pValue = reinterpret_cast<CString*>(&pItem->Value);
-		if (!pValue || pValue->IsEmpty()) return 0;
-		auto const res = pValue->GetLength();
-		if (!res) return 0;
-		auto const size = std::min(res + 1, (int)this->max_size());
-		memcpy_s(this->value(), size, pValue, size);
-		return static_cast<size_t>(res);
+		Buffer = IniFile->GetString(pSection, pKey);
+		return static_cast<size_t>(Buffer.GetLength());
 	}
 
 	// parser template
@@ -81,9 +72,7 @@ public:
 		return Read<double, 1>(pSection, pKey, nBuffer);
 	}
 
-
-public:
-	static const size_t readLength = 2048;
-	static char readBuffer[readLength];
+private:
+	CString Buffer;
 
 };

@@ -1,6 +1,8 @@
 #include "FA2Expand.h"
 #include <iostream>
 #include <stdio.h>
+#include "Enhancement/MultiLanguage.h"
+#include "Replacement/CFinalSunDlgExt.h"
 #include "Replacement/CTaskForceExt.h"
 #include "Replacement/CScriptTypesExt.h"
 #include "Replacement/CTeamTypesExt.h"
@@ -65,12 +67,15 @@ void __stdcall FA2Expand::ExeRun()
 #endif
 
 #endif
+	MessageBoxA(nullptr, "Test", "Test", MB_OK);
 	//std::locale::global(std::locale(""));
+	Translations::Initialize();
 
 	constexpr char title[] = "Final Alert for \"Revenge Now !\"";
 	constexpr char delWarn[] = "确定要删除这个脚本吗？不要忘记删除调用这个脚本的小队";
 	RunTime::ResetMemoryContentAt(0x5CD808, title, sizeof(title));
 	RunTime::ResetMemoryContentAt(0x5D15A0, delWarn, sizeof(delWarn));
+	CFinalSunDlgExt::ProgramStartupInit();
 	CTaskForceExt::ProgramStarupInit();
 	CScriptTypesExt::ProgramStartupInit();
 	CTeamTypesExt::ProgramStartupInit();

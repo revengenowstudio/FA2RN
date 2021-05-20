@@ -433,12 +433,15 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="Enhancement\MultiLanguage.cpp" />
     <ClCompile Include="Enhancement\SaveOption.cpp" />
     <ClCompile Include="FA2Expand.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />
+    <ClCompile Include="Meta\INIMeta.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
     <ClCompile Include="Misc\RemapColors.cpp" />
+    <ClCompile Include="Replacement\CFinalSunDlgExt.cpp" />
     <ClCompile Include="Replacement\CScriptTypesExt.cpp" />
     <ClCompile Include="Replacement\CTaskForceExt.cpp" />
     <ClCompile Include="Replacement\CTeamTypesExt.cpp" />
@@ -447,14 +450,34 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Enhancement\MultiLanguage.h" />
     <ClInclude Include="FA2Expand.h" />
     <ClInclude Include="FA2PP\ASMMacros.h" />
+    <ClInclude Include="FA2PP\CAITriggerTypes.h" />
+    <ClInclude Include="FA2PP\CAITriggerTypesEnable.h" />
+    <ClInclude Include="FA2PP\CBasic.h" />
+    <ClInclude Include="FA2PP\CBrushSize.h" />
+    <ClInclude Include="FA2PP\CFinalSunDlg.h" />
+    <ClInclude Include="FA2PP\CHouses.h" />
+    <ClInclude Include="FA2PP\CINIEditor.h" />
+    <ClInclude Include="FA2PP\CLighting.h" />
+    <ClInclude Include="FA2PP\CMapD.h" />
+    <ClInclude Include="FA2PP\CMyViewFrame.h" />
     <ClInclude Include="FA2PP\CScriptTypes.h" />
+    <ClInclude Include="FA2PP\CSFTable.h" />
+    <ClInclude Include="FA2PP\CSingleplayerSettings.h" />
+    <ClInclude Include="FA2PP\CSpecialFlags.h" />
+    <ClInclude Include="FA2PP\CTags.h" />
     <ClInclude Include="FA2PP\CTaskForce.h" />
     <ClInclude Include="FA2PP\CTeamTypes.h" />
-    <ClInclude Include="FA2PP\CTileSetBrowerFrame.h" />
+    <ClInclude Include="FA2PP\CTileSetBrowserFrame.h" />
     <ClInclude Include="FA2PP\CTileSetBrowserView.h" />
     <ClInclude Include="FA2PP\CTileSetDialogBar.h" />
+    <ClInclude Include="FA2PP\CTriggerAction.h" />
+    <ClInclude Include="FA2PP\CTriggerEvent.h" />
+    <ClInclude Include="FA2PP\CTriggerFrame.h" />
+    <ClInclude Include="FA2PP\CTriggerOption.h" />
+    <ClInclude Include="FA2PP\CWndView.h" />
     <ClInclude Include="FA2PP\FA2PP.h" />
     <ClInclude Include="FA2PP\FA2PPCore.h" />
     <ClInclude Include="FA2PP\FA2String.h" />
@@ -474,7 +497,9 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Ini.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Meta\INIMeta.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Replacement\CFinalSunDlgExt.h" />
     <ClInclude Include="Replacement\CScriptTypesExt.h" />
     <ClInclude Include="Replacement\CTaskForceExt.h" />
     <ClInclude Include="Replacement\CTeamTypesExt.h" />
@@ -484,6 +509,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Syringe.h" />
     <ClInclude Include="UI\resource.h" />
+    <ClInclude Include="Utilities\StringHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc" />
@@ -499,6 +525,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ResourceCompile Include="UI\TriggerEventDialog.rc" />
     <ResourceCompile Include="UI\TriggerMainDialog.rc" />
     <ResourceCompile Include="UI\TriggerTypeDialog.rc" />
+    <ResourceCompile Include="UI\WaypointPlacementDialog.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

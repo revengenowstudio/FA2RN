@@ -54,6 +54,15 @@
     <ClCompile Include="Misc\RemapColors.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Meta\INIMeta.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Replacement\CFinalSunDlgExt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Enhancement\MultiLanguage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -105,9 +114,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FA2PP\Helper\Parser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="FA2PP\CTileSetBrowerFrame.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FA2PP\CTileSetBrowserView.h">
@@ -164,10 +170,76 @@
     <ClInclude Include="FA2PP\CScriptTypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\CFinalSunDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTileSetBrowserFrame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CAITriggerTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CAITriggerTypesEnable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CBasic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CBrushSize.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CHouses.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CINIEditor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CLighting.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CMapD.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CMyViewFrame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CSingleplayerSettings.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CSpecialFlags.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTags.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTriggerFrame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTriggerAction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTriggerEvent.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CTriggerOption.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\CWndView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Meta\INIMeta.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="FA2PP\MFC\FA2CString.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FA2PP\MFC\FA2MFC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Replacement\CFinalSunDlgExt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Enhancement\MultiLanguage.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -209,6 +281,9 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
     <ResourceCompile Include="UI\ScriptTypesDialog.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UI\WaypointPlacementDialog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
