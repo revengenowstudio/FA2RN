@@ -208,4 +208,5 @@ public:
 
 private:
 		std::FAMap<CString, INISection, 0x5D8CB4, 0> data; // no idea about the nilrefs
+		char filePath[MAX_PATH];
 };
