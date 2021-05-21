@@ -438,6 +438,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
+    <ClCompile Include="Misc\RemapColors.cpp" />
     <ClCompile Include="Replacement\CScriptTypesExt.cpp" />
     <ClCompile Include="Replacement\CTaskForceExt.cpp" />
     <ClCompile Include="Replacement\CTeamTypesExt.cpp" />

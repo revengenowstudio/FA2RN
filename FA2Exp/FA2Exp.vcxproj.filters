@@ -51,6 +51,9 @@
     <ClCompile Include="Replacement\CTeamTypesExt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Misc\RemapColors.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
