@@ -211,8 +211,7 @@ public:
 		{ return m_pchData; }
 private:
 	void FA2MFC_CDECL format(LPCTSTR lpszFormat, const va_list args) {
-		size_t len = 0;
-		len = vsnprintf(nullptr, 0, lpszFormat, args);
+		size_t len = vsnprintf(nullptr, 0, lpszFormat, args);
 		if (len) {
 			vsnprintf(GetBufferSetLength(len + 1), len + 1, lpszFormat, args);
 		}
