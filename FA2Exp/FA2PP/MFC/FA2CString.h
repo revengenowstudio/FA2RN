@@ -155,11 +155,25 @@ public:
     const CString& operator+=(const CString& string)
         FA2MFC_THISCALL(0x556327);
 
-	bool FA2MFC_API operator!=(const CString& string) const
-		FA2MFC_THISCALL(0x452230);
-
-	bool operator==(const CString& string) const
-		{ return !operator!=(string); }
+	// Compare helpers
+	friend bool FA2MFC_API operator==(const CString& s1, const CString& s2) { return s1.Compare(s2) == 0; }
+	friend bool FA2MFC_API operator==(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) == 0; }
+	friend bool FA2MFC_API operator==(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) == 0; }
+	friend bool FA2MFC_API operator!=(const CString& s1, const CString& s2) { return s1.Compare(s2) != 0; }
+	friend bool FA2MFC_API operator!=(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) != 0; }
+	friend bool FA2MFC_API operator!=(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) != 0; }
+	friend bool FA2MFC_API operator<(const CString& s1, const CString& s2) { return s1.Compare(s2) < 0; }
+	friend bool FA2MFC_API operator<(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) < 0; }
+	friend bool FA2MFC_API operator<(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) > 0; }
+	friend bool FA2MFC_API operator>(const CString& s1, const CString& s2) { return s1.Compare(s2) > 0; }
+	friend bool FA2MFC_API operator>(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) > 0; }
+	friend bool FA2MFC_API operator>(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) < 0; }
+	friend bool FA2MFC_API operator<=(const CString& s1, const CString& s2) { return s1.Compare(s2) <= 0; }
+	friend bool FA2MFC_API operator<=(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) <= 0; }
+	friend bool FA2MFC_API operator<=(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) >= 0; }
+	friend bool FA2MFC_API operator>=(const CString& s1, const CString& s2) { return s1.Compare(s2) >= 0; }
+	friend bool FA2MFC_API operator>=(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) >= 0; }
+	friend bool FA2MFC_API operator>=(LPCTSTR s1, const CString& s2) { return s2.Compare(s1) <= 0; }
 
 	TCHAR GetAt(int nIndex) const
 	{
