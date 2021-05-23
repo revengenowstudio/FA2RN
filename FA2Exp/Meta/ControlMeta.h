@@ -2,7 +2,7 @@
 
 #include <FA2PP.h>
 
-namespace ControlHelpers
+namespace ControlMeta
 {
 class ComboBox
 {

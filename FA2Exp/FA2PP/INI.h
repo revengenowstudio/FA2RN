@@ -58,6 +58,9 @@ public:
 	}
 };
 
+INIStringDict::_Pairib INIStringDict::insert(const INIStringDict::value_type& pair) { JMP_THIS(0x40A010); }
+INIDict::_Pairib INIDict::insert(const INIDict::value_type& pair) { JMP_THIS(0x4026D0); }
+
 class NOVTABLE INISection {
 public:
 	INISection() { JMP_THIS(0x452880); }
@@ -118,6 +121,21 @@ public:
 		return true;
 	}
 
+	static FA2::CString* __cdecl GetAvailableIndex(FA2::CString*) { JMP_STD(0x446520); }
+	static FA2::CString* GetAvailableKey(FA2::CString* ret,const char* pSection) { JMP_STD(0x499E80); }
+
+	static FA2::CString GetAvailableIndex()
+	{
+		FA2::CString ret;
+		GetAvailableIndex(&ret);
+		return ret;
+	}
+	static FA2::CString GetAvailableKey(const char* pSection)
+	{
+		FA2::CString ret;
+		GetAvailableKey(&ret, pSection);
+		return ret;
+	}
 
 	bool SectionExists(const char* pSection)
 	{
@@ -132,6 +150,28 @@ public:
 		return 0;
 	}
 
+	std::pair<INIStringDict::iterator, bool> Insert(INIStringDict& dict, const char* pKey, const char* pValue)
+	{
+		auto const& ins = std::make_pair(pKey, pValue);
+		return dict.insert(ins);
+	}
+	std::pair<INIDict::iterator, bool> Insert(const CString& ID, const INISection& section)
+	{
+		std::pair<CString, INISection> ins = std::make_pair(ID, section);
+		return data.insert(ins);
+	}
+
+	bool WriteString(const char* pSection, const char* pKey, const char* pValue)
+	{
+		auto itr = data.find(pSection);
+		if (itr == data.end())	return false;
+		auto& dict = itr->second.EntriesDictionary;
+		auto pair = Insert(dict, pKey, pValue);
+		if (!pair.second) {
+			pair.first->second.AssignCopy(strlen(pValue), pValue);
+		}
+		return true;
+	}
 
 	// use it like this to avoid CTOR and crash:
 	// auto &iSection = iINI.TryGetSection("E1");
@@ -234,6 +274,6 @@ public:
 		}
 	}
 private:
-		std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0> data; // no idea about the nilrefs
+		INIDict data; // no idea about the nilrefs
 		char filePath[MAX_PATH];
 };

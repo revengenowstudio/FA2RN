@@ -3,6 +3,7 @@
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
+typedef unsigned int size_t;
 
 //Assembly macros
 #include <ASMMacros.h>

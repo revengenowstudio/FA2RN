@@ -63,6 +63,9 @@
     <ClCompile Include="Enhancement\MultiLanguage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Meta\ControlMeta.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -249,6 +252,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Replacement\CScriptTypesExtHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Meta\ControlMeta.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\INIParser.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

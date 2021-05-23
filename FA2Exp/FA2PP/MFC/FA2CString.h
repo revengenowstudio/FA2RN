@@ -144,9 +144,8 @@ public:
     void ConcatInPlace(int nSrcLen, LPCTSTR lpszSrcData)
         FA2MFC_THISCALL(0x55628C);
 
-    //const CString& operator+=(LPCTSTR lpsz)
-    //    FA2MFC_THISCALL(0x5562EB);
 	const CString& operator+=(LPCTSTR lpsz) = delete;//this function causes dead loop, do not use until we find out why
+	//    FA2MFC_THISCALL(0x5562EB);
 
     const CString& operator+=(TCHAR ch)
         FA2MFC_THISCALL(0x556312);

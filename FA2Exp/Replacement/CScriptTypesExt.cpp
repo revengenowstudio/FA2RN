@@ -1,5 +1,10 @@
 #include "CScriptTypesExt.h"
+#include "CScriptTypesExtHelper.h"
 #include "Helpers.h"
+#include "../Utilities/INIParser.h"
+#include "../Enhancement/MultiLanguage.h"
+
+#define SAFE_RELEASE(ptr) {if(!ptr) delete[] ptr;}
 
 void CScriptTypesExt::ProgramStartupInit()
 {
@@ -136,16 +141,18 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 
 	auto TranslateDlgItem = [this](int nID, const char* lpKey)
 	{
-		CString buffer;
-		if (Translations::GetTranslationItem(lpKey, buffer))
-			this->SetDlgItemText(nID, buffer);
+		CString ret = Translations::Translate(lpKey);
+		if (ret.GetLength()) {
+			this->SetDlgItemText(nID, ret);
+		}
 	};
 
 	auto TranslateCItem = [](CWnd* pWnd, const char* lpKey)
 	{
-		CString buffer;
-		if (Translations::GetTranslationItem(lpKey, buffer))
-			pWnd->SetWindowText(buffer);
+		CString ret = Translations::Translate(lpKey);
+		if (ret.GetLength()) {
+			pWnd->SetWindowText(ret);
+		}
 	};
 
 	TranslateCItem(this, "ScriptTypesTitle");
@@ -191,16 +198,14 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 
 	auto& fadata = GlobalVars::INIFiles::FAData();
 
-	if (fadata.SectionExists("ScriptParams"))
-	{
-		auto& entities = fadata.GetSection("ScriptParams");
+	if (auto const entities = fadata.TryGetSection("ScriptParams")) {
 		char* pParseBuffer[2];
-		for (auto& pair : entities.EntitiesDictionary)
+		for (auto& pair : entities->EntriesDictionary)
 		{
 			int id = atoi(pair.first);
 			if (id < 0) continue;
 			auto count =
-				ParseList(pair.second, (const char**)(pParseBuffer), 2);
+				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 2);
 			switch (count)
 			{
 			default:
@@ -217,23 +222,23 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 	}
 
 	if (fadata.SectionExists("ScriptsRA2")) {
-		auto& entities = fadata.GetSection("ScriptsRA2");
+		auto const entities = fadata.TryGetSection("ScriptsRA2");
 		char* pParseBuffer[5];
-		for (auto& pair : entities.EntitiesDictionary)
+		for (auto& pair : entities->EntriesDictionary)
 		{
 			int id = atoi(pair.first);
 			if (id < 0) continue;
 			auto count =
-				ParseList(pair.second, (const char**)(pParseBuffer), 5);
+				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 5);
 			switch (count)
 			{
 			case 5:
 			default:
 				ExtActions[id].Description_ = _strdup((const char*)pParseBuffer[4]);
 			case 4:
-				ExtActions[id].Editable_ = ParseBool((const char*)pParseBuffer[3]);
+				ExtActions[id].Editable_ = utilities::parse_bool((const char*)pParseBuffer[3]);
 			case 3:
-				ExtActions[id].Hide_ = ParseBool((const char*)pParseBuffer[2]);
+				ExtActions[id].Hide_ = utilities::parse_bool((const char*)pParseBuffer[2]);
 			case 2:
 				ExtActions[id].ParamCode_ = atoi((const char*)pParseBuffer[1]);
 			case 1:
@@ -279,7 +284,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 	if (scriptIndex >= 0 && listIndex >= 0)
 	{
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
-		STDHelpers::TrimIndex(scriptId);
+		utilities::trim_index(scriptId);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
@@ -289,7 +294,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 			actionIndex = buffer.GetLength() - 2;
 		}
 		tmp = buffer.Mid(actionIndex + 1);
-		STDHelpers::TrimIndex(tmp);
+		utilities::trim_index(tmp);
 		this->CCBScriptParameter.SetWindowText(tmp);
 
 		actionIndex = atoi(buffer.Mid(0, actionIndex));
@@ -326,7 +331,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 //
 void CScriptTypesExt::OnCBCurrentActionEditChanged()
 {
-	auto& doc = *INIMapFieldUpdate::UpdateMapFieldData(1);
+	auto& doc = *INIClass::GetMapDocument(true);
 	CString scriptId, buffer, listStr, tmp;
 	int scriptIndex, listIndex, actionIndex, actionData;
 
@@ -335,7 +340,7 @@ void CScriptTypesExt::OnCBCurrentActionEditChanged()
 	if (scriptIndex >= 0 && listIndex >= 0)
 	{
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
-		STDHelpers::TrimIndex(scriptId);
+		utilities::trim_index(scriptId);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
@@ -374,7 +379,7 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 	if (scriptIndex >= 0 && listIndex >= 0)
 	{
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
-		STDHelpers::TrimIndex(scriptId);
+		utilities::trim_index(scriptId);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
@@ -382,7 +387,7 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 			actionIndex = buffer.GetLength();
 		buffer = buffer.Mid(0, actionIndex);
 		this->CCBScriptParameter.GetWindowText(paramStr);
-		STDHelpers::TrimIndex(paramStr);
+		utilities::trim_index(paramStr);
 		tmp.Format("%s,%s", buffer, paramStr);
 		listStr.Format("%d", listIndex);
 		doc.WriteString(scriptId, listStr, tmp);
@@ -408,7 +413,7 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 	// insert mode ON
 	/*CString scriptID;
 	this->CCBCurrentScript.GetWindowText(scriptID);
-	STDHelpers::TrimIndex(scriptID);
+	utilities::trim_index(scriptID);
 
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 	if (doc.SectionExists(scriptID))
@@ -493,22 +498,22 @@ void CScriptTypesExt::OnBNCloneScriptClicked()
 	{
 		CString label;
 		this->CCBCurrentScript.GetLBText(nCurSel, label);
-		STDHelpers::TrimIndex(label);
-		INISection copied(doc.GetSection(label));
-		ppmfc::CString name;
-		name = copied.EntitiesDictionary["Name"];
+		utilities::trim_index(label);
+		INISection copied(*doc.TryGetSection(label));
+		FA2::CString name;
+		name = copied.EntriesDictionary["Name"];
 		name += " Clone";
-		((ppmfc::CString*)(&copied.EntitiesDictionary["Name"]))->AssignCopy(strlen(name), name);
+		((FA2::CString*)(&copied.EntriesDictionary["Name"]))->AssignCopy(strlen(name), name);
 		//Logger::Debug("new name = %s\n", name);
-		ppmfc::CString id;
+		FA2::CString id;
 		id = INIClass::GetAvailableIndex();
 		//Logger::Debug("available index get, id = %s\n", id);
-		doc.InsertSection(id.operator LPCTSTR(), copied);
+		doc.Insert(id, copied);
 		/*Logger::Debug("section inserted!\n");
 		Logger::Debug("section detail:\n");
 		for (auto& x : copied.EntitiesDictionary)
 			Logger::Debug("%s %s\n", x.first, x.second);*/
-		ppmfc::CString key;
+		FA2::CString key;
 		key = INIClass::GetAvailableKey("ScriptTypes");
 		//Logger::Debug("available section get, key = %s\n", key);
 		doc.WriteString("ScriptTypes", key, id);
@@ -519,11 +524,13 @@ void CScriptTypesExt::OnBNCloneScriptClicked()
 
 			// objective : reload combobox
 		auto& scripts = this->CCBCurrentScript;
-		while (this->CCBCurrentScript.DeleteString(0) != CB_ERR)
-			;
-		auto& scripttypes = doc.GetSection("ScriptTypes");
-		for (auto& x : scripttypes.EntitiesDictionary)
-			this->CCBCurrentScript.AddString((CString)x.second + " (" + doc.GetString(x.second, "Name") + ")");
+		while (this->CCBCurrentScript.DeleteString(0) != CB_ERR);
+
+		if (auto const scripttypes = doc.TryGetSection("ScriptTypes")) {
+			for (auto& x : scripttypes->EntriesDictionary) {
+				this->CCBCurrentScript.AddString(x.second + " (" + doc.GetString(x.second, "Name") + ")");
+			}
+		}
 		int idx = scripts.FindString(0, id);
 		scripts.SetCurSel(idx);
 		this->SetDlgItemText(1010, name);
