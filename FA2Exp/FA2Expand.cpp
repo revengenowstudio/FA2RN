@@ -48,6 +48,12 @@ HRSRC WINAPI FetchResource(
 	return g_FA2FindResourceProc(hModule, lpName, lpType); //Nothing was found, try the game's own resources.
 }
 
+void updateExecutionPath()
+{
+	GetModuleFileNameA(0, GlobalVars::ExePath(), 0x104u);
+	strrchr(GlobalVars::ExePath(), '\\')[1] = 0;
+}
+
 void __stdcall FA2Expand::ExeRun()
 {
 #if 0
@@ -67,7 +73,8 @@ void __stdcall FA2Expand::ExeRun()
 #endif
 
 #endif
-	MessageBoxA(nullptr, "Test", "Test", MB_OK);
+	updateExecutionPath();
+	//MessageBoxA(nullptr, "Test", "Test", MB_OK);
 	//std::locale::global(std::locale(""));
 	Translations::Initialize();
 

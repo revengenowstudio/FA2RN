@@ -27,6 +27,7 @@ void Translations::Initialize()
 	FinalAlertConfig::lpPath = GlobalVars::ExePath();
 	FinalAlertConfig::lpPath += "FinalAlert.ini";
 	FinalAlertConfig::ReadString("FinalSun", "Language", "English");
+
 	strcpy_s(Translations::pLanguage[0], FinalAlertConfig::pLastRead);
 	strcpy_s(Translations::pLanguage[1], FinalAlertConfig::pLastRead);
 	strcpy_s(Translations::pLanguage[2], FinalAlertConfig::pLastRead);
