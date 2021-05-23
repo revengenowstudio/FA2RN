@@ -14,15 +14,16 @@ class FinalAlertConfig
 public:
 	static DWORD ReadString(const char* pSection, const char* pKey, const char* pDefault = "", char* pBuffer = nullptr);
 	static void WriteString(const char* pSection, const char* pKey, const char* pContent);
-	static char pLastRead[0x400];
+	static char ReadBuffer[0x400];
 	static std::string lpPath;
 };
 
 class Translations
 {
 public:
-	static char Translations::pLanguage[4][0x400];
+	static char Languages[4][0x400];
 
 	static void Initialize();
-	static bool Translations::GetTranslationItem(const char* pLabelName, FA2::CString& ret);
+	static FA2::CString Translate(const char* pLabelName);
+	static FA2::CString TranslateOrDefault(const char* pLabelName, const FA2::CString& def);
 };

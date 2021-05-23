@@ -70,9 +70,8 @@ HTREEITEM ObjectBrowserControlExt::InsertString(const char* pString, DWORD dwIte
 HTREEITEM ObjectBrowserControlExt::InsertTranslatedString(const char* pOriginString, DWORD dwItemData,
 	HTREEITEM hParent, HTREEITEM hInsertAfter)
 {
-	FA2::CString buffer;
-	bool result = Translations::GetTranslationItem(pOriginString, buffer);
-	return InsertString(result ? buffer : pOriginString, dwItemData, hParent, hInsertAfter);
+	auto const& ret = Translations::Translate(pOriginString);
+	return InsertString(ret.GetLength() ? ret : pOriginString, dwItemData, hParent, hInsertAfter);
 }
 
 void ObjectBrowserControlExt::Redraw_Initialize()
@@ -225,7 +224,8 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 			subNodes[i++] = this->InsertString(itr.second, -1, hInfantry);
 		}
 	}
-	subNodes[-1] = this->InsertString("Others", -1, hInfantry);
+	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
+	subNodes[-1] = this->InsertString(otherStr, -1, hInfantry);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& infantries = mmh.GetSection("InfantryTypes");
@@ -278,7 +278,8 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 			subNodes[i++] = this->InsertString(itr.second, -1, hVehicle);
 		}
 	}
-	subNodes[-1] = this->InsertString("Others", -1, hVehicle);
+	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
+	subNodes[-1] = this->InsertString(otherStr, -1, hVehicle);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& vehicles = mmh.GetSection("VehicleTypes");
@@ -329,7 +330,8 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 		for (auto& itr : sides)
 			subNodes[i++] = this->InsertString(itr.second, -1, hAircraft);
 	}
-	subNodes[-1] = this->InsertString("Others", -1, hAircraft);
+	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
+	subNodes[-1] = this->InsertString(otherStr, -1, hAircraft);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& aircrafts = mmh.GetSection("AircraftTypes");
@@ -381,7 +383,8 @@ void ObjectBrowserControlExt::Redraw_Building()
 			subNodes[i++] = this->InsertString(itr.second, -1, hBuilding);
 		}
 	}
-	subNodes[-1] = this->InsertString("Others", -1, hBuilding);
+	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
+	subNodes[-1] = this->InsertString(otherStr, -1, hBuilding);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& buildings = mmh.GetSection("BuildingTypes");

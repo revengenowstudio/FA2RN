@@ -98,7 +98,7 @@ public:
     static void FA2MFC_API Release(CStringData* pStringData)
         FA2MFC_STDCALL(0x555E77);
 
-    void Empty()
+    void Empty() const
         FA2MFC_THISCALL(0x555E9A);
 
 	int GetLength() const {
