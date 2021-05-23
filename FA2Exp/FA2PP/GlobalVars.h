@@ -20,7 +20,7 @@ public:
         static constexpr reference<INIClass, 0x7EDCA8> const Art{}; // artmd.ini / art.ini
         static constexpr reference<INIClass, 0x7ED960> const Turtorial{}; // turtorial.ini
         static constexpr reference<INIClass, 0x7EDA78> const Sound{}; // soundmd.ini / sound.ini
-        static constexpr reference<INIClass, 0x7ED848> const EVA{}; // evamd.ini / eva.ini
+        static constexpr reference<INIClass, 0x7ED848> const Eva{}; // evamd.ini / eva.ini
         static constexpr reference<INIClass, 0x7ED730> const Theme{}; // thememd.ini / theme.ini
         static constexpr reference<INIClass, 0x7EDB90> const AI{}; // aimd.ini / ai.ini
         static constexpr reference<INIClass, 0x7ED3E8> const Temperate{}; // temperatmd.ini / temperat.ini

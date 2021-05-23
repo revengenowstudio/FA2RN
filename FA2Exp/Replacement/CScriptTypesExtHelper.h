@@ -10,6 +10,7 @@
 
 #include "../Meta/INIMeta.h"
 #include "../Utilities/StringHelper.h"
+#include "../Meta/ControlMeta.h"
 
 class CScriptTypesFunctions
 {
@@ -166,7 +167,7 @@ public:
 	// 8
 	static void CScriptTypes_LoadParams_Houses(CComboBox& comboBox)
 	{
-		ControlHelpers::ComboBox::LoadHouses(comboBox, true);
+		ControlMeta::ComboBox::LoadHouses(comboBox, true);
 	}
 
 	// 9
@@ -175,10 +176,9 @@ public:
 		while (comboBox.DeleteString(0) != -1);
 
 		auto& eva = GlobalVars::INIFiles::Eva();
-		if (eva.SectionExists("DialogList"))
+		if (auto const entries = eva.TryGetSection("DialogList"))
 		{
 			CString text;
-			auto& entries = eva.TryGetSection("DialogList");
 			for (auto& ent : entries->EntriesDictionary)
 			{
 				if (eva.SectionExists(ent.second))
@@ -248,7 +248,7 @@ public:
 	// 13
 	static void CScriptTypes_LoadParams_Countries(CComboBox& comboBox)
 	{
-		ControlHelpers::ComboBox::LoadCountries(comboBox, true);
+		ControlMeta::ComboBox::LoadCountries(comboBox, true);
 	}
 
 	// 14
@@ -287,13 +287,13 @@ public:
 	// 16
 	static void CScriptTypes_LoadParams_BuildingTypes(CComboBox& comboBox)
 	{
-		ControlHelpers::ComboBox::LoadGenericList(comboBox, "BuildingTypes", true, true);
+		ControlMeta::ComboBox::LoadGenericList(comboBox, "BuildingTypes", true, true);
 	}
 
 	// 17
 	static void CScriptTypes_LoadParams_Animations(CComboBox& comboBox)
 	{
-		ControlHelpers::ComboBox::LoadGenericList(comboBox, "Animations", true, true);
+		ControlMeta::ComboBox::LoadGenericList(comboBox, "Animations", true, true);
 	}
 
 	// 18

@@ -155,10 +155,11 @@ public:
 		auto const& ins = std::make_pair(pKey, pValue);
 		return dict.insert(ins);
 	}
-	std::pair<INIDict::iterator, bool> Insert(const CString& ID, const INISection& section)
+	typename INIDict::iterator Insert(const CString& ID, const INISection& section)
 	{
-		std::pair<CString, INISection> ins = std::make_pair(ID, section);
-		return data.insert(ins);
+		INIDict::value_type ins{ ID, section };
+		auto const& ret = data.insert(ins);
+		return ret.first;
 	}
 
 	bool WriteString(const char* pSection, const char* pKey, const char* pValue)
