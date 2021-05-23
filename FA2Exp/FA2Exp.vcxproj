@@ -465,6 +465,8 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="FA2PP\Helper\INIParser.h" />
     <ClInclude Include="FA2PP\Helper\Parser.h" />
     <ClInclude Include="FA2PP\INI.h" />
+    <ClInclude Include="FA2PP\MFC\FA2CString.h" />
+    <ClInclude Include="FA2PP\MFC\FA2MFC.h" />
     <ClInclude Include="FA2PP\ObjectOptions.h" />
     <ClInclude Include="FA2PP\Structure\FAMap.h" />
     <ClInclude Include="FA2PP\Structure\FATree.h" />

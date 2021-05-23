@@ -161,6 +161,12 @@
     <ClInclude Include="FA2PP\CScriptTypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CString.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2MFC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">
