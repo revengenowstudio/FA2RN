@@ -6,8 +6,7 @@
 */
 
 #pragma once
-
-#include <windows.h>
+#include <FA2PPCore.h>
 #define SYR_VER 2
 
 class LimitedRegister {

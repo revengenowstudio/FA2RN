@@ -1,6 +1,7 @@
 ﻿#include "../FA2Expand.h"
 #include "../UI/resource.h"
 #include <GlobalVars.h>
+#include <FA2PP.h>
 
 int MinPlayer = 2;
 
@@ -36,7 +37,7 @@ DEFINE_HOOK(4D56E0, SaveMapOption_DoDataExchange, 8)
 
 DEFINE_HOOK(428229, SaveMap_MinPlayer, 8)
 {
-	using ItemIterator = std::FAMap<FAString, FAString>::iterator;
+	using ItemIterator = std::FAMap<FA2::CString, FA2::CString>::iterator;
 	GET(ItemIterator, pEntry, ESI);
 
 	auto const minPlayerStr = std::to_string(MinPlayer);

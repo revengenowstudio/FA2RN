@@ -1,16 +1,14 @@
 #pragma once
 
-#include <FA2PP.h>
-
-#include <Helper/CompileTime.h>
 #include <INI.h>
+#include <Helper/CompileTime.h>
 
 class GlobalVars
 {
 public:
-    static constexpr reference<char*, 0x72A738, 260> const ExePath{}; // Where FA2.exe locates
-    static constexpr reference<char*, 0x72A530, 260> const MapPath{}; // Where current map locates 
-    static constexpr reference<char*, 0x72A634, 260> const FilePath{}; // Where mix files locates
+    static constexpr reference<char, 0x72A738, 260> const ExePath{}; // Where FA2.exe locates
+    static constexpr reference<char, 0x72A530, 260> const MapPath{}; // Where current map locates 
+    static constexpr reference<char, 0x72A634, 260> const FilePath{}; // Where mix files locates
     
 	static constexpr reference<bool, 0x5CE3B8> const ShouldLoadYRFiles{};
 	static constexpr reference<bool, 0x5D32AC> const ShouldSupportYR{};

@@ -4,6 +4,7 @@
 #include "RunTime.h"
 #include "Macro.h"
 #include "UI/Resource.h"
+#include <MFC/FA2CString.h>
 
 class FA2Expand
 {

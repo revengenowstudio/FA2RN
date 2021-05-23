@@ -95,7 +95,7 @@ __declspec(naked) void ret_func()
 //disable FA2 action hack
 DEFINE_HOOK(43CE79, sub_43CE50_SkipHack, B)
 {
-	//GET(const FAString*, string, ECX);
+	//GET(const FA2::CString*, string, ECX);
 
 	//logger::g_logger.Warn(std::string(__FUNCTION__" :") + string->c_str());
 	return  reinterpret_cast<DWORD>(ret_func);
@@ -159,7 +159,7 @@ DEFINE_HOOK(45AF57, CIsoView_StatusBar_YXTOXY_XToY_2, 7)
 //fix Turret check using ImageID rather than own type ID
 DEFINE_HOOK(48341F, CIsoView_LoadImage_TurretAnim, 5)
 {
-	GET_BASE(const FAString, ID, 0x8);
+	GET_BASE(const FA2::CString, ID, 0x8);
 
 	R->EAX(&ID);
 	return 0;
@@ -168,7 +168,7 @@ DEFINE_HOOK(48341F, CIsoView_LoadImage_TurretAnim, 5)
 DEFINE_HOOK(48346B, CIsoView_LoadImage_Turret, 5)
 {
 	//GET_BASE(const CString, ImageID, -0x1C);
-	GET_BASE(const FAString, ID, 0x8);
+	GET_BASE(const FA2::CString, ID, 0x8);
 
 	R->EDX(&ID);
 	return 0;
@@ -176,7 +176,7 @@ DEFINE_HOOK(48346B, CIsoView_LoadImage_Turret, 5)
 
 DEFINE_HOOK(4834C7, CIsoView_LoadImage_TurretIsVoxel, 5)
 {
-	GET_BASE(const FAString, ID, 0x8);
+	GET_BASE(const FA2::CString, ID, 0x8);
 
 	R->EDX(&ID);
 	return 0;
@@ -186,7 +186,7 @@ DEFINE_HOOK(4834C7, CIsoView_LoadImage_TurretIsVoxel, 5)
 DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 {
 	GET_BASE(const CString, ImageID, -0x1C);
-	GET_BASE(const FAString, ID, 0x8);
+	GET_BASE(const FA2::CString, ID, 0x8);
 
 	logger::g_logger.Info(std::string(__FUNCTION__" "));
 
@@ -396,7 +396,7 @@ DEFINE_HOOK(4956BA, sub_494B60_LoadFile_Debug, 5)
 #if 0
 DEFINE_HOOK(43CE8D, sub_43CE50, 9)
 {
-	REF_STACK(const FAString, string, 0x8);
+	REF_STACK(const FA2::CString, string, 0x8);
 
 	logger::g_logger.Warn(std::string("__FUNCTION__ ") + string.c_str());
 
