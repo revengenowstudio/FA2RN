@@ -3,10 +3,10 @@
 //#include "../FA2.h"
 
 #include <FA2PPCore.h>
-#include <FA2String.h>
-#include <Helper/CompileTime.h>
+#include <MFC/FA2CString.h>
 #include <Structure/FAMap.h>
 #include <fstream>
+#include <Helper/CompileTime.h>
 //#include <minwindef.h>
 
 // We can only use C++14 standard for now since our FATree & FAMap
@@ -17,6 +17,13 @@
 // Remember that we cannot call CTOR or DTOR for any FAMap/FATree
 // because nil & nilrefs haven't been analysed yet.
 // Consider to use : auto& iRules = GlobalVars::INIFiles::Rules();
+
+class INISectionEntriesComparator;
+class INISection;
+
+using INIDict = std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0>;
+using INIStringDict = std::FAMap<FA2::CString, FA2::CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator>;
+using INIIndiceDict = std::FAMap<FA2::CString, unsigned int, 0x5D8CA8, 0x5D8CA4, INISectionEntriesComparator>;
 
 class INIMapFieldUpdate
 {
@@ -42,35 +49,32 @@ class INISectionEntriesComparator
 {
 public:
 
-	static bool __stdcall __compare(CString* a1, CString* a2)
-	{
-		JMP_STD(0x452230);
-	}
+	static bool __stdcall __compare(const FA2::CString& a1, const FA2::CString& a2)
+		{ JMP_STD(0x452230); }
 
-	bool operator()(const CString& s1, const CString& s2) const
+	bool operator()(const FA2::CString& s1, const FA2::CString& s2) const
 	{
-		return __compare((CString*)&s1, (CString*)&s2);
+		return __compare(s1, s2);
 	}
 };
 
 class NOVTABLE INISection {
 public:
-	virtual ~INISection() 
+	INISection() { JMP_THIS(0x452880); }
+	INISection(const INISection& another) { JMP_THIS(0x4021C0); }
+
+	virtual ~INISection()
+		{ JMP_THIS(0x452B20); }
+
+	int GetItemCount(FA2::CString Key) const//0 means section exists but no content, -1 means section not exists
 		{ JMP_THIS(0x4023B0); }
 
-	int GetItemCount(FAString Key)//0 means section exists but no content, -1 means section not exists
-		{ JMP_THIS(0x4023B0); }
-
-	const FAString& GetValue(const FAString& Key)
+	const FA2::CString& GetValue(const FA2::CString& Key) const
 		{ JMP_THIS(0x407CA0);}
 
 //private:
-	std::FAMap<CString, CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator> EntriesDictionary;
-
-	// Be careful, better not to use this one for some reason.
-	// Cause I've never tested it.
-	// secsome - 2020/11/3
-	std::FAMap<CString, unsigned int, 0x5D8CA8, 0x5D8CA4> IndicesDictionary;
+	INIStringDict EntriesDictionary;
+	INIIndiceDict IndicesDictionary;
 };
 
 class NOVTABLE INIClass
@@ -89,7 +93,7 @@ public:
 	}
 
 	// Debug function
-	std::FAMap<CString, INISection, 0x5D8CB4, 0>& GetMap()
+	std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0>& GetMap()
 	{
 		return data;
 	}
@@ -120,34 +124,55 @@ public:
 		return data.find(pSection) != data.end();
 	}
 
-	// use it like this to avoid CTOR and crash:
-	// auto &iSection = iINI.GetSection("E1");
-	// secsome - 2020/11/3
-	INISection& GetSection(const char* pSection)
+	int GetKeyCount(const char* pSection)
 	{
 		auto itr = data.find(pSection);
 		if (itr != data.end())
-			return itr->second;
-		return data.begin()->second;
+			return itr->second.EntriesDictionary.size();
+		return 0;
+	}
+
+
+	// use it like this to avoid CTOR and crash:
+	// auto &iSection = iINI.TryGetSection("E1");
+	// secsome - 2020/11/3
+	const INISection* TryGetSection(const char* pSection) const
+	{
+		auto itr = data.find(pSection);
+		if (itr != data.end()) {
+			return &itr->second;
+		}
+		return nullptr;
 	}
 	//this may cause insert of new section
-	INISection& GetSection(const FAString& SectionName)
-		{ JMP_THIS(0x4020A0); }
+	//INISection& TryGetSection(const FAString& SectionName)
+	//	{ JMP_THIS(0x4020A0); }
 
 
-	CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") {
+	bool TryGetString(const char* pSection, const char* pKey, FA2::CString& ret) const
+	{
 		auto itrSection = data.find(pSection);
 		if (itrSection != data.end()) {
 			auto pEntries = &itrSection->second.EntriesDictionary;
 			auto itrKey = pEntries->find(pKey);
-			if (itrKey != pEntries->end())
-				return itrKey->second;
+			if (itrKey != pEntries->end()) {
+				ret = itrKey->second;
+				return true;
+			}
 		}
-		return pDefault;
+		return false;
+	}
+
+	FA2::CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") {
+		FA2::CString ret;
+		if (!TryGetString(pSection, pKey, ret)) {
+			ret = pDefault;
+		}
+		return ret;
 	}
 
 	int GetInteger(const char* pSection, const char* pKey, int nDefault = 0) {
-		CString& pStr = this->GetString(pSection, pKey, "");
+		FA2::CString& pStr = this->GetString(pSection, pKey, "");
 		int ret = 0;
 		if (sscanf_s(pStr, "%d", &ret) == 1)
 			return ret;
@@ -155,7 +180,7 @@ public:
 	}
 
 	float GetSingle(const char* pSection, const char* pKey, float nDefault = 0) {
-		CString& pStr = this->GetString(pSection, pKey, "");
+		FA2::CString& pStr = this->GetString(pSection, pKey, "");
 		float ret = 0;
 		if (sscanf_s(pStr, "%f", &ret) == 1)
 			return ret;
@@ -163,7 +188,7 @@ public:
 	}
 
 	double GetDouble(const char* pSection, const char* pKey, double nDefault = 0) {
-		CString& pStr = this->GetString(pSection, pKey, "");
+		FA2::CString& pStr = this->GetString(pSection, pKey, "");
 		double ret = 0;
 		if (sscanf_s(pStr, "%lf", &ret) == 1)
 			return ret;
@@ -171,7 +196,7 @@ public:
 	}
 
 	bool GetBool(const char* pSection, const char* pKey, bool nDefault = false) {
-		CString& pStr = this->GetString(pSection, pKey, "");
+		FA2::CString& pStr = this->GetString(pSection, pKey, "");
 		switch (toupper(static_cast<unsigned char>(*pStr)))
 		{
 		case '1':
@@ -187,10 +212,13 @@ public:
 		}
 	}
 
-	bool GetBoolean(const FAString& Section, const FAString& Key, bool Default = false)
+	bool GetBoolean(const FA2::CString& Section, const FA2::CString& Key, bool Default = false)
 	{
-		auto& section = this->GetSection(Section);
-		auto const& value = section.GetValue(Key);
+		auto const section = this->TryGetSection(Section);
+		if (!section) {
+			return Default;
+		}
+		auto const& value = section->GetValue(Key);
 		switch (toupper(static_cast<unsigned char>(value[0])))
 		{
 		case '1':
@@ -205,8 +233,7 @@ public:
 			return Default;
 		}
 	}
-
 private:
-		std::FAMap<CString, INISection, 0x5D8CB4, 0> data; // no idea about the nilrefs
+		std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0> data; // no idea about the nilrefs
 		char filePath[MAX_PATH];
 };
