@@ -201,7 +201,10 @@ void ObjectBrowserControlExt::Redraw_Owner()
 			continue;
 		}
 #endif
-		auto const& houseName = CSFTable::GetUIName(section[i]);
+		if (section == "GDI" || section == "Nod") {
+			continue;
+		}
+		auto const& houseName = CSFTable::GetUIName(section);
 		this->InsertString(houseName, Const_House + i, hOwner);
 	}
 }
