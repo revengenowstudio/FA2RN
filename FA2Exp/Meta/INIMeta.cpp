@@ -97,7 +97,7 @@ SequencedSection INIMetaGroup::GetSection(const char* pSection) const
 					continue;
 				}
 #endif
-				if (pair.first == FA2::CString("Name")) {
+				if (pair.first == "Name") {
 					ret.push_back("");
 					continue;
 				}
@@ -126,7 +126,7 @@ INIMetaGroup INIMeta::GetDocument()
 
 bool INIMeta::isNullOrEmpty(const FA2::CString& value)
 {
-	return !value.GetLength() || value == FA2::CString("none") || value == FA2::CString("<none>");
+	return !value.GetLength() || value == "none" || value == "<none>";
 }
 
 IndiceStorage INIMeta::GetIndicies(const INIClass& ini, const char* pSection)

@@ -175,11 +175,11 @@ void ObjectBrowserControlExt::Redraw_Owner()
 	auto const& mmh = INIMeta::GetDocument();
 
 	bool bMultiplayer = doc.GetBool("Basic", "MultiplayerOnly");
-	auto const& section = mmh.GetIndices("Houses", true);
+	auto const& orderedSections = mmh.GetIndices("Houses", true);
 
 #if defined(HintNonMultiplayerOwner)
 	bool &bLoadOnlySpecial = bMultiplayer;
-	if (bMultiplayer && section.size() > 2) {
+	if (bMultiplayer && orderedSections.size() > 2) {
 		bLoadOnlySpecial =
 		::MessageBox(
 			NULL,
@@ -192,11 +192,12 @@ void ObjectBrowserControlExt::Redraw_Owner()
 
 	}
 #endif
-	for (size_t i = 0, sz = section.size(); i < sz; ++i) {
+	for (size_t i = 0;  i < orderedSections.size(); ++i) {
+		auto const& section = orderedSections[i];
 #if defined(HintNonMultiplayerOwner)
 		if (bMultiplayer
-			&& section[i] != FA2::CString("Neutral House") 
-			&& section[i] != FA2::CString("Special House")) {
+			&& section != "Neutral House" 
+			&& section != "Special House") {
 			continue;
 		}
 #endif
