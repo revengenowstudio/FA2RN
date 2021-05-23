@@ -501,6 +501,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="pch.h" />
     <ClInclude Include="Replacement\CFinalSunDlgExt.h" />
     <ClInclude Include="Replacement\CScriptTypesExt.h" />
+    <ClInclude Include="Replacement\CScriptTypesExtHelper.h" />
     <ClInclude Include="Replacement\CTaskForceExt.h" />
     <ClInclude Include="Replacement\CTeamTypesExt.h" />
     <ClInclude Include="Replacement\CTileSetDialogBarExt.h" />

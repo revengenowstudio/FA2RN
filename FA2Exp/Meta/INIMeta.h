@@ -40,6 +40,8 @@ public:
 
 	static IndiceStorage GetIndicies(const INIClass& ini, const char* pSection);
 
+	static bool IsNullOrEmpty(const FA2::CString& value) { return isNullOrEmpty (value); }
+
 private:
 	static bool isNullOrEmpty(const FA2::CString& value);
 

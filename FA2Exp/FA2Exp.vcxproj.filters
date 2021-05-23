@@ -242,6 +242,15 @@
     <ClInclude Include="Enhancement\MultiLanguage.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FA2PP\CSFTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\StringHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Replacement\CScriptTypesExtHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">
