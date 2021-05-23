@@ -77,6 +77,9 @@ namespace std {
             value_type* operator->() {
                 return &**this;
             }
+			const value_type* operator->() const {
+				return const_cast<iterator*>(this)->operator->();
+			}
             iterator& operator++() {
                 _Inc();
                 return *this;

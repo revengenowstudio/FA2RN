@@ -60,9 +60,17 @@ namespace std{
 			{
 				return (_Tr.begin());
 			}
+			const iterator begin() const
+			{
+				return const_cast<FAMap*>(this)->begin();
+			}
 			iterator end()
 			{
 				return (_Tr.end());
+			}
+			const iterator end() const
+			{
+				return const_cast<FAMap*>(this)->end();
 			}
 			size_t size() const
 			{
@@ -135,6 +143,10 @@ namespace std{
 			iterator find(const _K& _Kv)
 			{
 				return (_Tr.find(_Kv));
+			}
+			const iterator find(const _K& _Kv) const
+			{
+				return const_cast<FAMap*>(this)->find(_Kv);
 			}
 			size_t count(const _K& _Kv) const
 			{
