@@ -200,7 +200,8 @@ void ObjectBrowserControlExt::Redraw_Owner()
 			continue;
 		}
 #endif
-		this->InsertString(section[i], Const_House + i, hOwner);
+		auto const& houseName = CSFTable::GetUIName(section[i]);
+		this->InsertString(houseName, Const_House + i, hOwner);
 	}
 }
 
