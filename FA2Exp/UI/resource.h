@@ -71,6 +71,30 @@ namespace Tag
 {
 	constexpr int Copy_Button = 9970;//复制标签
 }
+
+namespace WND_Script
+{
+	//脚本 Script
+	constexpr int ButtonNew = 9976; //添加脚本 Add Script, override
+	constexpr int ButtonReload = 9977; //刷新脚本模板 Reload Template
+	constexpr int ComboBoxTemplate = 9978; //脚本模板 Select Template
+	constexpr int ButtonNewLine= 9992; //添加脚本成员 Add Script member
+	constexpr int CheckBoxToggleInsert = 9993; //插入模式 Insert Mode
+	constexpr int ButtonCloneLine = 9996; //复制脚本成员 Copy Script member
+	constexpr int ButtonClone = 9999; //复制脚本 Copy Script
+	constexpr int TextDescription = 50700;
+	constexpr int TextScriptType = 50701;
+	constexpr int TextName = 50702;
+	constexpr int TextActions = 50703;
+	constexpr int TextType = 50704;
+	constexpr int TextActionDescription = 50705;
+	constexpr int TextActionParam = 1198;
+	constexpr int ButtonFA2New = 1154;
+	constexpr int ButtonDelete = 1066;
+	constexpr int ButtonFA2NewLine = 1173;
+	constexpr int ButtonDeleteLine = 1174;
+}
+
 /*
 触发编辑器 Trigger
 9987 Button 复制触发 Copy Trigger, override
@@ -85,14 +109,6 @@ WND_TaskForce::RefreshButton Button 刷新（可能没啥用，但还是留个�
 9995 Button 复制特遣部队成员  Copy Taskforce member
 9998 Button 复制特遣部队 Copy Taskforce
 
-脚本 Script
-9976 Button 添加脚本 Add Script, override
-9977 Button 刷新脚本模板 Reload Template
-9978 ComboBox 脚本模板 Select Template
-9992 Button 添加脚本成员 Add Script member
-9993 CheckBox 插入模式 Insert Mode
-9996 Button 复制脚本成员 Copy Script member
-9999 Button 复制脚本 Copy Script
 
 作战小队 Team
 9979 Button 新建作战小队 New Team, override

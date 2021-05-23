@@ -12,32 +12,54 @@ void CScriptTypesExt::ProgramStartupInit()
 	HackHelper::ResetMessageType(0x596010, CBN_KILLFOCUS); // param update
 
 	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596148), &CScriptTypesExt::PreTranslateMessageHook);
+	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596174), &CScriptTypesExt::OnInitDialogExt);
 }
 
-BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
+BOOL CScriptTypesExt::onMessageKeyDown(MSG* pMsg)
 {
-	if (pMsg->message == WM_KEYDOWN)
+	switch (pMsg->wParam)
 	{
-		switch (pMsg->wParam)
-		{
 		case VK_RETURN:
 		{
 			switch (::GetDlgCtrlID(pMsg->hwnd)) {
-			case DLG_ScriptTypes_Edit_Name: this->OnNameEditChanged();
-			default:
-				break;
+				case DLG_ScriptTypes_Edit_Name: this->OnNameEditChanged();
+				default:
+					break;
 			}
 
 		}
-
 		//do not exit dialog when enter key pressed
 		return TRUE;
 		default:
 			break;
-		}
 	}
+	return -1;
+}
+BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
+{
+	if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonClone)->GetSafeHwnd()) {
+		this->OnBNCloneScriptClicked();
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonCloneLine)->GetSafeHwnd()) {
+		this->OnBNCloneItemClicked();
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::CheckBoxToggleInsert)->GetSafeHwnd()) {
+		bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
+		::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_SETCHECK, bInsertMode ? BST_UNCHECKED : BST_CHECKED, 0);
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonFA2NewLine)->GetSafeHwnd()) {
+		this->OnBNAddActionClickedExt();
+		return FALSE;
+	}
+	return -1;
+}
 
-	return this->FA2CDialog::PreTranslateMessage(pMsg);
+BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
+{
+	int ret = -1;
+	if (pMsg->message == WM_KEYDOWN) {
+		ret = onMessageKeyDown(pMsg);
+	} else if (pMsg->message == WM_LBUTTONUP) {
+		ret = onMessageKeyUp(pMsg);
+	}
+	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
 
@@ -51,74 +73,74 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 		return;
 	switch (param.Param_)
 	{
-	default:
-	case 0:
-		while (this->CCBScriptParameter.DeleteString(0) != -1);
-		break;
-	case 1:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Target(this->CCBScriptParameter);
-		break;
-	case 2:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Waypoint(this->CCBScriptParameter);
-		break;
-	case 3:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptLine(
-			this->CCBScriptParameter,
-			this->CCBCurrentScript,
-			this->CLBScriptActions
-		);
-		break;
-	case 4:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_SplitGroup(this->CCBScriptParameter);
-		break;
-	case 5:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_GlobalVariables(this->CCBScriptParameter);
-		break;
-	case 6:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptTypes(this->CCBScriptParameter);
-		break;
-	case 7:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_TeamTypes(this->CCBScriptParameter);
-		break;
-	case 8:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Houses(this->CCBScriptParameter);
-		break;
-	case 9:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Speechs(this->CCBScriptParameter);
-		break;
-	case 10:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Sounds(this->CCBScriptParameter);
-		break;
-	case 11:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Movies(this->CCBScriptParameter);
-		break;
-	case 12:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Themes(this->CCBScriptParameter);
-		break;
-	case 13:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Countries(this->CCBScriptParameter);
-		break;
-	case 14:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_LocalVariables(this->CCBScriptParameter);
-		break;
-	case 15:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Facing(this->CCBScriptParameter);
-		break;
-	case 16:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_BuildingTypes(this->CCBScriptParameter);
-		break;
-	case 17:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Animations(this->CCBScriptParameter);
-		break;
-	case 18:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_TalkBubble(this->CCBScriptParameter);
-		break;
-	case 19:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Status(this->CCBScriptParameter);
-		break;
-	case 20:
-		CScriptTypesFunctions::CScriptTypes_LoadParams_Boolean(this->CCBScriptParameter);
-		break;
+		default:
+		case 0:
+			while (this->CCBScriptParameter.DeleteString(0) != -1);
+			break;
+		case 1:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Target(this->CCBScriptParameter);
+			break;
+		case 2:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Waypoint(this->CCBScriptParameter);
+			break;
+		case 3:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptLine(
+				this->CCBScriptParameter,
+				this->CCBCurrentScript,
+				this->CLBScriptActions
+			);
+			break;
+		case 4:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_SplitGroup(this->CCBScriptParameter);
+			break;
+		case 5:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_GlobalVariables(this->CCBScriptParameter);
+			break;
+		case 6:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptTypes(this->CCBScriptParameter);
+			break;
+		case 7:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_TeamTypes(this->CCBScriptParameter);
+			break;
+		case 8:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Houses(this->CCBScriptParameter);
+			break;
+		case 9:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Speechs(this->CCBScriptParameter);
+			break;
+		case 10:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Sounds(this->CCBScriptParameter);
+			break;
+		case 11:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Movies(this->CCBScriptParameter);
+			break;
+		case 12:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Themes(this->CCBScriptParameter);
+			break;
+		case 13:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Countries(this->CCBScriptParameter);
+			break;
+		case 14:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_LocalVariables(this->CCBScriptParameter);
+			break;
+		case 15:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Facing(this->CCBScriptParameter);
+			break;
+		case 16:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_BuildingTypes(this->CCBScriptParameter);
+			break;
+		case 17:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Animations(this->CCBScriptParameter);
+			break;
+		case 18:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_TalkBubble(this->CCBScriptParameter);
+			break;
+		case 19:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Status(this->CCBScriptParameter);
+			break;
+		case 20:
+			CScriptTypesFunctions::CScriptTypes_LoadParams_Boolean(this->CCBScriptParameter);
+			break;
 	}
 	this->CSTParameterOfSection.SetWindowText(param.Label_);
 	this->CSTParameterOfSection.EnableWindow(action.Editable_);
@@ -135,13 +157,13 @@ std::map<int, CScriptTypeAction> CScriptTypesExt::ExtActions;
 std::map<int, CScriptTypeParam> CScriptTypesExt::ExtParams;
 BOOL CScriptTypesExt::OnInitDialogExt()
 {
-	BOOL ret = FA2CDialog::OnInitDialog();
-	if (!ret)
+	if (!FA2CDialog::OnInitDialog()) {
 		return FALSE;
+	}
 
 	auto TranslateDlgItem = [this](int nID, const char* lpKey)
 	{
-		CString ret = Translations::Translate(lpKey);
+		FA2::CString ret = Translations::Translate(lpKey);
 		if (ret.GetLength()) {
 			this->SetDlgItemText(nID, ret);
 		}
@@ -149,7 +171,7 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 
 	auto TranslateCItem = [](CWnd* pWnd, const char* lpKey)
 	{
-		CString ret = Translations::Translate(lpKey);
+		FA2::CString ret = Translations::Translate(lpKey);
 		if (ret.GetLength()) {
 			pWnd->SetWindowText(ret);
 		}
@@ -157,21 +179,21 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 
 	TranslateCItem(this, "ScriptTypesTitle");
 
-	TranslateDlgItem(50700, "ScriptTypesDesc");
-	TranslateDlgItem(50701, "ScriptTypesSelectedScript");
-	TranslateDlgItem(50702, "ScriptTypesName");
-	TranslateDlgItem(50703, "ScriptTypesActions");
-	TranslateDlgItem(50704, "ScriptTypesActionType");
-	TranslateDlgItem(1198, "ScriptTypesActionParam");//sbFA2
-	TranslateDlgItem(50705, "ScriptTypesActionDesc");
+	TranslateDlgItem(WND_Script::TextDescription, "ScriptTypesDesc");
+	TranslateDlgItem(WND_Script::TextScriptType, "ScriptTypesSelectedScript");
+	TranslateDlgItem(WND_Script::TextName, "ScriptTypesName");
+	TranslateDlgItem(WND_Script::TextActions, "ScriptTypesActions");
+	TranslateDlgItem(WND_Script::TextType, "ScriptTypesActionType");
+	TranslateDlgItem(WND_Script::TextActionParam, "ScriptTypesActionParam");//sbFA2
+	TranslateDlgItem(WND_Script::TextActionDescription, "ScriptTypesActionDesc");
 
-	TranslateDlgItem(1154, "ScriptTypesAddScript");
-	TranslateDlgItem(1066, "ScriptTypesDelScript");
-	TranslateDlgItem(6300, "ScriptTypesCloScript");
-	TranslateDlgItem(1173, "ScriptTypesAddAction");
-	TranslateDlgItem(1174, "ScriptTypesDelAction");
-	TranslateDlgItem(6301, "ScriptTypesCloAction");
-	TranslateDlgItem(6302, "ScriptTypesInsertMode");
+	TranslateDlgItem(WND_Script::ButtonFA2New, "ScriptTypesAddScript");
+	TranslateDlgItem(WND_Script::ButtonDelete, "ScriptTypesDelScript");
+	TranslateDlgItem(WND_Script::ButtonClone, "ScriptTypesCloScript");
+	TranslateDlgItem(WND_Script::ButtonFA2NewLine, "ScriptTypesAddAction");
+	TranslateDlgItem(WND_Script::ButtonDeleteLine, "ScriptTypesDelAction");
+	TranslateDlgItem(WND_Script::ButtonCloneLine, "ScriptTypesCloAction");
+	TranslateDlgItem(WND_Script::CheckBoxToggleInsert, "ScriptTypesInsertMode");
 
 	while (CCBCurrentAction.DeleteString(0) != -1);
 
@@ -208,13 +230,13 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 2);
 			switch (count)
 			{
-			default:
-			case 2:
-				ExtParams[id].Param_ = atoi((const char*)pParseBuffer[1]);
-			case 1:
-				ExtParams[id].Label_ = _strdup((const char*)pParseBuffer[0]);
-			case 0:
-				continue;
+				default:
+				case 2:
+					ExtParams[id].Param_ = atoi((const char*)pParseBuffer[1]);
+				case 1:
+					ExtParams[id].Label_ = _strdup((const char*)pParseBuffer[0]);
+				case 0:
+					continue;
 			}
 		}
 		SAFE_RELEASE(pParseBuffer[0]);
@@ -232,19 +254,19 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 5);
 			switch (count)
 			{
-			case 5:
-			default:
-				ExtActions[id].Description_ = _strdup((const char*)pParseBuffer[4]);
-			case 4:
-				ExtActions[id].Editable_ = utilities::parse_bool((const char*)pParseBuffer[3]);
-			case 3:
-				ExtActions[id].Hide_ = utilities::parse_bool((const char*)pParseBuffer[2]);
-			case 2:
-				ExtActions[id].ParamCode_ = atoi((const char*)pParseBuffer[1]);
-			case 1:
-				ExtActions[id].Name_ = _strdup((const char*)pParseBuffer[0]);
-			case 0:
-				continue;
+				case 5:
+				default:
+					ExtActions[id].Description_ = _strdup((const char*)pParseBuffer[4]);
+				case 4:
+					ExtActions[id].Editable_ = utilities::parse_bool((const char*)pParseBuffer[3]);
+				case 3:
+					ExtActions[id].Hide_ = utilities::parse_bool((const char*)pParseBuffer[2]);
+				case 2:
+					ExtActions[id].ParamCode_ = atoi((const char*)pParseBuffer[1]);
+				case 1:
+					ExtActions[id].Name_ = _strdup((const char*)pParseBuffer[0]);
+				case 0:
+					continue;
 			}
 		}
 		SAFE_RELEASE(pParseBuffer[0]);
@@ -276,7 +298,7 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	CString scriptId, buffer, tmp;
+	FA2::CString scriptId, buffer, tmp;
 	int scriptIndex, listIndex, actionIndex, selectIndex, L, R, M;
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
@@ -332,7 +354,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 void CScriptTypesExt::OnCBCurrentActionEditChanged()
 {
 	auto& doc = *INIClass::GetMapDocument(true);
-	CString scriptId, buffer, listStr, tmp;
+	FA2::CString scriptId, buffer, listStr, tmp;
 	int scriptIndex, listIndex, actionIndex, actionData;
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
@@ -371,7 +393,7 @@ void CScriptTypesExt::OnCBCurrentActionEditChanged()
 void CScriptTypesExt::OnCBScriptParameterEditChanged()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	CString scriptId, buffer, listStr, paramStr, tmp;
+	FA2::CString scriptId, buffer, listStr, paramStr, tmp;
 	int scriptIndex, listIndex, actionIndex;
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
@@ -403,7 +425,7 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 	/*if (this->CCBCurrentScript.GetCount() <= 0 && this->CCBCurrentScript.GetCurSel() < 0)
 		return;
 
-	bool bInsertMode = ::SendMessage(::GetDlgItem(*this, 6302), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	if (!bInsertMode)
 	{
 		this->OnBNAddActionClicked();
@@ -411,7 +433,7 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 	}*/
 
 	// insert mode ON
-	/*CString scriptID;
+	/*FA2::CString scriptID;
 	this->CCBCurrentScript.GetWindowText(scriptID);
 	utilities::trim_index(scriptID);
 
@@ -428,13 +450,13 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 		if (curIndex == CB_ERR)
 			curIndex = 0;
 
-		CString srcKey, destKey;
+		FA2::CString srcKey, destKey;
 
 		for (int i = actionCount - 1; i >= curIndex; --i)
 		{
 			srcKey.Format("%d", i);
 			destKey.Format("%d", i + 1);
-			CString temp = doc.GetString(scriptID, srcKey, "0,0");
+			FA2::CString temp = doc.GetString(scriptID, srcKey, "0,0");
 			Logger::Debug("%s %s %s %s\n", scriptID, srcKey, destKey, temp);
 			doc.WriteString(scriptID, destKey, temp);
 		}
@@ -496,14 +518,14 @@ void CScriptTypesExt::OnBNCloneScriptClicked()
 	int nCurSel = this->CCBCurrentScript.GetCurSel();
 	if (nCurSel >= 0)
 	{
-		CString label;
+		FA2::CString label;
 		this->CCBCurrentScript.GetLBText(nCurSel, label);
 		utilities::trim_index(label);
 		INISection copied(*doc.TryGetSection(label));
 		FA2::CString name;
 		name = copied.EntriesDictionary["Name"];
 		name += " Clone";
-		((FA2::CString*)(&copied.EntriesDictionary["Name"]))->AssignCopy(strlen(name), name);
+		copied.EntriesDictionary["Name"].AssignCopy(strlen(name), name);
 		//Logger::Debug("new name = %s\n", name);
 		FA2::CString id;
 		id = INIClass::GetAvailableIndex();

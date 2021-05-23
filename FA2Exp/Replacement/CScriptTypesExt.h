@@ -66,4 +66,8 @@ public:
 	static int ExtParamID;
 	static std::map<int, CScriptTypeAction> ExtActions;
 	static std::map<int, CScriptTypeParam> ExtParams;
+
+private:
+	BOOL onMessageKeyDown(MSG* pMsg);
+	BOOL onMessageKeyUp(MSG* pMsg);
 };
