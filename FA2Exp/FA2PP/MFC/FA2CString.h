@@ -74,13 +74,12 @@ public:
         { TrimLeft(); TrimRight(); }
 
 	// simple formatting
-	void FA2MFC_CDECL Format(LPCTSTR lpszFormat, ...) = delete;
-	//void FA2MFC_CDECL Format(LPCTSTR lpszFormat, ...) {
-	//	va_list args;
-	//	va_start(lpszFormat, args);
-	//	format(lpszFormat, &args);
-	//	va_end(args);
-	//}
+	void FA2MFC_CDECL Format(LPCTSTR lpszFormat, ...) {
+		va_list args;
+		va_start(args, lpszFormat);
+		format(lpszFormat, args);
+		va_end(args);
+	}
 
     void AllocBuffer(int nLen)
         FA2MFC_THISCALL(0x555D7C);
@@ -212,13 +211,11 @@ public:
 	operator LPCTSTR() const           // as a C string
 		{ return m_pchData; }
 private:
-	void FA2MFC_CDECL format(LPCTSTR lpszFormat, const va_list* args) {
+	void FA2MFC_CDECL format(LPCTSTR lpszFormat, const va_list args) {
 		size_t len = 0;
-		va_list argsR;
-		memcpy(&argsR, args, sizeof(argsR));
-		len = vsnprintf(nullptr, 0, lpszFormat, argsR);
+		len = vsnprintf(nullptr, 0, lpszFormat, args);
 		if (len) {
-			vsnprintf(GetBufferSetLength(len), len, lpszFormat, *args);
+			vsnprintf(GetBufferSetLength(len + 1), len + 1, lpszFormat, args);
 		}
 	}
 };
