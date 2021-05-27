@@ -13,18 +13,16 @@ private:
 	};
 
 public:
-	static CString GetUIName(const char* pRegName)
+	static FA2::CString GetUIName(const char* pRegName)
 	{
+		FA2::CString ret;
 		_S* _X = (_S*)_H;
 		auto wstr = _X->QueryUIName(pRegName);
-		char* value = nullptr;
 		auto len = wcslen(wstr);
-		int valueBufferSize = WideCharToMultiByte(CP_ACP, NULL, wstr, len, value, 0, NULL, NULL) + 1;
-		value = new char[valueBufferSize];
-		WideCharToMultiByte(CP_ACP, NULL, wstr, len, value, valueBufferSize, NULL, NULL);
-		value[valueBufferSize - 1] = '\0';
-		CString ret = value;
-		delete[] value;
+		int valueBufferSize = WideCharToMultiByte(CP_ACP, NULL, wstr, len, NULL, 0, NULL, NULL) + 1;
+		auto buffer = ret.GetBuffer(valueBufferSize);
+		WideCharToMultiByte(CP_ACP, NULL, wstr, len, buffer, valueBufferSize, NULL, NULL);
+		buffer[valueBufferSize - 1] = '\0';
 		return ret;
 	}
 };

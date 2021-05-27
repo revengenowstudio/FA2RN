@@ -142,11 +142,11 @@ void ObjectBrowserControlExt::Redraw_Ground()
 	if (hGround == NULL)    return;
 
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	CString theater = doc.GetString("Map", "Theater");
+	FA2::CString theater = doc.GetString("Map", "Theater");
 	if (theater == "NEWURBAN")
 		theater = "UBN";
 
-	CString suffix;
+	FA2::CString suffix;
 	if (theater != "") {
 		suffix = theater.Mid(0, 3);
 	}
@@ -436,7 +436,7 @@ void ObjectBrowserControlExt::Redraw_Terrain()
 	for (auto i = 0; i < indices.size(); ++i) {
 		auto const& item = indices[i];
 		if (IgnoreSet.find(item.operator LPCTSTR()) == IgnoreSet.end()) {
-			CString buffer = CSFTable::GetUIName(item);
+			FA2::CString buffer = CSFTable::GetUIName(item);
 			this->InsertString(buffer, Const_Terrain + i, hTerrain);
 		}
 	}

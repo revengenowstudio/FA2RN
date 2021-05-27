@@ -5,22 +5,23 @@
 
 #include <GlobalVars.h>
 #include <CSFTable.h>
+#include <MFC/FA2CCombobox.h>
 
 namespace ControlMeta
 {
-	void ComboBox::Clear(CComboBox& combobox)
+	void ComboBox::Clear(FA2::CComboBox& combobox)
 	{
 		while (combobox.DeleteString(0) != -1);
 	}
 
-	void ComboBox::LoadHouses(CComboBox& combobox, bool bShowIndex)
+	void ComboBox::LoadHouses(FA2::CComboBox& combobox, bool bShowIndex)
 	{
 		ComboBox::Clear(combobox);
 
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
 		auto const& mmh = INIMeta::GetDocument();
 		auto& entries = mmh.GetIndices("Houses", true);
-		CString buffer;
+		FA2::CString buffer;
 		for (size_t i = 0, sz = entries.size(); i < sz; ++i) {
 			if (bShowIndex) {
 				buffer.Format("%u - %s", i, entries[i]);
@@ -54,7 +55,7 @@ namespace ControlMeta
 		}
 	}
 
-	void ComboBox::LoadCountries(CComboBox& combobox, bool bShowIndex)
+	void ComboBox::LoadCountries(FA2::CComboBox& combobox, bool bShowIndex)
 	{
 		ComboBox::Clear(combobox);
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
@@ -65,7 +66,7 @@ namespace ControlMeta
 		}
 		auto const& mmh = INIMeta::GetRules();
 		auto& entries = mmh.GetIndices("Countries", true);
-		CString buffer;
+		FA2::CString buffer;
 		for (size_t i = 0, sz = entries.size(); i < sz; ++i) {
 			if (bShowIndex) {
 				buffer.Format("%u - %s", i, entries[i]);
@@ -76,12 +77,12 @@ namespace ControlMeta
 		}
 	}
 
-	void ComboBox::LoadGenericList(CComboBox& combobox, const char* pSection, bool bShowRegName, bool bShowIndex)
+	void ComboBox::LoadGenericList(FA2::CComboBox& combobox, const char* pSection, bool bShowRegName, bool bShowIndex)
 	{
 		ComboBox::Clear(combobox);
 		auto const& mmh = INIMeta::GetRules();
 		auto const& entries = mmh.GetIndices(pSection, true);
-		CString buffer;
+		FA2::CString buffer;
 		for (size_t i = 0, sz = entries.size(); i < sz; ++i) {
 			if (bShowIndex) {
 				buffer.Format("%u - %s", i, CSFTable::GetUIName(entries[i]));

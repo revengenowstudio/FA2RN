@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <sstream>
+#include <MFC/FA2CString.h>
 
 namespace utilities
 {
@@ -26,13 +27,13 @@ namespace utilities
 		return def;
 	}
 
-	static void trim_string(CString& str)
+	static void trim_string(FA2::CString& str)
 	{
 		str.TrimLeft();
 		str.TrimRight();
 	}
 
-	static void trim_index(CString& str)
+	static void trim_index(FA2::CString& str)
 	{
 		trim_string(str);
 		int spaceIndex = str.Find(' ');

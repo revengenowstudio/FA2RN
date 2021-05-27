@@ -1,16 +1,21 @@
 #pragma once
 
 #include <FA2PP.h>
+#include <MFC/FA2MFC.h>
+
+FA2MFC_BEGIN
+class CComboBox;
+FA2MFC_END
 
 namespace ControlMeta
 {
 	class ComboBox
 	{
 	public:
-		static void Clear(CComboBox& combobox);
-		static void LoadHouses(CComboBox& combobox, bool bShowIndex = false);
-		static void LoadCountries(CComboBox& combobox, bool bShowIndex = false);
-		static void LoadGenericList(CComboBox& combobox, const char* pSection, bool bShowRegName = false, bool bShowIndex = false);
+		static void Clear(FA2::CComboBox& combobox);
+		static void LoadHouses(FA2::CComboBox& combobox, bool bShowIndex = false);
+		static void LoadCountries(FA2::CComboBox& combobox, bool bShowIndex = false);
+		static void LoadGenericList(FA2::CComboBox& combobox, const char* pSection, bool bShowRegName = false, bool bShowIndex = false);
 	};
 
 

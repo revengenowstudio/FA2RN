@@ -155,7 +155,7 @@ public:
 		auto const& ins = std::make_pair(pKey, pValue);
 		return dict.insert(ins);
 	}
-	typename INIDict::iterator Insert(const CString& ID, const INISection& section)
+	typename INIDict::iterator Insert(const FA2::CString& ID, const INISection& section)
 	{
 		INIDict::value_type ins{ ID, section };
 		auto const& ret = data.insert(ins);

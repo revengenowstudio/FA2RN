@@ -19,7 +19,7 @@ FA2MFC_STRUCT(CStringData)
     }
 };
 
-FA2MFC_CLASS(CString) : public ::CString
+FA2MFC_CLASS(CString) : ::CString
 {
 public:
     CString() FA2MFC_THISCALL(0x406F70);
@@ -54,6 +54,13 @@ public:
 
     CString Left(int at)
         { CString ret; Left(&ret, at); return ret; }
+
+	// simple sub-string extraction
+	CString Mid(int nFirst, int nCount) const
+		{ return CString(m_pchData + nFirst, nCount); }
+
+	CString Mid(int nFirst) const
+		{ return Mid(nFirst, GetData()->nDataLength - nFirst); }
 
     int ReverseFind(TCHAR ch) const
         FA2MFC_THISCALL(0x54F945);

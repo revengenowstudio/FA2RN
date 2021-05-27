@@ -12,24 +12,25 @@ void CScriptTypesExt::ProgramStartupInit()
 	HackHelper::ResetMessageType(0x596010, CBN_KILLFOCUS); // param update
 
 	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596148), &CScriptTypesExt::PreTranslateMessageHook);
-	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596174), &CScriptTypesExt::OnInitDialogExt);
+	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596174), &CScriptTypesExt::OnInitDialogHook);
 }
 
 BOOL CScriptTypesExt::onMessageKeyDown(MSG* pMsg)
 {
+	int ret = -1;
 	switch (pMsg->wParam)
 	{
 		case VK_RETURN:
 		{
 			switch (::GetDlgCtrlID(pMsg->hwnd)) {
 				case DLG_ScriptTypes_Edit_Name: this->OnNameEditChanged();
+					ret = TRUE;
+					break;
 				default:
 					break;
 			}
 
 		}
-		//do not exit dialog when enter key pressed
-		return TRUE;
 		default:
 			break;
 	}
@@ -44,7 +45,7 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::CheckBoxToggleInsert)->GetSafeHwnd()) {
 		bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
 		::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_SETCHECK, bInsertMode ? BST_UNCHECKED : BST_CHECKED, 0);
-	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonFA2NewLine)->GetSafeHwnd()) {
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNewLine)->GetSafeHwnd()) {
 		this->OnBNAddActionClickedExt();
 		return FALSE;
 	}
@@ -155,7 +156,7 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 
 std::map<int, CScriptTypeAction> CScriptTypesExt::ExtActions;
 std::map<int, CScriptTypeParam> CScriptTypesExt::ExtParams;
-BOOL CScriptTypesExt::OnInitDialogExt()
+BOOL CScriptTypesExt::OnInitDialogHook()
 {
 	if (!FA2CDialog::OnInitDialog()) {
 		return FALSE;
@@ -187,10 +188,10 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 	TranslateDlgItem(WND_Script::TextActionParam, "ScriptTypesActionParam");//sbFA2
 	TranslateDlgItem(WND_Script::TextActionDescription, "ScriptTypesActionDesc");
 
-	TranslateDlgItem(WND_Script::ButtonFA2New, "ScriptTypesAddScript");
+	TranslateDlgItem(WND_Script::ButtonNew, "ScriptTypesAddScript");
 	TranslateDlgItem(WND_Script::ButtonDelete, "ScriptTypesDelScript");
 	TranslateDlgItem(WND_Script::ButtonClone, "ScriptTypesCloScript");
-	TranslateDlgItem(WND_Script::ButtonFA2NewLine, "ScriptTypesAddAction");
+	TranslateDlgItem(WND_Script::ButtonNewLine, "ScriptTypesAddAction");
 	TranslateDlgItem(WND_Script::ButtonDeleteLine, "ScriptTypesDelAction");
 	TranslateDlgItem(WND_Script::ButtonCloneLine, "ScriptTypesCloAction");
 	TranslateDlgItem(WND_Script::CheckBoxToggleInsert, "ScriptTypesInsertMode");
@@ -225,9 +226,10 @@ BOOL CScriptTypesExt::OnInitDialogExt()
 		for (auto& pair : entities->EntriesDictionary)
 		{
 			int id = atoi(pair.first);
-			if (id < 0) continue;
-			auto count =
-				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 2);
+			if (id < 0) { 
+				continue; 
+			}
+			auto count = utilities::parse_list(pair.second, (const char**)(pParseBuffer), 2);
 			switch (count)
 			{
 				default:
@@ -307,6 +309,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 	{
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
+		auto const idxs = std::to_string(listIndex);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
@@ -317,7 +320,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		}
 		tmp = buffer.Mid(actionIndex + 1);
 		utilities::trim_index(tmp);
-		this->CCBScriptParameter.SetWindowText(tmp);
+		this->CCBScriptParameter.SetWindowTextA(tmp);
 
 		actionIndex = atoi(buffer.Mid(0, actionIndex));
 
@@ -408,7 +411,7 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 		if (actionIndex == CB_ERR)
 			actionIndex = buffer.GetLength();
 		buffer = buffer.Mid(0, actionIndex);
-		this->CCBScriptParameter.GetWindowText(paramStr);
+		this->CCBScriptParameter.GetWindowTextA(paramStr);
 		utilities::trim_index(paramStr);
 		tmp.Format("%s,%s", buffer, paramStr);
 		listStr.Format("%d", listIndex);
@@ -612,7 +615,7 @@ DEFINE_HOOK(4D75D0, CScriptTypes_OnCBCurrentActionSelectChanged, 7)
 		{
 			pThis->CScriptTypesExt::OnCBCurrentActionEditChanged();
 
-			pThis->CETDescription.SetWindowText(itr->second.Description_);
+			pThis->CETDescription.SetWindowTextA(itr->second.Description_);
 			pThis->CETDescription.EnableWindow(itr->second.Editable_);
 			pThis->CCBScriptParameter.EnableWindow(itr->second.Editable_);
 		}

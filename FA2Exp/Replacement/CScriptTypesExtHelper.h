@@ -17,7 +17,7 @@ class CScriptTypesFunctions
 public:
 
 	// 1
-	static void CScriptTypes_LoadParams_Target(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Target(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -35,7 +35,7 @@ public:
 	}
 
 	// 2
-	static void CScriptTypes_LoadParams_Waypoint(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Waypoint(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -65,7 +65,7 @@ public:
 	}
 
 	// 3
-	static void CScriptTypes_LoadParams_ScriptLine(CComboBox& comboBox, CComboBox& currentScript, CListBox& listBox)
+	static void CScriptTypes_LoadParams_ScriptLine(FA2::CComboBox& comboBox, FA2::CComboBox& currentScript, CListBox& listBox)
 	{
 		int cnt = listBox.GetCount();
 		// up to 50
@@ -76,7 +76,7 @@ public:
 
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
 
-		CString buffer, scriptName, parambuf;
+		FA2::CString buffer, scriptName, parambuf;
 		currentScript.GetLBText(currentScript.GetCurSel(), scriptName);
 		utilities::trim_index(scriptName);
 
@@ -96,7 +96,7 @@ public:
 	}
 
 	// 4
-	static void CScriptTypes_LoadParams_SplitGroup(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_SplitGroup(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -107,13 +107,13 @@ public:
 	}
 
 	// 5
-	static void CScriptTypes_LoadParams_GlobalVariables(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_GlobalVariables(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
 		auto& rules = GlobalVars::INIFiles::Rules();
 		if (auto const entities = rules.TryGetSection("VariableNames")) {
-			CString text;
+			FA2::CString text;
 			for (auto& x : entities->EntriesDictionary) {
 				if (x.first != "Name" && !INIMeta::IsNullOrEmpty(x.first)) {
 					int l = atoi(x.first);
@@ -125,13 +125,13 @@ public:
 	}
 
 	// 6
-	static void CScriptTypes_LoadParams_ScriptTypes(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_ScriptTypes(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
 		if (auto const entries = doc.TryGetSection("ScriptTypes")) {
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary) {
 				if (doc.SectionExists(ent.second) && !INIMeta::IsNullOrEmpty(ent.second)) {
 					int id = atoi(ent.first);
@@ -145,13 +145,13 @@ public:
 	}
 
 	// 7
-	static void CScriptTypes_LoadParams_TeamTypes(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_TeamTypes(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
 		if (auto const entries = doc.TryGetSection("TeamTypes")) {
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary) {
 				if (doc.SectionExists(ent.second) && !INIMeta::IsNullOrEmpty(ent.second)) {
 					int id = atoi(ent.first);
@@ -165,13 +165,13 @@ public:
 	}
 
 	// 8
-	static void CScriptTypes_LoadParams_Houses(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Houses(FA2::CComboBox& comboBox)
 	{
 		ControlMeta::ComboBox::LoadHouses(comboBox, true);
 	}
 
 	// 9
-	static void CScriptTypes_LoadParams_Speechs(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Speechs(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -192,7 +192,7 @@ public:
 	}
 
 	// 10
-	static void CScriptTypes_LoadParams_Sounds(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Sounds(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -210,7 +210,7 @@ public:
 	}
 
 	// 11
-	static void CScriptTypes_LoadParams_Movies(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Movies(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -228,7 +228,7 @@ public:
 	}
 
 	// 12
-	static void CScriptTypes_LoadParams_Themes(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Themes(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -246,13 +246,13 @@ public:
 	}
 
 	// 13
-	static void CScriptTypes_LoadParams_Countries(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Countries(FA2::CComboBox& comboBox)
 	{
 		ControlMeta::ComboBox::LoadCountries(comboBox, true);
 	}
 
 	// 14
-	static void CScriptTypes_LoadParams_LocalVariables(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_LocalVariables(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -270,7 +270,7 @@ public:
 	}
 
 	// 15
-	static void CScriptTypes_LoadParams_Facing(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Facing(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -285,19 +285,19 @@ public:
 	}
 
 	// 16
-	static void CScriptTypes_LoadParams_BuildingTypes(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_BuildingTypes(FA2::CComboBox& comboBox)
 	{
 		ControlMeta::ComboBox::LoadGenericList(comboBox, "BuildingTypes", true, true);
 	}
 
 	// 17
-	static void CScriptTypes_LoadParams_Animations(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Animations(FA2::CComboBox& comboBox)
 	{
 		ControlMeta::ComboBox::LoadGenericList(comboBox, "Animations", true, true);
 	}
 
 	// 18
-	static void CScriptTypes_LoadParams_TalkBubble(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_TalkBubble(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -308,7 +308,7 @@ public:
 	}
 
 	// 19
-	static void CScriptTypes_LoadParams_Status(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Status(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 
@@ -359,7 +359,7 @@ public:
 	}
 
 	// 20
-	static void CScriptTypes_LoadParams_Boolean(CComboBox& comboBox)
+	static void CScriptTypes_LoadParams_Boolean(FA2::CComboBox& comboBox)
 	{
 		while (comboBox.DeleteString(0) != -1);
 

@@ -31,7 +31,7 @@ public:
 
 	/*static void* GetMessageMap();*/
 
-	BOOL OnInitDialogExt();
+	BOOL OnInitDialogHook();
 
 	void OnCBCurrentActionEditChanged();
 	void OnCBScriptParameterEditChanged();
