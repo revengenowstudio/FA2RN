@@ -24,12 +24,23 @@ FA2MFC_CLASS(CString) : ::CString
 public:
     CString() FA2MFC_THISCALL(0x406F70);
 	CString(const CString& stringSrc) FA2MFC_THISCALL(0x555C84);
-	CString(TCHAR ch, int nRepeat = 1) = delete;//not analyzed
+	CString(TCHAR ch, int nRepeat = 1) FA2MFC_THISCALL(0x54F598);
 	CString(LPCSTR lpsz) FA2MFC_THISCALL(0x555F7D);
     CString(LPCWSTR lpsz) FA2MFC_THISCALL(0x555FCF);
-	CString(LPCTSTR lpch, int nLength) FA2MFC_THISCALL(0x54F598);
 	CString(const unsigned char* psz) = delete;//not analyzed
 	~CString() FA2MFC_THISCALL(0x555F0F);
+
+	//helper:
+	//CString(CString&& rhs)
+	//{ 
+	//	std::swap(*(reinterpret_cast<CStringData*>(m_pchData) - 1), *(reinterpret_cast<CStringData*>(rhs.m_pchData - 1)));
+	//	std::swap(m_pchData, rhs.m_pchData);
+	//}
+
+	CString(LPCTSTR lpch, int nLength)
+	{
+		AssignCopy(nLength, lpch);
+	}
 
     const CString& operator=(TCHAR ch)
         FA2MFC_THISCALL(0x54F5CC);
