@@ -19,7 +19,7 @@
 
 std::unordered_map<int, HTREEITEM> ObjectBrowserControlExt::ExtNodes;
 std::unordered_set<std::string> ObjectBrowserControlExt::IgnoreSet;
-std::unordered_set<std::string> ObjectBrowserControlExt::ExtSets[Set_Count];
+std::unordered_set<std::string> ObjectBrowserControlExt::ExtSets[static_cast<int>(SetType::Count)];
 std::unordered_map<std::string, int> ObjectBrowserControlExt::KnownItem;
 std::unordered_map<std::string, int> ObjectBrowserControlExt::Owners;
 
@@ -55,6 +55,7 @@ std::vector<FA2::CString> getSides()
 		if (commaPos >= 0) {
 			item = item.Mid(0, commaPos);
 		}
+		//TODO:get the second value to distinguish type for list
 	}
 
 	return ret;
@@ -130,17 +131,17 @@ void ObjectBrowserControlExt::Redraw_Initialize()
 
 	auto loadSet = [&mmh](const char* pTypeName, SetType nType)
 	{
-		ExtSets[nType].clear();
+		ExtSets[static_cast<int>(nType)].clear();
 		auto& section = mmh.GetSection(pTypeName);
 		for (auto& item : section) {
-			ExtSets[nType].insert(std::string(item));
+			ExtSets[static_cast<int>(nType)].insert(std::string(item));
 		}
 	};
 
-	loadSet("BuildingTypes", Set_Building);
-	loadSet("InfantryTypes", Set_Infantry);
-	loadSet("VehicleTypes", Set_Vehicle);
-	loadSet("AircraftTypes", Set_Aircraft);
+	loadSet("BuildingTypes", SetType::Building);
+	loadSet("InfantryTypes", SetType::Infantry);
+	loadSet("VehicleTypes", SetType::Vehicle);
+	loadSet("AircraftTypes", SetType::Aircraft);
 
 	auto loadOwner = [&mmh]()
 	{
@@ -270,7 +271,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 		if (IgnoreSet.find(std::string(inf)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(inf, Set_Infantry);
+		int side = GuessSide(inf, SetType::Infantry);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -311,7 +312,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 		if (IgnoreSet.find(std::string(veh)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(veh, Set_Vehicle);
+		int side = GuessSide(veh, SetType::Vehicle);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -351,7 +352,7 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 		if (IgnoreSet.find(std::string(air)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(air, Set_Aircraft);
+		int side = GuessSide(air, SetType::Aircraft);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -390,7 +391,7 @@ void ObjectBrowserControlExt::Redraw_Building()
 		if (IgnoreSet.find(std::string(bud)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(bud, Set_Building);
+		int side = GuessSide(bud, SetType::Building);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -555,17 +556,17 @@ void ObjectBrowserControlExt::Redraw_PlayerLocation()
 	this->InsertTranslatedString("StartpointsDelete", 21, hPlayerLocation);
 }
 
-int ObjectBrowserControlExt::GuessType(const char* pRegName)
+ObjectBrowserControlExt::SetType ObjectBrowserControlExt::GuessType(const char* pRegName)
 {
-	if (ExtSets[Set_Building].find(pRegName) != ExtSets[Set_Building].end())
-		return Set_Building;
-	if (ExtSets[Set_Infantry].find(pRegName) != ExtSets[Set_Infantry].end())
-		return Set_Infantry;
-	if (ExtSets[Set_Vehicle].find(pRegName) != ExtSets[Set_Vehicle].end())
-		return Set_Vehicle;
-	if (ExtSets[Set_Aircraft].find(pRegName) != ExtSets[Set_Aircraft].end())
-		return Set_Aircraft;
-	return -1;
+	if (ExtSets[static_cast<int>(SetType::Building)].find(pRegName) != ExtSets[static_cast<int>(SetType::Building)].end())
+		return  SetType::Building;
+	if (ExtSets[static_cast<int>(SetType::Infantry)].find(pRegName) != ExtSets[static_cast<int>(SetType::Infantry)].end())
+		return  SetType::Infantry;
+	if (ExtSets[static_cast<int>(SetType::Vehicle)].find(pRegName) != ExtSets[static_cast<int>(SetType::Vehicle)].end())
+		return  SetType::Vehicle;
+	if (ExtSets[static_cast<int>(SetType::Aircraft)].find(pRegName) != ExtSets[static_cast<int>(SetType::Aircraft)].end())
+		return  SetType::Aircraft;
+	return  SetType::Set_None;
 }
 
 int ObjectBrowserControlExt::GuessSide(const char* pRegName, SetType nType)
@@ -577,20 +578,20 @@ int ObjectBrowserControlExt::GuessSide(const char* pRegName, SetType nType)
 	int result = -1;
 	switch (nType)
 	{
-	case Set_None:
+	case  SetType::Set_None:
 	default:
 		break;
-	case Set_Building:
+	case  SetType::Building:
 		result = GuessBuildingSide(pRegName);
 		break;
-	case Set_Infantry:
-		result = GuessGenericSide(pRegName, Set_Infantry);
+	case  SetType::Infantry:
+		result = GuessGenericSide(pRegName, SetType::Infantry);
 		break;
-	case Set_Vehicle:
-		result = GuessGenericSide(pRegName, Set_Vehicle);
+	case  SetType::Vehicle:
+		result = GuessGenericSide(pRegName, SetType::Vehicle);
 		break;
-	case Set_Aircraft:
-		result = GuessGenericSide(pRegName, Set_Aircraft);
+	case  SetType::Aircraft:
+		result = GuessGenericSide(pRegName, SetType::Aircraft);
 		break;
 	}
 	KnownItem[pRegName] = result;
@@ -618,13 +619,13 @@ int ObjectBrowserControlExt::GuessBuildingSide(const char* pRegName)
 	}
 	if (i >= rules.GetKeyCount("Sides"))
 		return -1;
-	return GuessGenericSide(pRegName, Set_Building);
+	return GuessGenericSide(pRegName, SetType::Building);
 }
 
-int ObjectBrowserControlExt::GuessGenericSide(const char* pRegName, int nType)
+int ObjectBrowserControlExt::GuessGenericSide(const char* pRegName, SetType nType)
 {
 	auto const& mmh = INIMeta::GetRules(); \
-		auto const& set = ExtSets[nType];
+		auto const& set = ExtSets[static_cast<int>(nType)];
 
 	if (set.find(pRegName) == set.end()) {
 		return -1;

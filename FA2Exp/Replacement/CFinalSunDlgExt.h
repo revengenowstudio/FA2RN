@@ -23,9 +23,14 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
         Root_Delete
     };
 
-    enum SetType {
+    enum class SetType {
 		Set_None = -1,
-        Set_Building = 0, Set_Infantry, Set_Vehicle, Set_Aircraft, Set_Count
+        Building = 0, 
+		Infantry, 
+		Vehicle, 
+		Aircraft,
+		_Last,
+		Count = _Last,
     };
 
     enum
@@ -39,7 +44,7 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
 
     static mpTreeNode ExtNodes;
     static std::unordered_set<std::string> IgnoreSet;
-    static std::unordered_set<std::string> ExtSets[Set_Count];
+    static std::unordered_set<std::string> ExtSets[static_cast<int>(SetType::Count)];
     static std::unordered_map<std::string, int> KnownItem;
     static std::unordered_map<std::string, int> Owners;
     HTREEITEM InsertString(const char* pString, DWORD dwItemData = 0, 
@@ -77,7 +82,7 @@ public:
     /// The index of type guessed. -1 if cannot be guessed.
     /// 0 = Building, 1 = Infantry, 2 = Vehicle, 3 = Aircraft
     /// </returns>
-    static int GuessType(const char* pRegName);
+    static SetType GuessType(const char* pRegName);
     /// <summary>
     /// Guess which side does the item belongs to.
     /// </summary>
@@ -103,5 +108,5 @@ public:
     /// 0 = Building, 1 = Infantry, 2 = Vehicle, 3 = Aircraft
     /// </param>
     /// <returns>The index of side guessed. -1 if cannot be guessed.</returns>
-    static int GuessGenericSide(const char* pRegName, int nType);
+    static int GuessGenericSide(const char* pRegName, SetType nType);
 };
