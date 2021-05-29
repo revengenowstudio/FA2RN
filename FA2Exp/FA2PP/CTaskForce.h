@@ -1,5 +1,7 @@
 #pragma once
 #include <FA2PP.h>
+#include <MFC/FA2CCombobox.h>
+#include <MFC/FA2CListBox.h>
 
 class NOVTABLE CTaskForce : public FA2CDialog
 {
@@ -15,10 +17,10 @@ public:
 	void OnGroupIDChanged() { JMP_THIS(0x4E5550); }
 
 	//member properties
-	CComboBox		CCBMemberType;
-	CListBox		CLBItems;
-	CComboBox		CCBTaskType;
-	CString			CStringGroup;
-	CString			CStringName;
-	CString			CStringNum;
+	FA2::CComboBox	CCBMemberType;
+	FA2::CListBox		CLBItems;
+	FA2::CComboBox	CCBTaskType;
+	FA2::CString	CStringGroup;
+	FA2::CString	CStringName;
+	FA2::CString	CStringNum;
 };

@@ -19,19 +19,30 @@ public:
 	// 1
 	static void CScriptTypes_LoadParams_Target(FA2::CComboBox& comboBox)
 	{
+		struct ParamaPair
+		{
+			const char* Str;
+			int Idx;
+		};
+		static ParamaPair params[] = {
+			{"0 - Not specified", 0},
+			{"1 - Anything (uses auto-targeting)", 1},
+			{"2 - Buildings", 2},
+			{"3 - Harvesters", 3},
+			{"4 - Infantry", 4},
+			{"5 - Vehicles", 5},
+			{"6 - Factories", 6},
+			{"7 - Base defenses", 7},
+			{"9 - Power plants", 9},
+			{"10 - Occupiables", 10},
+			{"11 - Tech Buildings", 11},
+		};
+
 		while (comboBox.DeleteString(0) != -1);
 
-		comboBox.SetItemData(comboBox.AddString("0 - Not specified"), 0);
-		comboBox.SetItemData(comboBox.AddString("1 - Anything (uses auto-targeting)"), 1);
-		comboBox.SetItemData(comboBox.AddString("2 - Buildings"), 2);
-		comboBox.SetItemData(comboBox.AddString("3 - Harvesters"), 3);
-		comboBox.SetItemData(comboBox.AddString("4 - Infantry"), 4);
-		comboBox.SetItemData(comboBox.AddString("5 - Vehicles"), 5);
-		comboBox.SetItemData(comboBox.AddString("6 - Factories"), 6);
-		comboBox.SetItemData(comboBox.AddString("7 - Base defenses"), 7);
-		comboBox.SetItemData(comboBox.AddString("9 - Power plants"), 9);
-		comboBox.SetItemData(comboBox.AddString("10 - Occupiables"), 10);
-		comboBox.SetItemData(comboBox.AddString("11 - Tech Buildings"), 11);
+		for (auto const& param : params) {
+			comboBox.SetItemData(comboBox.AddString(param.Str), param.Idx);
+		}
 	}
 
 	// 2
@@ -65,7 +76,7 @@ public:
 	}
 
 	// 3
-	static void CScriptTypes_LoadParams_ScriptLine(FA2::CComboBox& comboBox, FA2::CComboBox& currentScript, CListBox& listBox)
+	static void CScriptTypes_LoadParams_ScriptLine(FA2::CComboBox& comboBox, FA2::CComboBox& currentScript, FA2::CListBox& listBox)
 	{
 		int cnt = listBox.GetCount();
 		// up to 50
@@ -178,7 +189,7 @@ public:
 		auto& eva = GlobalVars::INIFiles::Eva();
 		if (auto const entries = eva.TryGetSection("DialogList"))
 		{
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary)
 			{
 				if (eva.SectionExists(ent.second))
@@ -198,7 +209,7 @@ public:
 
 		auto& sound = GlobalVars::INIFiles::Sound();
 		if (auto const entries = sound.TryGetSection("SoundList")) {
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary) {
 				if (sound.SectionExists(ent.second) && !INIMeta::IsNullOrEmpty(ent.second)) {
 					int id = atoi(ent.first);
@@ -216,7 +227,7 @@ public:
 
 		auto& art = GlobalVars::INIFiles::Art();
 		if (auto const entries = art.TryGetSection("Movies")) {
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary) {
 				if (ent.first != "Name") {
 					int id = atoi(ent.first);
@@ -234,7 +245,7 @@ public:
 
 		auto& theme = GlobalVars::INIFiles::Theme();
 		if (auto const entries = theme.TryGetSection("Themes")) {
-			CString text;
+			FA2::CString text;
 			for (auto& ent : entries->EntriesDictionary) {
 				if (theme.SectionExists(ent.second) && !INIMeta::IsNullOrEmpty(ent.second)) {
 					int id = atoi(ent.first);
@@ -258,7 +269,7 @@ public:
 
 		auto& doc = GlobalVars::INIFiles::CurrentDocument();
 		if (auto const entities = doc.TryGetSection("VariableNames")) {
-			CString text;
+			FA2::CString text;
 			for (auto& x : entities->EntriesDictionary) {
 				if (INIMeta::IsNullOrEmpty(x.first) || x.first == "Name")
 					continue;

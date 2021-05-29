@@ -66,6 +66,9 @@
     <ClCompile Include="Meta\ControlMeta.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Enhancement\IniProcess.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -258,6 +261,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\INIParser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CCombobox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CTreeCtrl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CStatic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FA2PP\MFC\FA2CListBox.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

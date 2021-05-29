@@ -19,7 +19,7 @@ FA2MFC_STRUCT(CStringData)
     }
 };
 
-FA2MFC_CLASS(CString) : ::CString
+FA2MFC_CLASS(CString) /*: ::CString*/
 {
 public:
     CString() FA2MFC_THISCALL(0x406F70);
@@ -134,14 +134,30 @@ public:
     void AssignCopy(int nSrcLen, LPCTSTR lpszSrcData)
         FA2MFC_THISCALL(0x55601B);
 
-    const CString& operator=(CString& str)
+    CString* operator=(const CString* str)
         FA2MFC_THISCALL(0x556048);
 
-    const CString& operator=(LPCSTR lpsz)
-        FA2MFC_THISCALL(0x556098);
+	CString& operator=(const CString& str)
+	{ 
+		this->operator=(&str);
+		return *this;
+	}
 
-    const CString& operator=(LPCWSTR lpsz)
-        FA2MFC_THISCALL(0x5560BF);
+	CString& operator=(LPCSTR lpsz)
+	{
+		AssignCopy(SafeStrlen(lpsz), lpsz);
+		return *this;
+	}//0x556098
+
+	CString& operator=(LPCWSTR lpsz)
+	{
+		auto const nCount = lpsz ? wcslen(lpsz) : 0;
+		auto const nConLen = 2 * nCount;
+		AllocBeforeWrite(2 * nCount);
+		_wcstombsz(m_pchData, lpsz, nConLen + 1);
+		ReleaseBuffer();
+		return *this;
+	}// 0x5560BF
 
 	TCHAR operator[](int nIndex) const // same as GetAt
 		{ return GetAt(nIndex); }
@@ -171,6 +187,13 @@ public:
     const CString& operator+=(const CString& string)
         FA2MFC_THISCALL(0x556327);
 
+	int SafeStrlen(LPCTSTR lpsz)
+		{ return (lpsz == NULL) ? 0 : lstrlen(lpsz); }
+	// CString support (windows specific)
+	int Compare(LPCTSTR lpsz) const
+		{ return _tcscmp(m_pchData, lpsz); }    // MBCS/Unicode aware
+	int CompareNoCase(LPCTSTR lpsz) const
+		{ return _tcsicmp(m_pchData, lpsz); }   // MBCS/Unicode aware
 	// Compare helpers
 	friend bool FA2MFC_API operator==(const CString& s1, const CString& s2) { return s1.Compare(s2) == 0; }
 	friend bool FA2MFC_API operator==(const CString& s1, LPCTSTR s2) { return s1.Compare(s2) == 0; }
@@ -234,6 +257,8 @@ private:
 			vsnprintf(GetBufferSetLength(len + 1), len + 1, lpszFormat, args);
 		}
 	}
+
+	LPTSTR m_pchData;
 };
 
 //BOOL _PPMFC_API AfxExtractSubString(CString& rString, LPCTSTR lpszFullString,

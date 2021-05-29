@@ -20,10 +20,10 @@ public:
 		: IniFile(pIniFile)
 	{ }
 
-	CString& value() {
+	FA2::CString& value() {
 		return Buffer;
 	}
-	const CString& value() const {
+	const FA2::CString& value() const {
 		return Buffer;
 	}
 
@@ -73,6 +73,6 @@ public:
 	}
 
 private:
-	CString Buffer;
+	FA2::CString Buffer;
 
 };

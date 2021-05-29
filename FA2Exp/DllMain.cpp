@@ -711,6 +711,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			//Scripts
+#if defined(OldScript)
 			case 9976: {//Override Add Script for Templates
 				logger::g_logger.Info("Add Script");
 				HWND ScriptWnd = FindWindow(
@@ -1014,6 +1015,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 				break;
 			}
+#endif
 			//Teams
 			case 9979: {//Override New Team for Templates
 				logger::g_logger.Info("New Team");

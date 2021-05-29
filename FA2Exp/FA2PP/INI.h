@@ -204,7 +204,7 @@ public:
 		return false;
 	}
 
-	FA2::CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") {
+	FA2::CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") const {
 		FA2::CString ret;
 		if (!TryGetString(pSection, pKey, ret)) {
 			ret = pDefault;

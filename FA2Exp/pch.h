@@ -1,6 +1,6 @@
 #pragma once
 #include "UI/resource.h"
-#include <locale.h>
+//#include <locale.h>
 #include <direct.h>
 #include <vector>
 #include <unordered_map>

@@ -63,7 +63,6 @@ public:
 	void OnBNCloneScriptClicked();
 	void OnBNCloneItemClicked();
 
-	static int ExtParamID;
 	static std::map<int, CScriptTypeAction> ExtActions;
 	static std::map<int, CScriptTypeParam> ExtParams;
 

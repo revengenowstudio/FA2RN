@@ -63,16 +63,16 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
-
-
-int CScriptTypesExt::ExtParamID = -1;
 void CScriptTypesExt::UpdateParams(int actionIndex)
 {
-	auto& action = ExtActions[actionIndex];
-	auto& param = ExtParams[action.ParamCode_];
-	if (param.Param_ == ExtParamID)
+	static int LastParamID = -1;
+	auto const& action = ExtActions[actionIndex];
+	auto const& param = ExtParams[action.ParamCode_];
+	auto const lastID = std::exchange(LastParamID, param.Param_);
+	if (lastID == param.Param_) {
 		return;
-	switch (param.Param_)
+	}
+	switch (LastParamID)
 	{
 		default:
 		case 0:
@@ -147,7 +147,6 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 	this->CSTParameterOfSection.EnableWindow(action.Editable_);
 	this->CCBScriptParameter.EnableWindow(action.Editable_);
 	this->CETDescription.SetWindowText(action.Description_);
-	ExtParamID = param.Param_;
 }
 
 //
@@ -166,15 +165,15 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 	{
 		FA2::CString ret = Translations::Translate(lpKey);
 		if (ret.GetLength()) {
-			this->SetDlgItemText(nID, ret);
+			this->SetDlgItemTextA(nID, ret);
 		}
 	};
 
-	auto TranslateCItem = [](CWnd* pWnd, const char* lpKey)
+	auto TranslateCItem = [](FA2::CWnd* pWnd, const char* lpKey)
 	{
 		FA2::CString ret = Translations::Translate(lpKey);
 		if (ret.GetLength()) {
-			pWnd->SetWindowText(ret);
+			pWnd->SetWindowTextA(ret);
 		}
 	};
 
@@ -305,16 +304,14 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
 	listIndex = this->CLBScriptActions.GetCurSel();
-	if (scriptIndex >= 0 && listIndex >= 0)
-	{
+	if (scriptIndex >= 0 && listIndex >= 0) {
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
 		auto const idxs = std::to_string(listIndex);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
-		if (actionIndex == CB_ERR)
-		{
+		if (actionIndex == CB_ERR) {
 			buffer += ",0";
 			actionIndex = buffer.GetLength() - 2;
 		}
@@ -328,22 +325,26 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		// So divide it!
 		L = 0;
 		R = this->CCBCurrentAction.GetCount() - 1;
-		M = (L + R) >> 1;
-		while (R > L)
-		{
+		M = (L + R) / 2;
+		while (R > L) {
 			const int MData = this->CCBCurrentAction.GetItemData(M);
-			if (MData == actionIndex)
+			if (MData == actionIndex) {
 				break;
-			if (MData > actionIndex)
+			}
+			if (MData > actionIndex) {
 				R = M;
-			else
+			}
+			else {
 				L = M;
-			M = (L + R) >> 1;
+			}
+			M = (L + R) / 2;
 		}
-		if (R > L)
+		if (R > L) {
 			selectIndex = M;
-		else
+		}
+		else {
 			selectIndex = 0;
+		}
 
 		this->CCBCurrentAction.SetCurSel(selectIndex);
 		this->UpdateParams(actionIndex);
@@ -354,37 +355,56 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 //{
 //}
 //
+
+void _showCStr(const FA2::CString& str)
+{
+	char buffer[0x20];
+	sprintf_s(buffer, "Len : %d, Str : %s", str.GetLength(), str.operator LPCTSTR());
+	MessageBoxA(NULL, buffer, "", MB_OK);
+}
+
 void CScriptTypesExt::OnCBCurrentActionEditChanged()
 {
 	auto& doc = *INIClass::GetMapDocument(true);
-	FA2::CString scriptId, buffer, listStr, tmp;
-	int scriptIndex, listIndex, actionIndex, actionData;
 
-	scriptIndex = this->CCBCurrentScript.GetCurSel();
-	listIndex = this->CLBScriptActions.GetCurSel();
+	const int scriptIndex = this->CCBCurrentScript.GetCurSel();
+	const int listIndex = this->CLBScriptActions.GetCurSel();
 	if (scriptIndex >= 0 && listIndex >= 0)
 	{
+		FA2::CString scriptId;
+		FA2::CString buffer;
+		_showCStr(scriptId);
+		_showCStr(buffer);
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
+		_showCStr(scriptId);
 		buffer.Format("%d", listIndex);
+		_showCStr(buffer);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
-		actionIndex = buffer.Find(',');
-		if (actionIndex == CB_ERR)
+		_showCStr(buffer);
+		int commaPos = buffer.Find(',');
+		if (commaPos == CB_ERR) {
 			buffer = "0";
-		else
-			buffer = buffer.Mid(actionIndex + 1);
+		}
+		else {
+			buffer = buffer.Mid(commaPos + 1);
+		}
 
-		actionIndex = this->CCBCurrentAction.GetCurSel();
+		int actionIndex = this->CCBCurrentAction.GetCurSel();
 		if (actionIndex >= 0)
 		{
-			actionData = this->CCBCurrentAction.GetItemData(actionIndex);
+			const int actionData = this->CCBCurrentAction.GetItemData(actionIndex);
 			this->UpdateParams(actionData);
 			actionIndex = this->CCBScriptParameter.FindString(0, buffer);
-			if (actionIndex != CB_ERR)
+			if (actionIndex != CB_ERR) {
 				this->CCBScriptParameter.SetCurSel(actionIndex);
+			}
+			FA2::CString listStr;
+			FA2::CString tmp;
 			tmp.Format("%d,%s", actionData, buffer);
 			listStr.Format("%d", listIndex);
 			doc.WriteString(scriptId, listStr, tmp);
+			_showCStr(tmp);
 		}
 	}
 }
@@ -622,7 +642,7 @@ DEFINE_HOOK(4D75D0, CScriptTypes_OnCBCurrentActionSelectChanged, 7)
 	}
 	return 0x4D7662;
 }
-
+//totally rewritten
 DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);

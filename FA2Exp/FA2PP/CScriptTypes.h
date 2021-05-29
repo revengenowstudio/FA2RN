@@ -1,6 +1,9 @@
 #pragma once
 
 #include <FA2PP.h>
+#include <MFC/FA2CStatic.h>
+#include <MFC/FA2CEdit.h>
+#include <MFC/FA2CListBox.h>
 #include <MFC/FA2CCombobox.h>
 
 class NOVTABLE CScriptTypes : public FA2CDialog
@@ -30,11 +33,11 @@ public:
 
 
 	//member properties
-	CEdit				CETDescription; // 92
-	CStatic			CSTParameterOfSection; // 152
+	FA2::CEdit		CETDescription; // 92
+	FA2::CStatic	CSTParameterOfSection; // 152
 	FA2::CComboBox	CCBCurrentAction; // 212
 	FA2::CComboBox	CCBCurrentScript; // 272
 	FA2::CComboBox	CCBScriptParameter; // 332
-	CListBox		CLBScriptActions; // 392
-	CString			CString_ScriptName; // 452
+	FA2::CListBox	CLBScriptActions; // 392
+	FA2::CString	CString_ScriptName; // 452
 };

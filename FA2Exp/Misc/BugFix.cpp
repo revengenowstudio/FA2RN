@@ -44,6 +44,7 @@ DEFINE_HOOK(41FDDB, FA2Main_GetFilePath_2, 6)
 	return 0x41FDE9;
 }
 
+#if 0
 DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 {
 	auto& rules = GlobalVars::INIFiles::Rules();
@@ -66,11 +67,12 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 		return 0x4F1695;
 	}
 
-	GET(CString, name, ECX);
+	GET(FA2::CString, name, ECX);
 	name.Format("%04d (%s)", overlayIdx, name);
 	R->ECX<const char*>(name);
 	return 0;
 }
+#endif
 
 __declspec(naked) void ret_func()
 {
@@ -203,7 +205,7 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 //tracers
 DEFINE_HOOK(470B6C, CIsoView_UpdatePaint_Building_Debug, B)
 {
-	GET_STACK(const CString, BuildingID, 0x320);
+	GET_STACK(const FA2::CString, BuildingID, 0x320);
 
 	logger::info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(BuildingID));
 
@@ -248,7 +250,7 @@ DEFINE_HOOK(470AD7, CIsoView_UpdatePaint_Building_FirstTimeLoad, 7)
 
 DEFINE_HOOK(4B606D, sub_4B5460, 5)
 {
-	REF_STACK(CString, key, 0x1C);
+	REF_STACK(FA2::CString, key, 0x1C);
 	GET(int, frameSeqIdx, EBX);
 
 	logger::info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(key) + " frameSeqIdx : " + std::to_string(frameSeqIdx));
@@ -275,8 +277,8 @@ DEFINE_HOOK(4B606D, sub_4B5460, 5)
 DEFINE_HOOK(48344F, CIsoView_LoadImage_Debug, 6)
 {
 	GET_BASE(BOOL, buildingTypeItemExists, -88);
-	GET_BASE(const CString, ImageID, -0x1C);
-	GET_BASE(const CString, TurretAnimID, -0x78);
+	GET_BASE(const FA2::CString, ImageID, -0x1C);
+	GET_BASE(const FA2::CString, TurretAnimID, -0x78);
 
 	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " BuildingItemCount : " + std::to_string(buildingTypeItemExists));
 	logger::g_logger.Info(std::string(__FUNCTION__" : TurretAnimID ") + static_cast<const char*>(TurretAnimID));
@@ -301,8 +303,8 @@ DEFINE_HOOK(483670, CIsoView_LoadImage_SHPTurretDebug, 5)
 
 DEFINE_HOOK(483491, CIsoView_LoadImage_Turret_Debug, 5)
 {
-	GET_BASE(const CString, ImageID, -0x1C);
-	GET_BASE(const CString, ID, 0x8);
+	GET_BASE(const FA2::CString, ImageID, -0x1C);
+	GET_BASE(const FA2::CString, ID, 0x8);
 	GET(bool, HasTurret, EAX);
 
 	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(HasTurret));
@@ -313,8 +315,8 @@ DEFINE_HOOK(483491, CIsoView_LoadImage_Turret_Debug, 5)
 
 DEFINE_HOOK(483709, CIsoView_LoadImage_SHPTurret, 6)
 {
-	GET_BASE(const CString, ImageID, -0x1C);
-	GET_BASE(const CString, ID, 0x8);
+	GET_BASE(const FA2::CString, ImageID, -0x1C);
+	GET_BASE(const FA2::CString, ID, 0x8);
 	GET(bool, HasTurret, EAX);
 
 	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(HasTurret));
@@ -325,7 +327,7 @@ DEFINE_HOOK(483709, CIsoView_LoadImage_SHPTurret, 6)
 
 DEFINE_HOOK(4B6BE5, BuildingDrawImage_Debug, 8)
 {
-	GET_STACK(const CString, ImageID, STACK_OFFS(0x580, 0x568));
+	GET_STACK(const FA2::CString, ImageID, STACK_OFFS(0x580, 0x568));
 	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID));
 
 	if (ImageID == "GAGAP") {
@@ -347,7 +349,7 @@ DEFINE_HOOK(4B6C25, BuildingDrawImage_Debug2, 5)
 
 DEFINE_HOOK(4B6C33, BuildingDrawImage_FrameID, 5)
 {
-	GET(const CString*, FrameID, EAX);
+	GET(const FA2::CString*, FrameID, EAX);
 
 	logger::info(std::string(__FUNCTION__" : FrameID : ") + static_cast<const char*>(*FrameID));
 
@@ -370,7 +372,7 @@ DEFINE_HOOK(475450, sub475450_Debug, 7)
 
 DEFINE_HOOK(47AE90, sub_47AB50_FileName, A)
 {
-	GET(const CString*, strFileName, EAX);
+	GET(const FA2::CString*, strFileName, EAX);
 
 	logger::g_logger.Info(std::string(__FUNCTION__" : strFileName  ") + static_cast<const char*>(*strFileName));
 
