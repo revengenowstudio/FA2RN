@@ -11,7 +11,7 @@ logger::logger() {
 logger::logger(const std::string& Name) {
 	fout.close();
 	DebugName = Name;
-	fout.open(DebugName, std::ios::out);
+	fout.open(DebugName, std::ios::out | std::ios::trunc);
 }
 
 void logger::Debug(const std::string& Reason)
