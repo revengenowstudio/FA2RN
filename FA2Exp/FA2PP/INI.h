@@ -31,10 +31,7 @@ private:
 	static constexpr DWORD _H = 0x72CBF8;
 	struct _S
 	{
-		static void UpdateMapFieldData(int flag)
-		{
-			JMP_THIS(0x49C280);
-		}
+		void UpdateMapFieldData(int flag) { JMP_THIS(0x49C280); }
 	};
 
 public:
