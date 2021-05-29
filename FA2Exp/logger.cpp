@@ -14,6 +14,12 @@ logger::logger(const std::string& Name) {
 	fout.open(DebugName, std::ios::out);
 }
 
+void logger::Debug(const std::string& Reason)
+{
+	std::string out = "[Debug] " + CurrentTime() + ": " + Reason;
+	fout << out << std::endl;
+}
+
 void logger::Warn(const std::string& Reason) {
 	std::string out = "[Warn] " + CurrentTime() + ": " + Reason;
 	fout << out << std::endl;

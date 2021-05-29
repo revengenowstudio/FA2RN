@@ -16,6 +16,7 @@ public:
 
 	logger();
 	logger(const std::string& Name);
+	void Debug(const std::string& Reason);
 	void Warn(const std::string& Reason);
 	void Info(const std::string& Reason);
 	void Error(const std::string& Reason);

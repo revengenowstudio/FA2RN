@@ -360,7 +360,8 @@ void _showCStr(const FA2::CString& str)
 {
 	char buffer[0x20];
 	sprintf_s(buffer, "Len : %d, Str : %s", str.GetLength(), str.operator LPCTSTR());
-	MessageBoxA(NULL, buffer, "", MB_OK);
+	logger::g_logger.Debug(buffer);
+	//MessageBoxA(NULL, buffer, "", MB_OK);
 }
 
 void CScriptTypesExt::OnCBCurrentActionEditChanged()
