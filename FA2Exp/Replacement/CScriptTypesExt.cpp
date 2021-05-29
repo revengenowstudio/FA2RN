@@ -43,11 +43,12 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonCloneLine)->GetSafeHwnd()) {
 		this->OnBNCloneItemClicked();
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::CheckBoxToggleInsert)->GetSafeHwnd()) {
-		bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
-		::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_SETCHECK, bInsertMode ? BST_UNCHECKED : BST_CHECKED, 0);
+		//bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
+		//::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_SETCHECK, bInsertMode ? BST_UNCHECKED : BST_CHECKED, 0);
+		//return FALSE;
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNewLine)->GetSafeHwnd()) {
 		this->OnBNAddActionClickedExt();
-		return FALSE;
+		return TRUE;
 	}
 	return -1;
 }
@@ -65,14 +66,23 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 
 void CScriptTypesExt::UpdateParams(int actionIndex)
 {
-	static int LastParamID = -1;
+	static int LastActionID = -1;
 	auto const& action = ExtActions[actionIndex];
 	auto const& param = ExtParams[action.ParamCode_];
-	auto const lastID = std::exchange(LastParamID, param.Param_);
-	if (lastID == param.Param_) {
+	auto const paramType = param.Param_;
+	auto const lastActionID = std::exchange(LastActionID, actionIndex);
+	
+	logger::g_logger.Debug(__FUNCTION__
+		" LastActionID = " + std::to_string(lastActionID) +
+		" actionIndex = " + std::to_string(actionIndex) +
+		" paramType = " + std::to_string(paramType)
+	);
+
+	if (lastActionID == actionIndex) {
 		return;
 	}
-	switch (LastParamID)
+
+	switch (paramType)
 	{
 		default:
 		case 0:
@@ -422,15 +432,15 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
 	listIndex = this->CLBScriptActions.GetCurSel();
-	if (scriptIndex >= 0 && listIndex >= 0)
-	{
+	if (scriptIndex >= 0 && listIndex >= 0) {
 		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
-		if (actionIndex == CB_ERR)
+		if (actionIndex == CB_ERR) {
 			actionIndex = buffer.GetLength();
+		}
 		buffer = buffer.Mid(0, actionIndex);
 		this->CCBScriptParameter.GetWindowTextA(paramStr);
 		utilities::trim_index(paramStr);
@@ -490,6 +500,59 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 		doc.WriteString(scriptID, srcKey, "0,0");
 		this->OnCBCurrentScriptSelectChanged();
 	}*/
+
+	logger::g_logger.Info("Add Script Member");
+	HWND ScriptWnd = this->m_hWnd;
+
+	HWND CheckBox = ::GetDlgItem(ScriptWnd, 9993);
+	HWND BtnAdd = ::GetDlgItem(ScriptWnd, 1173);
+	HWND ListBox = ::GetDlgItem(ScriptWnd, 1170);
+	HWND ComboType = ::GetDlgItem(ScriptWnd, 1064);
+	HWND ComboPara = ::GetDlgItem(ScriptWnd, 1196);
+	int IsChecked = ::SendMessage(CheckBox, BM_GETCHECK, NULL, NULL);
+	int ScriptCount = ::SendMessage(ListBox, LB_GETCOUNT, 0, 0);
+	int CurSelIndex = ::SendMessage(ListBox, LB_GETCURSEL, 0, 0);
+	if (IsChecked != BST_CHECKED || ScriptCount == 0) {
+		logger::g_logger.Info("Script Member - Insert Mode OFF");
+		::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
+		::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
+		::SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		return;
+	}
+	logger::g_logger.Info("Script Member - Insert Mode ON");
+	std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
+	std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
+	for (int i = CurSelIndex; i < ScriptCount; ++i) {
+		::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		CurType[i - CurSelIndex] = ::SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
+		int strLen = ::GetWindowTextLength(ComboPara) + 1;
+		CurPara[i - CurSelIndex] = new TCHAR[strLen];
+		::GetWindowText(ComboPara, CurPara[i - CurSelIndex], strLen);
+	}
+	::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
+	::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
+	++ScriptCount;
+	for (int i = CurSelIndex + 1; i < ScriptCount; ++i) {
+		::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		::SendMessage(ComboType, CB_SETCURSEL, CurType[i - CurSelIndex - 1], NULL);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
+		::SetWindowText(ComboPara, CurPara[i - CurSelIndex - 1]);
+		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
+	}
+	::SendMessage(ListBox, LB_SETCURSEL, CurSelIndex, NULL);
+	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+
+	::SendMessage(ComboType, CB_SETCURSEL, 0, NULL);
+	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
+	::SetWindowText(ComboPara, "0");
+	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
+	for (auto x : CurPara) { 
+		delete[] x; 
+	}
 
 	return;
 }
@@ -586,8 +649,8 @@ void CScriptTypesExt::OnBNCloneScriptClicked()
 
 void CScriptTypesExt::OnBNCloneItemClicked()
 {
-	::MessageBox(NULL, "ÀÁµÃÐ´ÁË", "¹¾¹¾¹¾", MB_OK);
-	::MessageBox(NULL, "Implement Needed!", "TODO", MB_OK);
+	//::MessageBox(NULL, "ÀÁµÃÐ´ÁË", "¹¾¹¾¹¾", MB_OK);
+	//::MessageBox(NULL, "Implement Needed!", "TODO", MB_OK);
 }
 //****************************************** Hooks ****************************************************
 
