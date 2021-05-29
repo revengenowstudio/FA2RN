@@ -166,7 +166,7 @@ public:
 		auto& dict = itr->second.EntriesDictionary;
 		auto pair = Insert(dict, pKey, pValue);
 		if (!pair.second) {
-			pair.first->second.AssignCopy(strlen(pValue), pValue);
+			pair.first->second = pValue;
 		}
 		return true;
 	}
