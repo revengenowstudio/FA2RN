@@ -23,7 +23,7 @@ public:
 	BOOL PreTranslateMessageHook(MSG * pMsg);
 
 
-	void UpdateParams(int actionIndex, const char* value = nullptr);
+	void UpdateParams(int actionIndex);
 
 	//
 	// Ext Functions

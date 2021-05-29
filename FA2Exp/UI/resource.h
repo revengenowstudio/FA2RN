@@ -93,6 +93,9 @@ namespace WND_Script
 	constexpr int ButtonDelete = 1066;
 	constexpr int ButtonFA2NewLine = 1173;
 	constexpr int ButtonDeleteLine = 1174;
+	constexpr int ListBoxActions = 1170;
+	constexpr int ComboBoxActionType = 1064;
+	constexpr int ComboBoxParameter = 1196;
 }
 
 /*

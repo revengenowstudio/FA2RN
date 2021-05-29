@@ -20,6 +20,8 @@ public:
 	void SetDlgItemText(int nID, LPCTSTR lpszString) { JMP_THIS(0x5554AA); }
 	void SetWindowText(LPCTSTR lpszString) { JMP_THIS(0x5555A2); }
 
+	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL, UINT nType = MB_OK) { JMP_THIS(0x553E53); }
+
 	// Window State Functions
 	BOOL IsWindowEnabled() const { JMP_THIS(0x5556B2); }
 	BOOL EnableWindow(BOOL bEnable = TRUE) { JMP_THIS(0x5556CD); }

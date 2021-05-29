@@ -48,7 +48,6 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 		//return FALSE;
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNewLine)->GetSafeHwnd()) {
 		this->OnBNAddActionClickedExt();
-		return TRUE;
 	}
 	return -1;
 }
@@ -64,7 +63,7 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
-void CScriptTypesExt::UpdateParams(int actionIndex, const char* value)
+void CScriptTypesExt::UpdateParams(int actionIndex)
 {
 	static int LastActionID = -1;
 	auto const& action = ExtActions[actionIndex];
@@ -87,10 +86,6 @@ void CScriptTypesExt::UpdateParams(int actionIndex, const char* value)
 		default:
 		case 0:
 			while (this->CCBScriptParameter.DeleteString(0) != -1);
-			//this->CCBScriptParameter.ResetContent();
-			if (value) {
-				this->CCBScriptParameter.SetWindowTextA(value);//To avoid switching to param type 0 error
-			}
 			break;
 		case 1:
 			CScriptTypesFunctions::LoadParams_Target(this->CCBScriptParameter);
@@ -331,7 +326,6 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		}
 		paramNumStr = buffer.Mid(actionIndex + 1);
 		utilities::trim_index(paramNumStr);
-		this->CCBScriptParameter.SetWindowTextA(paramNumStr);
 
 		actionIndex = atoi(buffer.Mid(0, actionIndex));
 
@@ -361,7 +355,8 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		}
 
 		this->CCBCurrentAction.SetCurSel(selectIndex);
-		this->UpdateParams(actionIndex, paramNumStr);
+		this->UpdateParams(actionIndex);
+		this->CCBScriptParameter.SetWindowTextA(paramNumStr);
 	}
 }
 //
@@ -460,103 +455,62 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 //
 void CScriptTypesExt::OnBNAddActionClickedExt()
 {
-	/*if (this->CCBCurrentScript.GetCount() <= 0 && this->CCBCurrentScript.GetCurSel() < 0)
-		return;
-
-	bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
-	if (!bInsertMode)
-	{
-		this->OnBNAddActionClicked();
-		return;
-	}*/
-
-	// insert mode ON
-	/*FA2::CString scriptID;
-	this->CCBCurrentScript.GetWindowText(scriptID);
-	utilities::trim_index(scriptID);
-
-	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	if (doc.SectionExists(scriptID))
-	{
-		int curIndex = this->CLBScriptActions.GetCurSel();
-		int actionCount = this->CLBScriptActions.GetCount();
-		this->OnBNAddActionClicked();
-
-		if (actionCount <= 0)
-			return;
-
-		if (curIndex == CB_ERR)
-			curIndex = 0;
-
-		FA2::CString srcKey, destKey;
-
-		for (int i = actionCount - 1; i >= curIndex; --i)
-		{
-			srcKey.Format("%d", i);
-			destKey.Format("%d", i + 1);
-			FA2::CString temp = doc.GetString(scriptID, srcKey, "0,0");
-			Logger::Debug("%s %s %s %s\n", scriptID, srcKey, destKey, temp);
-			doc.WriteString(scriptID, destKey, temp);
-		}
-
-		srcKey.Format("%d", curIndex);
-		Logger::Debug("%s %s %s\n", scriptID, srcKey, "0,0");
-		doc.WriteString(scriptID, srcKey, "0,0");
-		this->OnCBCurrentScriptSelectChanged();
-	}*/
-
-	logger::g_logger.Info("Add Script Member");
+	logger::g_logger.Debug("Add Script Member");
 	HWND ScriptWnd = this->m_hWnd;
 
-	HWND CheckBox = ::GetDlgItem(ScriptWnd, 9993);
-	HWND BtnAdd = ::GetDlgItem(ScriptWnd, 1173);
-	HWND ListBox = ::GetDlgItem(ScriptWnd, 1170);
-	HWND ComboType = ::GetDlgItem(ScriptWnd, 1064);
-	HWND ComboPara = ::GetDlgItem(ScriptWnd, 1196);
+	HWND CheckBox = ::GetDlgItem(ScriptWnd, WND_Script::CheckBoxToggleInsert);
+	HWND BtnAdd = ::GetDlgItem(ScriptWnd, WND_Script::ButtonFA2NewLine);
+	HWND ListBox = ::GetDlgItem(ScriptWnd, WND_Script::ListBoxActions);
+	HWND ComboType = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxActionType);
+	HWND ComboPara = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxParameter);
 	int IsChecked = ::SendMessage(CheckBox, BM_GETCHECK, NULL, NULL);
 	int ScriptCount = ::SendMessage(ListBox, LB_GETCOUNT, 0, 0);
 	int CurSelIndex = ::SendMessage(ListBox, LB_GETCURSEL, 0, 0);
-	if (IsChecked != BST_CHECKED || ScriptCount == 0) {
-		logger::g_logger.Info("Script Member - Insert Mode OFF");
-		::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
-		::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
-		::SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		return;
-	}
-	logger::g_logger.Info("Script Member - Insert Mode ON");
-	std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
-	std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
-	for (int i = CurSelIndex; i < ScriptCount; ++i) {
-		::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		CurType[i - CurSelIndex] = ::SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
-		int strLen = ::GetWindowTextLength(ComboPara) + 1;
-		CurPara[i - CurSelIndex] = new TCHAR[strLen];
-		::GetWindowText(ComboPara, CurPara[i - CurSelIndex], strLen);
-	}
-	::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
-	::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
-	++ScriptCount;
-	for (int i = CurSelIndex + 1; i < ScriptCount; ++i) {
-		::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		::SendMessage(ComboType, CB_SETCURSEL, CurType[i - CurSelIndex - 1], NULL);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
-		::SetWindowText(ComboPara, CurPara[i - CurSelIndex - 1]);
-		::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
-	}
-	::SendMessage(ListBox, LB_SETCURSEL, CurSelIndex, NULL);
-	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
 
-	::SendMessage(ComboType, CB_SETCURSEL, 0, NULL);
-	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
-	::SetWindowText(ComboPara, "0");
-	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
-	for (auto x : CurPara) { 
-		delete[] x; 
+	if (IsChecked == BST_CHECKED && ScriptCount > 0) {
+		logger::g_logger.Info("Script Member - Insert Mode ON");
+		MessageBoxA("Insert mode not supported yet, fallback to insert at the end", "Error");
+		//std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
+		//std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
+		//for (int i = CurSelIndex; i < ScriptCount; ++i) {
+		//	::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
+		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		//	CurType[i - CurSelIndex] = ::SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
+		//	int strLen = ::GetWindowTextLength(ComboPara) + 1;
+		//	CurPara[i - CurSelIndex] = new TCHAR[strLen];
+		//	::GetWindowText(ComboPara, CurPara[i - CurSelIndex], strLen);
+		//}
+		//::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
+		//::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
+		//++ScriptCount;
+		//for (int i = CurSelIndex + 1; i < ScriptCount; ++i) {
+		//	::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
+		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+		//	::SendMessage(ComboType, CB_SETCURSEL, CurType[i - CurSelIndex - 1], NULL);
+		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
+		//	::SetWindowText(ComboPara, CurPara[i - CurSelIndex - 1]);
+		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
+		//}
+		//::SendMessage(ListBox, LB_SETCURSEL, CurSelIndex, NULL);
+		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
+
+		//::SendMessage(ComboType, CB_SETCURSEL, 0, NULL);
+		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
+		//::SetWindowText(ComboPara, "0");
+		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
+		//for (auto x : CurPara) { 
+		//	delete[] x; 
+		//}
+		//return;
 	}
+
+	logger::g_logger.Info("Script Member - Insert Mode OFF");
+	this->OnBNAddActionClicked();
+	//::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
+	//::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
+	::SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
+	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
 
 	return;
 }
