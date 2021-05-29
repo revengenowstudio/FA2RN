@@ -64,7 +64,7 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
-void CScriptTypesExt::UpdateParams(int actionIndex)
+void CScriptTypesExt::UpdateParams(int actionIndex, const char* value)
 {
 	static int LastActionID = -1;
 	auto const& action = ExtActions[actionIndex];
@@ -72,11 +72,11 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 	auto const paramType = param.Param_;
 	auto const lastActionID = std::exchange(LastActionID, actionIndex);
 	
-	logger::g_logger.Debug(__FUNCTION__
-		" LastActionID = " + std::to_string(lastActionID) +
-		" actionIndex = " + std::to_string(actionIndex) +
-		" paramType = " + std::to_string(paramType)
-	);
+	//logger::g_logger.Debug(__FUNCTION__
+	//	" LastActionID = " + std::to_string(lastActionID) +
+	//	" actionIndex = " + std::to_string(actionIndex) +
+	//	" paramType = " + std::to_string(paramType)
+	//);
 
 	if (lastActionID == actionIndex) {
 		return;
@@ -87,70 +87,74 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 		default:
 		case 0:
 			while (this->CCBScriptParameter.DeleteString(0) != -1);
+			//this->CCBScriptParameter.ResetContent();
+			if (value) {
+				this->CCBScriptParameter.SetWindowTextA(value);//To avoid switching to param type 0 error
+			}
 			break;
 		case 1:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Target(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Target(this->CCBScriptParameter);
 			break;
 		case 2:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Waypoint(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Waypoint(this->CCBScriptParameter);
 			break;
 		case 3:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptLine(
+			CScriptTypesFunctions::LoadParams_ScriptLine(
 				this->CCBScriptParameter,
 				this->CCBCurrentScript,
 				this->CLBScriptActions
 			);
 			break;
 		case 4:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_SplitGroup(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_SplitGroup(this->CCBScriptParameter);
 			break;
 		case 5:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_GlobalVariables(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_GlobalVariables(this->CCBScriptParameter);
 			break;
 		case 6:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_ScriptTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_ScriptTypes(this->CCBScriptParameter);
 			break;
 		case 7:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_TeamTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_TeamTypes(this->CCBScriptParameter);
 			break;
 		case 8:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Houses(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Houses(this->CCBScriptParameter);
 			break;
 		case 9:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Speechs(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Speechs(this->CCBScriptParameter);
 			break;
 		case 10:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Sounds(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Sounds(this->CCBScriptParameter);
 			break;
 		case 11:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Movies(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Movies(this->CCBScriptParameter);
 			break;
 		case 12:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Themes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Themes(this->CCBScriptParameter);
 			break;
 		case 13:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Countries(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Countries(this->CCBScriptParameter);
 			break;
 		case 14:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_LocalVariables(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_LocalVariables(this->CCBScriptParameter);
 			break;
 		case 15:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Facing(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Facing(this->CCBScriptParameter);
 			break;
 		case 16:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_BuildingTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_BuildingTypes(this->CCBScriptParameter);
 			break;
 		case 17:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Animations(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Animations(this->CCBScriptParameter);
 			break;
 		case 18:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_TalkBubble(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_TalkBubble(this->CCBScriptParameter);
 			break;
 		case 19:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Status(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Mission(this->CCBScriptParameter);
 			break;
 		case 20:
-			CScriptTypesFunctions::CScriptTypes_LoadParams_Boolean(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Boolean(this->CCBScriptParameter);
 			break;
 	}
 	this->CSTParameterOfSection.SetWindowText(param.Label_);
@@ -309,7 +313,7 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	FA2::CString scriptId, buffer, tmp;
+	FA2::CString scriptId, buffer, paramNumStr;
 	int scriptIndex, listIndex, actionIndex, selectIndex, L, R, M;
 
 	scriptIndex = this->CCBCurrentScript.GetCurSel();
@@ -321,13 +325,13 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
 		actionIndex = buffer.Find(',');
-		if (actionIndex == CB_ERR) {
+		if (actionIndex < 0) {
 			buffer += ",0";
 			actionIndex = buffer.GetLength() - 2;
 		}
-		tmp = buffer.Mid(actionIndex + 1);
-		utilities::trim_index(tmp);
-		this->CCBScriptParameter.SetWindowTextA(tmp);
+		paramNumStr = buffer.Mid(actionIndex + 1);
+		utilities::trim_index(paramNumStr);
+		this->CCBScriptParameter.SetWindowTextA(paramNumStr);
 
 		actionIndex = atoi(buffer.Mid(0, actionIndex));
 
@@ -357,7 +361,7 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		}
 
 		this->CCBCurrentAction.SetCurSel(selectIndex);
-		this->UpdateParams(actionIndex);
+		this->UpdateParams(actionIndex, paramNumStr);
 	}
 }
 //
