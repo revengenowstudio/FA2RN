@@ -37,7 +37,7 @@ public:
 	//	std::swap(m_pchData, rhs.m_pchData);
 	//}
 
-	CString(LPCTSTR lpch, int nLength)
+	CString(LPCTSTR lpch, int nLength) : CString()
 	{
 		AssignCopy(nLength, lpch);
 	}
@@ -68,7 +68,10 @@ public:
 
 	// simple sub-string extraction
 	CString Mid(int nFirst, int nCount) const
-		{ return CString(m_pchData + nFirst, nCount); }
+	{ 
+		CString ret(m_pchData + nFirst, nCount);
+		return ret;
+	}
 
 	CString Mid(int nFirst) const
 		{ return Mid(nFirst, GetData()->nDataLength - nFirst); }
@@ -114,7 +117,7 @@ public:
 
     static void FA2MFC_API Release(CStringData* pStringData)
         FA2MFC_STDCALL(0x555E77);
-
+	//clear
     void Empty() const
         FA2MFC_THISCALL(0x555E9A);
 
@@ -257,6 +260,8 @@ private:
 			vsnprintf(GetBufferSetLength(len + 1), len + 1, lpszFormat, args);
 		}
 	}
+
+	//static constexpr constant_ptr<const char, 0x5D4498> const chEmpty{};//default CTOR pointing to here
 
 	LPTSTR m_pchData;
 };

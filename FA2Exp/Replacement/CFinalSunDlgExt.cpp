@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <Uxtheme.h>
 
-#define BrowserRedraw_CleanUp
+//#define BrowserRedraw_CleanUp_Separately
 #define BrowserRedraw_GuessMode 1
 
 //#include "../../Helpers/Translations.h"
@@ -42,6 +42,10 @@ BOOL CFinalSunDlgExt::PreTranslateMessageExt(MSG* pMsg)
 //
 void ObjectBrowserControlExt::Redraw()
 {
+#if !defined(BrowserRedraw_CleanUp_Separately)
+	this->SelectItem(NULL);
+	this->DeleteAllItems();
+#endif
 	Redraw_Initialize();
 	Redraw_MainList();
 	Redraw_Ground();
@@ -143,11 +147,12 @@ void ObjectBrowserControlExt::Redraw_Ground()
 
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 	FA2::CString theater = doc.GetString("Map", "Theater");
-	if (theater == "NEWURBAN")
+	if (theater == "NEWURBAN") {
 		theater = "UBN";
+	}
 
 	FA2::CString suffix;
-	if (theater != "") {
+	if (theater.GetLength() > 0) {
 		suffix = theater.Mid(0, 3);
 	}
 
@@ -251,7 +256,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 	}
 
 	// Clear up
-#if defined(BrowserRedraw_CleanUp)
+#if defined(BrowserRedraw_CleanUp_Separately)
 	for (auto& subnode : subNodes) {
 		if (!this->ItemHasChildren(subnode.second)) {
 			this->DeleteItem(subnode.second);
@@ -306,7 +311,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 	}
 
 	// Clear up
-#if defined(BrowserRedraw_CleanUp)
+#if defined(BrowserRedraw_CleanUp_Separately)
 	for (auto& subnode : subNodes) {
 		if (!this->ItemHasChildren(subnode.second)) {
 			this->DeleteItem(subnode.second);
@@ -358,7 +363,7 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 	}
 
 	// Clear up
-#if defined(BrowserRedraw_CleanUp)
+#if defined(BrowserRedraw_CleanUp_Separately)
 	for (auto& subnode : subNodes) {
 		if (!this->ItemHasChildren(subnode.second)) {
 			this->DeleteItem(subnode.second);
@@ -412,7 +417,7 @@ void ObjectBrowserControlExt::Redraw_Building()
 	}
 
 	// Clear up
-#if defined(BrowserRedraw_CleanUp)
+#if defined(BrowserRedraw_CleanUp_Separately)
 	for (auto& subnode : subNodes) {
 		if (!this->ItemHasChildren(subnode.second)) {
 			this->DeleteItem(subnode.second);
