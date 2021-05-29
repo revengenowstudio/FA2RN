@@ -19,7 +19,7 @@
 
 std::unordered_map<int, HTREEITEM> ObjectBrowserControlExt::ExtNodes;
 std::unordered_set<std::string> ObjectBrowserControlExt::IgnoreSet;
-std::unordered_set<std::string> ObjectBrowserControlExt::ExtSets[static_cast<int>(SetType::Count)];
+std::unordered_set<std::string> ObjectBrowserControlExt::ExtSets[static_cast<int>(TreeViewTechnoType::Count)];
 std::unordered_map<std::string, int> ObjectBrowserControlExt::KnownItem;
 std::unordered_map<std::string, int> ObjectBrowserControlExt::Owners;
 
@@ -39,29 +39,38 @@ BOOL CFinalSunDlgExt::PreTranslateMessageExt(MSG* pMsg)
 	return FA2CDialog::PreTranslateMessage(pMsg);
 }
 
-std::vector<FA2::CString> getSides()
+using vecSideNodeInfo = std::vector<std::pair<FA2::CString, TechnoTypeMask>>;
+vecSideNodeInfo getSides()
 {
-	std::vector<FA2::CString> ret;
+	vecSideNodeInfo ret;
 	auto const& fadata = GlobalVars::INIFiles::FAData();
 	auto const pSection = fadata.TryGetSection("Sides");
+
+	auto toType = [](const FA2::CString& str) -> TechnoTypeMask {
+		return TechnoTypeMask(atoi(str));
+	};
+
 	if (!pSection) {
 		return ret;
 	}
 	for (auto const& itemPair : pSection->EntriesDictionary) {
-		ret.push_back(itemPair.second);
+		ret.push_back({ itemPair.second, {} });
 	}
+	FA2::CString typeStr;
 	for (auto& item : ret) {
-		auto const commaPos = item.Find(',');
+		auto const commaPos = item.first.Find(',');
+		//now parse real type
 		if (commaPos >= 0) {
-			item = item.Mid(0, commaPos);
+			typeStr = item.first.Mid(commaPos + 1);
+			item.first = item.first.Mid(0, commaPos);
+			item.second = toType(typeStr);
 		}
-		//TODO:get the second value to distinguish type for list
 	}
 
 	return ret;
 }
 
-void ObjectBrowserControlExt::insertItemBySides(mpTreeNode& subNodes, HTREEITEM& item)
+void ObjectBrowserControlExt::insertItemBySides(TreeViewTechnoType type, mpTreeNode& subNodes, HTREEITEM& item)
 {
 	auto const& sides = getSides();
 	int i = 0;
@@ -71,7 +80,9 @@ void ObjectBrowserControlExt::insertItemBySides(mpTreeNode& subNodes, HTREEITEM&
 		subNodes[i++] = this->InsertString("Yuri", -1, item);
 	} else {
 		for (auto const& side : sides) {
-			subNodes[i++] = this->InsertString(side, -1, item);
+			if (side.second & type) {
+				subNodes[i++] = this->InsertString(side.first, -1, item);
+			}
 		}
 	}
 	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
@@ -129,7 +140,7 @@ void ObjectBrowserControlExt::Redraw_Initialize()
 	auto& fadata = GlobalVars::INIFiles::FAData();
 	auto const& mmh = INIMeta::GetRules();
 
-	auto loadSet = [&mmh](const char* pTypeName, SetType nType)
+	auto loadSet = [&mmh](const char* pTypeName, TreeViewTechnoType nType)
 	{
 		ExtSets[static_cast<int>(nType)].clear();
 		auto& section = mmh.GetSection(pTypeName);
@@ -138,10 +149,10 @@ void ObjectBrowserControlExt::Redraw_Initialize()
 		}
 	};
 
-	loadSet("BuildingTypes", SetType::Building);
-	loadSet("InfantryTypes", SetType::Infantry);
-	loadSet("VehicleTypes", SetType::Vehicle);
-	loadSet("AircraftTypes", SetType::Aircraft);
+	loadSet("BuildingTypes", TreeViewTechnoType::Building);
+	loadSet("InfantryTypes", TreeViewTechnoType::Infantry);
+	loadSet("VehicleTypes", TreeViewTechnoType::Vehicle);
+	loadSet("AircraftTypes", TreeViewTechnoType::Aircraft);
 
 	auto loadOwner = [&mmh]()
 	{
@@ -261,7 +272,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	this->insertItemBySides(subNodes, hInfantry);
+	this->insertItemBySides(TreeViewTechnoType::Infantry, subNodes, hInfantry);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& infantries = mmh.GetSection("InfantryTypes");
@@ -271,7 +282,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 		if (IgnoreSet.find(std::string(inf)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(inf, SetType::Infantry);
+		int side = GuessSide(inf, TreeViewTechnoType::Infantry);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -302,7 +313,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	this->insertItemBySides(subNodes, hVehicle);
+	this->insertItemBySides(TreeViewTechnoType::Vehicle, subNodes, hVehicle);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& vehicles = mmh.GetSection("VehicleTypes");
@@ -312,7 +323,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 		if (IgnoreSet.find(std::string(veh)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(veh, SetType::Vehicle);
+		int side = GuessSide(veh, TreeViewTechnoType::Vehicle);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -342,7 +353,7 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 
 	auto& rules = GlobalVars::INIFiles::Rules();
 
-	this->insertItemBySides(subNodes, hAircraft);
+	this->insertItemBySides(TreeViewTechnoType::Aircraft, subNodes, hAircraft);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& aircrafts = mmh.GetSection("AircraftTypes");
@@ -352,7 +363,7 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 		if (IgnoreSet.find(std::string(air)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(air, SetType::Aircraft);
+		int side = GuessSide(air, TreeViewTechnoType::Aircraft);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -376,11 +387,12 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 void ObjectBrowserControlExt::Redraw_Building()
 {
 	HTREEITEM& hBuilding = ExtNodes[Root_Building];
-	if (hBuilding == NULL)   return;
-
+	if (hBuilding == NULL) {
+		return;
+	}
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	this->insertItemBySides(subNodes, hBuilding);
+	this->insertItemBySides(TreeViewTechnoType::Building, subNodes, hBuilding);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& buildings = mmh.GetSection("BuildingTypes");
@@ -391,7 +403,7 @@ void ObjectBrowserControlExt::Redraw_Building()
 		if (IgnoreSet.find(std::string(bud)) != IgnoreSet.end()) {
 			continue;
 		}
-		int side = GuessSide(bud, SetType::Building);
+		int side = GuessSide(bud, TreeViewTechnoType::Building);
 		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
 		}
@@ -556,20 +568,20 @@ void ObjectBrowserControlExt::Redraw_PlayerLocation()
 	this->InsertTranslatedString("StartpointsDelete", 21, hPlayerLocation);
 }
 
-ObjectBrowserControlExt::SetType ObjectBrowserControlExt::GuessType(const char* pRegName)
+TreeViewTechnoType ObjectBrowserControlExt::GuessType(const char* pRegName)
 {
-	if (ExtSets[static_cast<int>(SetType::Building)].find(pRegName) != ExtSets[static_cast<int>(SetType::Building)].end())
-		return  SetType::Building;
-	if (ExtSets[static_cast<int>(SetType::Infantry)].find(pRegName) != ExtSets[static_cast<int>(SetType::Infantry)].end())
-		return  SetType::Infantry;
-	if (ExtSets[static_cast<int>(SetType::Vehicle)].find(pRegName) != ExtSets[static_cast<int>(SetType::Vehicle)].end())
-		return  SetType::Vehicle;
-	if (ExtSets[static_cast<int>(SetType::Aircraft)].find(pRegName) != ExtSets[static_cast<int>(SetType::Aircraft)].end())
-		return  SetType::Aircraft;
-	return  SetType::Set_None;
+	if (ExtSets[static_cast<int>(TreeViewTechnoType::Building)].find(pRegName) != ExtSets[static_cast<int>(TreeViewTechnoType::Building)].end())
+		return  TreeViewTechnoType::Building;
+	if (ExtSets[static_cast<int>(TreeViewTechnoType::Infantry)].find(pRegName) != ExtSets[static_cast<int>(TreeViewTechnoType::Infantry)].end())
+		return  TreeViewTechnoType::Infantry;
+	if (ExtSets[static_cast<int>(TreeViewTechnoType::Vehicle)].find(pRegName) != ExtSets[static_cast<int>(TreeViewTechnoType::Vehicle)].end())
+		return  TreeViewTechnoType::Vehicle;
+	if (ExtSets[static_cast<int>(TreeViewTechnoType::Aircraft)].find(pRegName) != ExtSets[static_cast<int>(TreeViewTechnoType::Aircraft)].end())
+		return  TreeViewTechnoType::Aircraft;
+	return  TreeViewTechnoType::Set_None;
 }
 
-int ObjectBrowserControlExt::GuessSide(const char* pRegName, SetType nType)
+int ObjectBrowserControlExt::GuessSide(const char* pRegName, TreeViewTechnoType nType)
 {
 	auto& knownIterator = KnownItem.find(pRegName);
 	if (knownIterator != KnownItem.end())
@@ -578,20 +590,20 @@ int ObjectBrowserControlExt::GuessSide(const char* pRegName, SetType nType)
 	int result = -1;
 	switch (nType)
 	{
-	case  SetType::Set_None:
+	case  TreeViewTechnoType::Set_None:
 	default:
 		break;
-	case  SetType::Building:
+	case  TreeViewTechnoType::Building:
 		result = GuessBuildingSide(pRegName);
 		break;
-	case  SetType::Infantry:
-		result = GuessGenericSide(pRegName, SetType::Infantry);
+	case  TreeViewTechnoType::Infantry:
+		result = GuessGenericSide(pRegName, TreeViewTechnoType::Infantry);
 		break;
-	case  SetType::Vehicle:
-		result = GuessGenericSide(pRegName, SetType::Vehicle);
+	case  TreeViewTechnoType::Vehicle:
+		result = GuessGenericSide(pRegName, TreeViewTechnoType::Vehicle);
 		break;
-	case  SetType::Aircraft:
-		result = GuessGenericSide(pRegName, SetType::Aircraft);
+	case  TreeViewTechnoType::Aircraft:
+		result = GuessGenericSide(pRegName, TreeViewTechnoType::Aircraft);
 		break;
 	}
 	KnownItem[pRegName] = result;
@@ -619,10 +631,10 @@ int ObjectBrowserControlExt::GuessBuildingSide(const char* pRegName)
 	}
 	if (i >= rules.GetKeyCount("Sides"))
 		return -1;
-	return GuessGenericSide(pRegName, SetType::Building);
+	return GuessGenericSide(pRegName, TreeViewTechnoType::Building);
 }
 
-int ObjectBrowserControlExt::GuessGenericSide(const char* pRegName, SetType nType)
+int ObjectBrowserControlExt::GuessGenericSide(const char* pRegName, TreeViewTechnoType nType)
 {
 	auto const& mmh = INIMeta::GetRules(); \
 		auto const& set = ExtSets[static_cast<int>(nType)];

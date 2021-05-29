@@ -14,6 +14,40 @@ public:
     BOOL PreTranslateMessageExt(MSG* pMsg);
 };
 
+#define MAKE_MASK(refVal) 1 << static_cast<int>(refVal) 
+
+enum class TreeViewTechnoType {
+	Set_None = -1,
+	Building = 0,
+	Infantry,
+	Vehicle,
+	Aircraft,
+	_Last,
+	_First = 0,
+	Count = _Last,
+};
+
+enum class TechnoTypeMask
+{
+	ForBuilding = MAKE_MASK(TreeViewTechnoType::Building),
+	ForInfantry = MAKE_MASK(TreeViewTechnoType::Infantry),
+	ForVehicle = MAKE_MASK(TreeViewTechnoType::Vehicle),
+	ForAircraft = MAKE_MASK(TreeViewTechnoType::Aircraft),
+};
+
+inline bool operator&(TechnoTypeMask lhs, TechnoTypeMask rhs)
+{
+	return static_cast<int>(lhs) & static_cast<int>(rhs);
+}
+inline bool operator&(TechnoTypeMask lhs, TreeViewTechnoType rhs)
+{
+	return lhs & static_cast<TechnoTypeMask>(MAKE_MASK(rhs));
+}
+inline bool operator&(TreeViewTechnoType lhs, TechnoTypeMask rhs)
+{
+	return rhs & static_cast<TechnoTypeMask>(MAKE_MASK(lhs));
+}
+
 class ObjectBrowserControlExt : public ObjectBrowserControl
 {
     enum {
@@ -21,16 +55,6 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
         Root_Aircraft, Root_Building, Root_Terrain, Root_Smudge, Root_Overlay,
         Root_Waypoint, Root_Celltag, Root_Basenode, Root_Tunnel, Root_PlayerLocation,
         Root_Delete
-    };
-
-    enum class SetType {
-		Set_None = -1,
-        Building = 0, 
-		Infantry, 
-		Vehicle, 
-		Aircraft,
-		_Last,
-		Count = _Last,
     };
 
     enum
@@ -44,7 +68,7 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
 
     static mpTreeNode ExtNodes;
     static std::unordered_set<std::string> IgnoreSet;
-    static std::unordered_set<std::string> ExtSets[static_cast<int>(SetType::Count)];
+    static std::unordered_set<std::string> ExtSets[static_cast<int>(TreeViewTechnoType::Count)];
     static std::unordered_map<std::string, int> KnownItem;
     static std::unordered_map<std::string, int> Owners;
     HTREEITEM InsertString(const char* pString, DWORD dwItemData = 0, 
@@ -71,7 +95,7 @@ public:
 	void Redraw();
     int UpdateEngine(int nData);
 private:
-	void insertItemBySides(mpTreeNode& node, HTREEITEM& item);
+	void insertItemBySides(TreeViewTechnoType type, mpTreeNode& node, HTREEITEM& item);
 
 public:
     /// <summary>
@@ -82,7 +106,7 @@ public:
     /// The index of type guessed. -1 if cannot be guessed.
     /// 0 = Building, 1 = Infantry, 2 = Vehicle, 3 = Aircraft
     /// </returns>
-    static SetType GuessType(const char* pRegName);
+    static TreeViewTechnoType GuessType(const char* pRegName);
     /// <summary>
     /// Guess which side does the item belongs to.
     /// </summary>
@@ -92,7 +116,7 @@ public:
     /// 0 = Building, 1 = Infantry, 2 = Vehicle, 3 = Aircraft
     /// </param>
     /// <returns>The index of side guessed. -1 if cannot be guessed.</returns>
-    static int GuessSide(const char* pRegName, SetType nType);
+    static int GuessSide(const char* pRegName, TreeViewTechnoType nType);
     /// <summary>
     /// Guess which side does the item belongs to.
     /// </summary>
@@ -108,5 +132,5 @@ public:
     /// 0 = Building, 1 = Infantry, 2 = Vehicle, 3 = Aircraft
     /// </param>
     /// <returns>The index of side guessed. -1 if cannot be guessed.</returns>
-    static int GuessGenericSide(const char* pRegName, SetType nType);
+    static int GuessGenericSide(const char* pRegName, TreeViewTechnoType nType);
 };
