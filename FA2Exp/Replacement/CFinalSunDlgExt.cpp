@@ -39,6 +39,45 @@ BOOL CFinalSunDlgExt::PreTranslateMessageExt(MSG* pMsg)
 	return FA2CDialog::PreTranslateMessage(pMsg);
 }
 
+std::vector<FA2::CString> getSides()
+{
+	std::vector<FA2::CString> ret;
+	auto const& fadata = GlobalVars::INIFiles::FAData();
+	auto const pSection = fadata.TryGetSection("Sides");
+	if (!pSection) {
+		return ret;
+	}
+	for (auto const& itemPair : pSection->EntriesDictionary) {
+		ret.push_back(itemPair.second);
+	}
+	for (auto& item : ret) {
+		auto const commaPos = item.Find(',');
+		if (commaPos >= 0) {
+			item = item.Mid(0, commaPos);
+		}
+	}
+
+	return ret;
+}
+
+void ObjectBrowserControlExt::insertItemBySides(mpTreeNode& subNodes, HTREEITEM& item)
+{
+	auto const& sides = getSides();
+	int i = 0;
+	if (sides.empty()) {
+		subNodes[i++] = this->InsertString("Allied", -1, item);
+		subNodes[i++] = this->InsertString("Soviet", -1, item);
+		subNodes[i++] = this->InsertString("Yuri", -1, item);
+	} else {
+		for (auto const& side : sides) {
+			subNodes[i++] = this->InsertString(side, -1, item);
+		}
+	}
+	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
+	subNodes[-1] = this->InsertString(otherStr, -1, item);
+}
+
+
 //
 void ObjectBrowserControlExt::Redraw()
 {
@@ -221,21 +260,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	auto& fadata = GlobalVars::INIFiles::FAData();
-
-	int i = 0;
-	if (!fadata.SectionExists("Sides")) {
-		subNodes[i++] = this->InsertString("Allied", -1, hInfantry);
-		subNodes[i++] = this->InsertString("Soviet", -1, hInfantry);
-		subNodes[i++] = this->InsertString("Yuri", -1, hInfantry);
-	} else {
-		auto& sides = fadata.TryGetSection("Sides")->EntriesDictionary;
-		for (auto& itr : sides) {
-			subNodes[i++] = this->InsertString(itr.second, -1, hInfantry);
-		}
-	}
-	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
-	subNodes[-1] = this->InsertString(otherStr, -1, hInfantry);
+	this->insertItemBySides(subNodes, hInfantry);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& infantries = mmh.GetSection("InfantryTypes");
@@ -246,8 +271,9 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 			continue;
 		}
 		int side = GuessSide(inf, Set_Infantry);
-		if (subNodes.find(side) == subNodes.end())
+		if (subNodes.find(side) == subNodes.end()) {
 			side = -1;
+		}
 		this->InsertString(
 			CSFTable::GetUIName(inf),
 			Const_Infantry + index - 1,
@@ -275,21 +301,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	auto& fadata = GlobalVars::INIFiles::FAData();
-
-	int i = 0;
-	if (!fadata.SectionExists("Sides")) {
-		subNodes[i++] = this->InsertString("Allied", -1, hVehicle);
-		subNodes[i++] = this->InsertString("Soviet", -1, hVehicle);
-		subNodes[i++] = this->InsertString("Yuri", -1, hVehicle);
-	} else {
-		auto& sides = fadata.TryGetSection("Sides")->EntriesDictionary;
-		for (auto& itr : sides) {
-			subNodes[i++] = this->InsertString(itr.second, -1, hVehicle);
-		}
-	}
-	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
-	subNodes[-1] = this->InsertString(otherStr, -1, hVehicle);
+	this->insertItemBySides(subNodes, hVehicle);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& vehicles = mmh.GetSection("VehicleTypes");
@@ -328,20 +340,8 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 	std::unordered_map<int, HTREEITEM> subNodes;
 
 	auto& rules = GlobalVars::INIFiles::Rules();
-	auto& fadata = GlobalVars::INIFiles::FAData();
 
-	int i = 0;
-	if (!fadata.SectionExists("Sides")) {
-		subNodes[i++] = this->InsertString("Allied", -1, hAircraft);
-		subNodes[i++] = this->InsertString("Soviet", -1, hAircraft);
-		subNodes[i++] = this->InsertString("Yuri", -1, hAircraft);
-	} else {
-		auto& sides = fadata.TryGetSection("Sides")->EntriesDictionary;
-		for (auto& itr : sides)
-			subNodes[i++] = this->InsertString(itr.second, -1, hAircraft);
-	}
-	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
-	subNodes[-1] = this->InsertString(otherStr, -1, hAircraft);
+	this->insertItemBySides(subNodes, hAircraft);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& aircrafts = mmh.GetSection("AircraftTypes");
@@ -379,22 +379,7 @@ void ObjectBrowserControlExt::Redraw_Building()
 
 	std::unordered_map<int, HTREEITEM> subNodes;
 
-	//auto& rules = GlobalVars::INIFiles::Rules();
-	auto& fadata = GlobalVars::INIFiles::FAData();
-
-	int i = 0;
-	if (!fadata.SectionExists("Sides")) {
-		subNodes[i++] = this->InsertString("Allied", -1, hBuilding);
-		subNodes[i++] = this->InsertString("Soviet", -1, hBuilding);
-		subNodes[i++] = this->InsertString("Yuri", -1, hBuilding);
-	} else {
-		auto& sides = fadata.TryGetSection("Sides")->EntriesDictionary;
-		for (auto& itr : sides) {
-			subNodes[i++] = this->InsertString(itr.second, -1, hBuilding);
-		}
-	}
-	auto const otherStr = Translations::TranslateOrDefault("Other", "Others");
-	subNodes[-1] = this->InsertString(otherStr, -1, hBuilding);
+	this->insertItemBySides(subNodes, hBuilding);
 
 	auto const& mmh = INIMeta::GetRules();
 	auto& buildings = mmh.GetSection("BuildingTypes");

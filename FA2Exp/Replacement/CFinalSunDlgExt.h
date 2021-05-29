@@ -35,7 +35,9 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
         Const_House = 70000, Const_Smudge = 80000
     };
 
-    static std::unordered_map<int, HTREEITEM> ExtNodes;
+	using mpTreeNode = std::unordered_map<int, HTREEITEM>;
+
+    static mpTreeNode ExtNodes;
     static std::unordered_set<std::string> IgnoreSet;
     static std::unordered_set<std::string> ExtSets[Set_Count];
     static std::unordered_map<std::string, int> KnownItem;
@@ -61,9 +63,10 @@ class ObjectBrowserControlExt : public ObjectBrowserControl
     void Redraw_Tunnel();
     void Redraw_PlayerLocation();
 public:
-    void Redraw();
+	void Redraw();
     int UpdateEngine(int nData);
-
+private:
+	void insertItemBySides(mpTreeNode& node, HTREEITEM& item);
 
 public:
     /// <summary>
