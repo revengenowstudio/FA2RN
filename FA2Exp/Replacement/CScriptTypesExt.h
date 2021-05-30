@@ -36,13 +36,13 @@ public:
 	void OnActionTypeEditChangedExt();
 	void OnActionParameterEditChangedExt();
 	void OnActionLineSelectChangedExt();
+	void OnActionTypeSelectChangedExt();
 
 	/*void DoDataExchange(CDataExchange* pDX);
 
 	void OnScriptTypeSelectChanged();
 	void OnETScriptNameChanged();
 
-	void OnCBCurrentActionSelectChanged();
 	void OnActionParameterSelectChanged();
 	*/
 	void OnActionTypeAddExt();

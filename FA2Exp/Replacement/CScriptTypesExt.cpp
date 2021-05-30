@@ -10,6 +10,34 @@
 
 std::vector<ScriptTemplate> g_ScriptTemplates;
 
+int scriptTypeIndexToComboBoxIndex(FA2::CComboBox& comboBox, int scriptTypeIndex)
+{
+	// As we know, the data sequence is ¡ü
+	// So divide it!
+	int selectIndex = 0;
+	auto L = 0;
+	auto R = comboBox.GetCount() - 1;
+	auto M = (L + R) / 2;
+	while (R > L) {
+		const int MData = comboBox.GetItemData(M);
+		if (MData == scriptTypeIndex) {
+			break;
+		}
+		if (MData > scriptTypeIndex) {
+			R = M;
+		} else {
+			L = M;
+		}
+		M = (L + R) / 2;
+	}
+	if (R > L) {
+		selectIndex = M;
+	} else {
+		selectIndex = 0;
+	}
+	return selectIndex;
+}
+
 void CScriptTypesExt::ProgramStartupInit()
 {
 	HackHelper::ResetMessageType(0x595FC8, EN_KILLFOCUS); // name update
@@ -334,30 +362,7 @@ void CScriptTypesExt::OnActionLineSelectChangedExt()
 
 		actionIndex = atoi(buffer.Mid(0, actionIndex));
 
-		// As we know, the data sequence is ¡ü
-		// So divide it!
-		L = 0;
-		R = this->ComboBoxActionType.GetCount() - 1;
-		M = (L + R) / 2;
-		while (R > L) {
-			const int MData = this->ComboBoxActionType.GetItemData(M);
-			if (MData == actionIndex) {
-				break;
-			}
-			if (MData > actionIndex) {
-				R = M;
-			}
-			else {
-				L = M;
-			}
-			M = (L + R) / 2;
-		}
-		if (R > L) {
-			selectIndex = M;
-		}
-		else {
-			selectIndex = 0;
-		}
+		selectIndex = scriptTypeIndexToComboBoxIndex(this->ComboBoxActionType, actionIndex);
 
 		this->ComboBoxActionType.SetCurSel(selectIndex);
 		this->UpdateParams(actionIndex);
@@ -423,11 +428,26 @@ void CScriptTypesExt::OnActionTypeEditChangedExt()
 		}
 	}
 }
-//
-//void CScriptTypesExt::OnCBCurrentActionSelectChanged()
-//{
-//}
-//
+
+void CScriptTypesExt::OnActionTypeSelectChangedExt()
+{
+	int curActionIdx = this->ComboBoxActionType.GetCurSel();
+	if (curActionIdx >= 0)
+	{
+		int curActionData = this->ComboBoxActionType.GetItemData(curActionIdx);
+		auto& dict = CScriptTypesExt::ExtActions;
+		auto itr = dict.find(curActionData);
+		if (itr != dict.end())
+		{
+			this->OnActionTypeEditChangedExt();
+
+			this->EditDescription.SetWindowTextA(itr->second.Description_);
+			this->EditDescription.EnableWindow(itr->second.Editable_);
+			this->ComboBoxActionParameter.EnableWindow(itr->second.Editable_);
+		}
+	}
+}
+
 void CScriptTypesExt::OnActionParameterEditChangedExt()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
@@ -587,10 +607,11 @@ void CScriptTypesExt::OnScriptTypeAddExt()
 		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ListBoxActions, LBN_SELCHANGE), (LPARAM)ListBox);
 		this->OnActionLineSelectChangedExt();
 		//::SendMessageA(ComboType, CB_SETCURSEL, atoi(templateItem->first.c_str()), NULL);
+		auto const scripIndex = atoi(templateItem.first.c_str());
 		logger::g_logger.Debug(__FUNCTION__" ComboBoxActionType cur idx : " + std::to_string(atoi(templateItem.first.c_str())));
-		this->ComboBoxActionType.SetCurSel(atoi(templateItem.first.c_str()));
+		this->ComboBoxActionType.SetCurSel(scriptTypeIndexToComboBoxIndex(this->ComboBoxActionType, scripIndex));
 		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ComboBoxActionType, CBN_SELCHANGE), (LPARAM)ComboType);
-		this->OnActionTypeSelectChanged();
+		this->OnActionTypeSelectChangedExt();
 		if (templateItem.second == "EMPTY") { 
 			continue; 
 		}
@@ -748,21 +769,7 @@ DEFINE_HOOK(4D6A10, CScriptTypes_OnCBCurrentActionEditChanged, 7)
 DEFINE_HOOK(4D75D0, CScriptTypes_OnCBCurrentActionSelectChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);
-	int curActionIdx = pThis->ComboBoxActionType.GetCurSel();
-	if (curActionIdx >= 0)
-	{
-		int curActionData = pThis->ComboBoxActionType.GetItemData(curActionIdx);
-		auto& dict = CScriptTypesExt::ExtActions;
-		auto itr = dict.find(curActionData);
-		if (itr != dict.end())
-		{
-			pThis->OnActionTypeEditChangedExt();
-
-			pThis->EditDescription.SetWindowTextA(itr->second.Description_);
-			pThis->EditDescription.EnableWindow(itr->second.Editable_);
-			pThis->ComboBoxActionParameter.EnableWindow(itr->second.Editable_);
-		}
-	}
+	pThis->OnActionTypeSelectChangedExt();
 	return 0x4D7662;
 }
 //totally rewritten
