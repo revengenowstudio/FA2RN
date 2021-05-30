@@ -268,7 +268,6 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <MinimumRequiredVersion>
       </MinimumRequiredVersion>
-      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSt|Win32'">

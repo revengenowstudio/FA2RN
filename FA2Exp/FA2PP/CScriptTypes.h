@@ -19,25 +19,25 @@ public:
 	// Controls
 	//
 
-	void OnCBCurrentScriptSelectChanged() { JMP_THIS(0x4D61B0); }
-	void OnLBScriptActionsSelectChanged() { JMP_THIS(0x4D6500); }
+	void OnScriptTypeSelectChanged() { JMP_THIS(0x4D61B0); }
+	void OnActionLineSelectChanged() { JMP_THIS(0x4D6500); }
 	void OnNameEditChanged() { JMP_THIS(0x4D6770); }
 	void OnCBCurrentActionEditChanged() { JMP_THIS(0x4D6A10); }
-	void OnCBCurrentActionSelectChanged() { JMP_THIS(0x4D75D0); }
-	void OnCBScriptParameterEditChanged() { JMP_THIS(0x4D7670); }
-	void OnCBScriptParameterSelectChanged() { JMP_THIS(0x4D7A50); }
-	void OnBNAddActionClicked() { JMP_THIS(0x4D7AC0); }
-	void OnBNDeleteActionClicked() { JMP_THIS(0x4D7DD0); }
-	void OnBNAddScriptClicked() { JMP_THIS(0x4D8390); }
-	void OnBNDeleteScriptClicked() { JMP_THIS(0x4D8730); }
+	void OnActionTypeSelectChanged() { JMP_THIS(0x4D75D0); }
+	void OnActionParameterEditChanged() { JMP_THIS(0x4D7670); }
+	void OnActionParameterSelectChanged() { JMP_THIS(0x4D7A50); }
+	void OnActionAdd() { JMP_THIS(0x4D7AC0); }
+	void OnActionDelete() { JMP_THIS(0x4D7DD0); }
+	void OnScriptTypeAdd() { JMP_THIS(0x4D8390); }
+	void OnScriptTypeDelete() { JMP_THIS(0x4D8730); }
 
 
 	//member properties
-	FA2::CEdit		CETDescription; // 92
-	FA2::CStatic	CSTParameterOfSection; // 152
-	FA2::CComboBox	CCBCurrentAction; // 212
-	FA2::CComboBox	CCBCurrentScript; // 272
-	FA2::CComboBox	CCBScriptParameter; // 332
-	FA2::CListBox	CLBScriptActions; // 392
-	FA2::CString	CString_ScriptName; // 452
+	FA2::CEdit		EditDescription; //<! description of a specific selected action type
+	FA2::CStatic	TextParameterLabel; //<! label that hints the category of action parameter
+	FA2::CComboBox	ComboBoxActionType; //<! action type for a selected line of selected script type 
+	FA2::CComboBox	ComboBoxScriptType; //<! all script types, and you can select one to edit
+	FA2::CComboBox	ComboBoxActionParameter; //<! action parameter for a selected action type
+	FA2::CListBox	ListActions; //<! all action listed for a selected script type
+	FA2::CString	ScriptName; //<! a human readable name to identify a script
 };

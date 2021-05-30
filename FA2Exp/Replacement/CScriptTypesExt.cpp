@@ -3,8 +3,12 @@
 #include "Helpers.h"
 #include "../Utilities/INIParser.h"
 #include "../Enhancement/MultiLanguage.h"
+#include "../Config.h"
+#include <set>
 
 #define SAFE_RELEASE(ptr) {if(!ptr) delete[] ptr;}
+
+std::vector<ScriptTemplate> g_ScriptTemplates;
 
 void CScriptTypesExt::ProgramStartupInit()
 {
@@ -39,15 +43,15 @@ BOOL CScriptTypesExt::onMessageKeyDown(MSG* pMsg)
 BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 {
 	if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonClone)->GetSafeHwnd()) {
-		this->OnBNCloneScriptClicked();
+		this->OnScriptTypeCloneExt();
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonCloneLine)->GetSafeHwnd()) {
-		this->OnBNCloneItemClicked();
-	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::CheckBoxToggleInsert)->GetSafeHwnd()) {
-		//bool bInsertMode = ::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_GETCHECK, 0, 0) == BST_CHECKED;
-		//::SendMessage(::GetDlgItem(*this, WND_Script::CheckBoxToggleInsert), BM_SETCHECK, bInsertMode ? BST_UNCHECKED : BST_CHECKED, 0);
-		//return FALSE;
+		this->OnActionLineCloneExt();
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNewLine)->GetSafeHwnd()) {
-		this->OnBNAddActionClickedExt();
+		this->OnActionTypeAddExt();
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonReload)->GetSafeHwnd()) {
+		this->OnTemplateLoadExt();
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNew)->GetSafeHwnd()) {
+		this->OnScriptTypeAddExt();
 	}
 	return -1;
 }
@@ -85,77 +89,77 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 	{
 		default:
 		case 0:
-			while (this->CCBScriptParameter.DeleteString(0) != -1);
+			while (this->ComboBoxActionParameter.DeleteString(0) != -1);
 			break;
 		case 1:
-			CScriptTypesFunctions::LoadParams_Target(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Target(this->ComboBoxActionParameter);
 			break;
 		case 2:
-			CScriptTypesFunctions::LoadParams_Waypoint(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Waypoint(this->ComboBoxActionParameter);
 			break;
 		case 3:
 			CScriptTypesFunctions::LoadParams_ScriptLine(
-				this->CCBScriptParameter,
-				this->CCBCurrentScript,
-				this->CLBScriptActions
+				this->ComboBoxActionParameter,
+				this->ComboBoxScriptType,
+				this->ListActions
 			);
 			break;
 		case 4:
-			CScriptTypesFunctions::LoadParams_SplitGroup(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_SplitGroup(this->ComboBoxActionParameter);
 			break;
 		case 5:
-			CScriptTypesFunctions::LoadParams_GlobalVariables(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_GlobalVariables(this->ComboBoxActionParameter);
 			break;
 		case 6:
-			CScriptTypesFunctions::LoadParams_ScriptTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_ScriptTypes(this->ComboBoxActionParameter);
 			break;
 		case 7:
-			CScriptTypesFunctions::LoadParams_TeamTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_TeamTypes(this->ComboBoxActionParameter);
 			break;
 		case 8:
-			CScriptTypesFunctions::LoadParams_Houses(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Houses(this->ComboBoxActionParameter);
 			break;
 		case 9:
-			CScriptTypesFunctions::LoadParams_Speechs(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Speechs(this->ComboBoxActionParameter);
 			break;
 		case 10:
-			CScriptTypesFunctions::LoadParams_Sounds(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Sounds(this->ComboBoxActionParameter);
 			break;
 		case 11:
-			CScriptTypesFunctions::LoadParams_Movies(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Movies(this->ComboBoxActionParameter);
 			break;
 		case 12:
-			CScriptTypesFunctions::LoadParams_Themes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Themes(this->ComboBoxActionParameter);
 			break;
 		case 13:
-			CScriptTypesFunctions::LoadParams_Countries(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Countries(this->ComboBoxActionParameter);
 			break;
 		case 14:
-			CScriptTypesFunctions::LoadParams_LocalVariables(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_LocalVariables(this->ComboBoxActionParameter);
 			break;
 		case 15:
-			CScriptTypesFunctions::LoadParams_Facing(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Facing(this->ComboBoxActionParameter);
 			break;
 		case 16:
-			CScriptTypesFunctions::LoadParams_BuildingTypes(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_BuildingTypes(this->ComboBoxActionParameter);
 			break;
 		case 17:
-			CScriptTypesFunctions::LoadParams_Animations(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Animations(this->ComboBoxActionParameter);
 			break;
 		case 18:
-			CScriptTypesFunctions::LoadParams_TalkBubble(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_TalkBubble(this->ComboBoxActionParameter);
 			break;
 		case 19:
-			CScriptTypesFunctions::LoadParams_Mission(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Mission(this->ComboBoxActionParameter);
 			break;
 		case 20:
-			CScriptTypesFunctions::LoadParams_Boolean(this->CCBScriptParameter);
+			CScriptTypesFunctions::LoadParams_Boolean(this->ComboBoxActionParameter);
 			break;
 	}
-	this->CSTParameterOfSection.SetWindowText(param.Label_);
-	this->CSTParameterOfSection.EnableWindow(action.Editable_);
-	this->CCBScriptParameter.EnableWindow(action.Editable_);
-	this->CETDescription.SetWindowText(action.Description_);
+	this->TextParameterLabel.SetWindowText(param.Label_);
+	this->TextParameterLabel.EnableWindow(action.Editable_);
+	this->ComboBoxActionParameter.EnableWindow(action.Editable_);
+	this->EditDescription.SetWindowText(action.Description_);
 }
 
 //
@@ -204,7 +208,7 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 	TranslateDlgItem(WND_Script::ButtonCloneLine, "ScriptTypesCloAction");
 	TranslateDlgItem(WND_Script::CheckBoxToggleInsert, "ScriptTypesInsertMode");
 
-	while (CCBCurrentAction.DeleteString(0) != -1);
+	while (ComboBoxActionType.DeleteString(0) != -1);
 
 	// Initialize defaults
 	const char** pNames = reinterpret_cast<const char**>(0x5D035C);
@@ -291,30 +295,31 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 	{
 		if (!ent.second.Hide_)
 		{
-			int data = CCBCurrentAction.AddString(ent.second.Name_);
-			CCBCurrentAction.SetItemData(data, counter);
+			int data = ComboBoxActionType.AddString(ent.second.Name_);
+			ComboBoxActionType.SetItemData(data, counter);
 		}
 		++counter;
 
 	}
+	this->OnTemplateLoadExt();
 	return TRUE;
 }
 
 //
-//void CScriptTypesExt::OnCBCurrentScriptSelectChanged()
+//void CScriptTypesExt::OnScriptTypeSelectChanged()
 //{
 //}
 //
-void CScriptTypesExt::OnLBScriptActionsSelectChanged()
+void CScriptTypesExt::OnActionLineSelectChangedExt()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 	FA2::CString scriptId, buffer, paramNumStr;
 	int scriptIndex, listIndex, actionIndex, selectIndex, L, R, M;
 
-	scriptIndex = this->CCBCurrentScript.GetCurSel();
-	listIndex = this->CLBScriptActions.GetCurSel();
+	scriptIndex = this->ComboBoxScriptType.GetCurSel();
+	listIndex = this->ListActions.GetCurSel();
 	if (scriptIndex >= 0 && listIndex >= 0) {
-		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
+		this->ComboBoxScriptType.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
 		auto const idxs = std::to_string(listIndex);
 		buffer.Format("%d", listIndex);
@@ -332,10 +337,10 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 		// As we know, the data sequence is °¸
 		// So divide it!
 		L = 0;
-		R = this->CCBCurrentAction.GetCount() - 1;
+		R = this->ComboBoxActionType.GetCount() - 1;
 		M = (L + R) / 2;
 		while (R > L) {
-			const int MData = this->CCBCurrentAction.GetItemData(M);
+			const int MData = this->ComboBoxActionType.GetItemData(M);
 			if (MData == actionIndex) {
 				break;
 			}
@@ -354,9 +359,9 @@ void CScriptTypesExt::OnLBScriptActionsSelectChanged()
 			selectIndex = 0;
 		}
 
-		this->CCBCurrentAction.SetCurSel(selectIndex);
+		this->ComboBoxActionType.SetCurSel(selectIndex);
 		this->UpdateParams(actionIndex);
-		this->CCBScriptParameter.SetWindowTextA(paramNumStr);
+		this->ComboBoxActionParameter.SetWindowTextA(paramNumStr);
 	}
 }
 //
@@ -373,19 +378,19 @@ void _showCStr(const FA2::CString& str)
 	//MessageBoxA(NULL, buffer, "", MB_OK);
 }
 
-void CScriptTypesExt::OnCBCurrentActionEditChanged()
+void CScriptTypesExt::OnActionTypeEditChangedExt()
 {
 	auto& doc = *INIClass::GetMapDocument(true);
 
-	const int scriptIndex = this->CCBCurrentScript.GetCurSel();
-	const int listIndex = this->CLBScriptActions.GetCurSel();
+	const int scriptIndex = this->ComboBoxScriptType.GetCurSel();
+	const int listIndex = this->ListActions.GetCurSel();
 	if (scriptIndex >= 0 && listIndex >= 0)
 	{
 		FA2::CString scriptId;
 		FA2::CString buffer;
 		_showCStr(scriptId);
 		_showCStr(buffer);
-		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
+		this->ComboBoxScriptType.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
 		_showCStr(scriptId);
 		buffer.Format("%d", listIndex);
@@ -400,14 +405,14 @@ void CScriptTypesExt::OnCBCurrentActionEditChanged()
 			buffer = buffer.Mid(commaPos + 1);
 		}
 
-		int actionIndex = this->CCBCurrentAction.GetCurSel();
+		int actionIndex = this->ComboBoxActionType.GetCurSel();
 		if (actionIndex >= 0)
 		{
-			const int actionData = this->CCBCurrentAction.GetItemData(actionIndex);
+			const int actionData = this->ComboBoxActionType.GetItemData(actionIndex);
 			this->UpdateParams(actionData);
-			actionIndex = this->CCBScriptParameter.FindString(0, buffer);
+			actionIndex = this->ComboBoxActionParameter.FindString(0, buffer);
 			if (actionIndex != CB_ERR) {
-				this->CCBScriptParameter.SetCurSel(actionIndex);
+				this->ComboBoxActionParameter.SetCurSel(actionIndex);
 			}
 			FA2::CString listStr;
 			FA2::CString tmp;
@@ -423,16 +428,16 @@ void CScriptTypesExt::OnCBCurrentActionEditChanged()
 //{
 //}
 //
-void CScriptTypesExt::OnCBScriptParameterEditChanged()
+void CScriptTypesExt::OnActionParameterEditChangedExt()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 	FA2::CString scriptId, buffer, listStr, paramStr, tmp;
 	int scriptIndex, listIndex, actionIndex;
 
-	scriptIndex = this->CCBCurrentScript.GetCurSel();
-	listIndex = this->CLBScriptActions.GetCurSel();
+	scriptIndex = this->ComboBoxScriptType.GetCurSel();
+	listIndex = this->ListActions.GetCurSel();
 	if (scriptIndex >= 0 && listIndex >= 0) {
-		this->CCBCurrentScript.GetLBText(scriptIndex, scriptId);
+		this->ComboBoxScriptType.GetLBText(scriptIndex, scriptId);
 		utilities::trim_index(scriptId);
 		buffer.Format("%d", listIndex);
 		buffer = doc.GetString(scriptId, buffer, "0,0");
@@ -441,7 +446,7 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 			actionIndex = buffer.GetLength();
 		}
 		buffer = buffer.Mid(0, actionIndex);
-		this->CCBScriptParameter.GetWindowTextA(paramStr);
+		this->ComboBoxActionParameter.GetWindowTextA(paramStr);
 		utilities::trim_index(paramStr);
 		tmp.Format("%s,%s", buffer, paramStr);
 		listStr.Format("%d", listIndex);
@@ -449,11 +454,11 @@ void CScriptTypesExt::OnCBScriptParameterEditChanged()
 	}
 }
 //
-//void CScriptTypesExt::OnCBScriptParameterSelectChanged()
+//void CScriptTypesExt::OnActionParameterSelectChanged()
 //{
 //}
 //
-void CScriptTypesExt::OnBNAddActionClickedExt()
+void CScriptTypesExt::OnActionTypeAddExt()
 {
 	logger::g_logger.Debug("Add Script Member");
 	HWND ScriptWnd = this->m_hWnd;
@@ -506,7 +511,7 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 	}
 
 	logger::g_logger.Info("Script Member - Insert Mode OFF");
-	this->OnBNAddActionClicked();
+	this->OnActionAdd();
 	//::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
 	//::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
 	::SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
@@ -515,56 +520,101 @@ void CScriptTypesExt::OnBNAddActionClickedExt()
 	return;
 }
 //
-//void CScriptTypesExt::OnBNDeleteActionClicked()
+//void CScriptTypesExt::OnActionDelete()
 //{
 //}
 //
-//void CScriptTypesExt::OnBNAddScriptClicked()
+//void CScriptTypesExt::OnScriptTypeAdd()
 //{
 //}
-void CScriptTypesExt::OnBNAddScriptClickedExt()
+void CScriptTypesExt::OnScriptTypeAddExt()
 {
-	// TODO : Jump to the script we have just inserted!
+	logger::g_logger.Info("Add Script");
+	HWND ScriptWnd = this->m_hWnd;
+	HWND ComboScriptTemplate = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxTemplate);
+	HWND EditName = ::GetDlgItem(ScriptWnd, WND_Script::EditScriptName);
+	HWND ListBox = ::GetDlgItem(ScriptWnd, WND_Script::ListBoxActions);
+	HWND ComboType = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxActionType);
+	HWND ComboPara = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxParameter);
+	int curTemplateComboCount = ::SendMessageA(ComboScriptTemplate, CB_GETCOUNT, NULL, NULL);
+	if (curTemplateComboCount <= 0) {
+		HWND BtnLoad = ::GetDlgItem(ScriptWnd, WND_Script::ButtonReload);
+		::SendMessageA(BtnLoad, WM_LBUTTONDOWN, WND_Script::ButtonReload, NULL);
+		::SendMessageA(BtnLoad, WM_LBUTTONUP, WND_Script::ButtonReload, NULL);
+	}
+	int curTemplateIndex = ::SendMessageA(ComboScriptTemplate, CB_GETCURSEL, NULL, NULL);
+	ScriptTemplate& curTemplate = g_ScriptTemplates[curTemplateIndex];
+	logger::g_logger.Info("Now using Script Template " + curTemplate[0].first);
+
+	HWND AllScriptCombo = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxScriptType);
+	int ScriptCount = ::SendMessageA(AllScriptCombo, CB_GETCOUNT, 0, 0);
+	std::set<std::string> ScriptDictionary;
+
+	for (int i = 0; i < ScriptCount; ++i) {
+		int strLen = ::SendMessageA(AllScriptCombo, CB_GETLBTEXTLEN, i, NULL);
+		std::string scriptID;
+		scriptID.resize(strLen);
+		::SendMessageA(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)scriptID.data());
+		ScriptDictionary.emplace(std::move(scriptID));
+	}
+
+	this->OnScriptTypeAdd();
+
+	int newIdx = 0;
+	for (; newIdx < ScriptCount; ++newIdx) {
+		std::string str;
+		int strLen = ::SendMessageA(AllScriptCombo, CB_GETLBTEXTLEN, newIdx, NULL);
+		str.resize(strLen);
+		::SendMessageA(AllScriptCombo, CB_GETLBTEXT, newIdx, (LPARAM)str.data());
+		if (ScriptDictionary.find(str) == ScriptDictionary.end()) {
+			break;
+		}
+	}
+
+	//::SendMessageA(AllScriptCombo, CB_SETCURSEL, i, NULL);
+	this->ComboBoxScriptType.SetCurSel(newIdx);//select the end
+	this->SetDlgItemTextA(WND_Script::EditScriptName, curTemplate[0].second.c_str());
+	this->OnNameEditChanged();
+
+	//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ComboBoxScriptType, CBN_SELCHANGE), (LPARAM)AllScriptCombo);
+	this->OnScriptTypeSelectChanged();
+
+	for (int idx = 0; idx < curTemplate.Count(); ++idx) {
+		this->OnActionAdd();
+		auto const& templateItem = curTemplate[idx + 1];//first one is reserved for name
+		//::SendMessageA(ListBox, LB_SETCURSEL, idx, NULL);
+		this->ListActions.SetCurSel(idx);
+		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ListBoxActions, LBN_SELCHANGE), (LPARAM)ListBox);
+		this->OnActionLineSelectChangedExt();
+		//::SendMessageA(ComboType, CB_SETCURSEL, atoi(templateItem->first.c_str()), NULL);
+		logger::g_logger.Debug(__FUNCTION__" ComboBoxActionType cur idx : " + std::to_string(atoi(templateItem.first.c_str())));
+		this->ComboBoxActionType.SetCurSel(atoi(templateItem.first.c_str()));
+		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ComboBoxActionType, CBN_SELCHANGE), (LPARAM)ComboType);
+		this->OnActionTypeSelectChanged();
+		if (templateItem.second == "EMPTY") { 
+			continue; 
+		}
+		//::SetWindowTextA(ComboPara, templateItem->second.c_str());
+		this->ComboBoxActionParameter.SetWindowTextA(templateItem.second.c_str());
+		this->OnActionParameterEditChangedExt();
+		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ComboBoxParameter, CBN_SELCHANGE), (LPARAM)ComboPara);
+	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
-//void CScriptTypesExt::OnBNDeleteScriptClicked()
+//void CScriptTypesExt::OnScriptTypeDelete()
 //{
 //}
 
-void CScriptTypesExt::OnBNCloneScriptClicked()
+void CScriptTypesExt::OnScriptTypeCloneExt()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 
-	int nCurSel = this->CCBCurrentScript.GetCurSel();
+	int nCurSel = this->ComboBoxScriptType.GetCurSel();
 	if (nCurSel >= 0)
 	{
 		FA2::CString label;
-		this->CCBCurrentScript.GetLBText(nCurSel, label);
+		this->ComboBoxScriptType.GetLBText(nCurSel, label);
 		utilities::trim_index(label);
 		INISection copied(*doc.TryGetSection(label));
 		FA2::CString name;
@@ -590,25 +640,76 @@ void CScriptTypesExt::OnBNCloneScriptClicked()
 			Logger::Debug("%s %s\n", x.first, x.second);*/
 
 			// objective : reload combobox
-		auto& scripts = this->CCBCurrentScript;
-		while (this->CCBCurrentScript.DeleteString(0) != CB_ERR);
+		auto& scripts = this->ComboBoxScriptType;
+		while (this->ComboBoxScriptType.DeleteString(0) != CB_ERR);
 
 		if (auto const scripttypes = doc.TryGetSection("ScriptTypes")) {
 			for (auto& x : scripttypes->EntriesDictionary) {
-				this->CCBCurrentScript.AddString(x.second + " (" + doc.GetString(x.second, "Name") + ")");
+				this->ComboBoxScriptType.AddString(x.second + " (" + doc.GetString(x.second, "Name") + ")");
 			}
 		}
 		int idx = scripts.FindString(0, id);
 		scripts.SetCurSel(idx);
-		this->SetDlgItemText(1010, name);
+		this->SetDlgItemText(WND_Script::EditScriptName, name);
 	}
 	return;
 }
 
-void CScriptTypesExt::OnBNCloneItemClicked()
+void CScriptTypesExt::OnActionLineCloneExt()
 {
 	//::MessageBox(NULL, "¿¡µ√–¥¡À", "πæπæπæ", MB_OK);
 	//::MessageBox(NULL, "Implement Needed!", "TODO", MB_OK);
+}
+
+void LoadScriptTemplates() {
+	Ini& ini = Ini::ConfigIni;
+	g_ScriptTemplates.clear();
+
+	//Read Team Templates
+	int ScriptTemplatesCount = atoi(ini.Read("ScriptTemplates", "Counts").c_str());
+	if (ini.Exist() == FALSE) {
+		MessageBox(
+			NULL,
+			MessageBoxConfig::Instance.Message.IniNotExist.c_str(),
+			MessageBoxConfig::Instance.Captain.Error.c_str(),
+			MB_OK
+		);
+		ScriptTemplatesCount = 0;
+	}
+	if (ScriptTemplatesCount < 0) { 
+		ScriptTemplatesCount = 0; 
+	}
+
+	logger::g_logger.Info(std::to_string(ScriptTemplatesCount) + " Script Templates Loading");
+
+	g_ScriptTemplates.resize(ScriptTemplatesCount + 1);
+	g_ScriptTemplates[0].Resize(1);
+	g_ScriptTemplates[0][0].first = ini.Read("ScriptTemplates", "DefaultName");
+	g_ScriptTemplates[0][0].second = "New script";
+
+	for (int i = 1; i <= ScriptTemplatesCount; ++i) {
+		std::string curstr = ini.Read("ScriptTemplates", std::to_string(i));
+		ScriptTemplate scriptTemplate = ini.Split(curstr, ',');
+		g_ScriptTemplates[i] = scriptTemplate;
+	}
+
+	return;
+}
+
+void CScriptTypesExt::OnTemplateLoadExt()
+{
+	logger::g_logger.Debug("Load Script Templates");
+	LoadScriptTemplates();
+	HWND ScriptWnd = this->m_hWnd;
+	HWND ComboScriptTemplate;
+	this->GetDlgItem(9978, &ComboScriptTemplate);
+	::SendMessage(ComboScriptTemplate, CB_RESETCONTENT, NULL, NULL);
+	int ScriptTemplateCount = g_ScriptTemplates.size();
+	for (int i = 0; i < ScriptTemplateCount; ++i) {
+		::SendMessage(ComboScriptTemplate, CB_ADDSTRING, NULL, (LPARAM)(g_ScriptTemplates[i][0].first.c_str()));
+	}
+	::SendMessage(ComboScriptTemplate, CB_SETCURSEL, 0, NULL);
+	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(9978, CBN_SELCHANGE), (LPARAM)ComboScriptTemplate);
 }
 //****************************************** Hooks ****************************************************
 
@@ -633,33 +734,33 @@ DEFINE_HOOK(4D5B20, CScriptTypes_DTOR, 7)
 DEFINE_HOOK(4D7670, CScriptTypes_OnCBScriptParameterEditChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);
-	pThis->CScriptTypesExt::OnCBScriptParameterEditChanged();
+	pThis->OnActionParameterEditChangedExt();
 	return 0x4D7A44;
 }
 
 DEFINE_HOOK(4D6A10, CScriptTypes_OnCBCurrentActionEditChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);
-	pThis->CScriptTypesExt::OnCBCurrentActionEditChanged();
+	pThis->OnActionTypeEditChangedExt();
 	return 0x4D7569;
 }
 
 DEFINE_HOOK(4D75D0, CScriptTypes_OnCBCurrentActionSelectChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);
-	int curActionIdx = pThis->CCBCurrentAction.GetCurSel();
+	int curActionIdx = pThis->ComboBoxActionType.GetCurSel();
 	if (curActionIdx >= 0)
 	{
-		int curActionData = pThis->CCBCurrentAction.GetItemData(curActionIdx);
+		int curActionData = pThis->ComboBoxActionType.GetItemData(curActionIdx);
 		auto& dict = CScriptTypesExt::ExtActions;
 		auto itr = dict.find(curActionData);
 		if (itr != dict.end())
 		{
-			pThis->CScriptTypesExt::OnCBCurrentActionEditChanged();
+			pThis->OnActionTypeEditChangedExt();
 
-			pThis->CETDescription.SetWindowTextA(itr->second.Description_);
-			pThis->CETDescription.EnableWindow(itr->second.Editable_);
-			pThis->CCBScriptParameter.EnableWindow(itr->second.Editable_);
+			pThis->EditDescription.SetWindowTextA(itr->second.Description_);
+			pThis->EditDescription.EnableWindow(itr->second.Editable_);
+			pThis->ComboBoxActionParameter.EnableWindow(itr->second.Editable_);
 		}
 	}
 	return 0x4D7662;
@@ -668,7 +769,7 @@ DEFINE_HOOK(4D75D0, CScriptTypes_OnCBCurrentActionSelectChanged, 7)
 DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 {
 	GET(CScriptTypesExt*, pThis, ECX);
-	pThis->CScriptTypesExt::OnLBScriptActionsSelectChanged();
+	pThis->OnActionLineSelectChangedExt();
 	return 0x4D676C;
 }
 
@@ -693,14 +794,14 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 //DEFINE_HOOK(4D61B0, CScriptTypes_OnCBCurrentScriptSelectChanged, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnCBCurrentScriptSelectChanged();
+//	pThis->CScriptTypesExt::OnScriptTypeSelectChanged();
 //	return 0x4D64FD;
 //}
 //
 //DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnLBScriptActionsSelectChanged();
+//	pThis->CScriptTypesExt::OnActionLineSelectChangedExt();
 //	return 0x4D676C;
 //}
 //
@@ -714,7 +815,7 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 //DEFINE_HOOK(4D6A10, CScriptTypes_OnCBCurrentActionEditChanged, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnCBCurrentActionEditChanged();
+//	pThis->CScriptTypesExt::OnActionTypeEditChangedExt();
 //	return 0x4D7569;
 //}
 //
@@ -728,47 +829,47 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 //DEFINE_HOOK(4D7670, CScriptTypes_OnCBScriptParameterEditChanged, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnCBScriptParameterEditChanged();
+//	pThis->CScriptTypesExt::OnActionParameterEditChangedExt();
 //	return 0x4D7A44;
 //}
 //
 //DEFINE_HOOK(4D7A50, CScriptTypes_OnCBScriptParameterSelectChanged, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnCBScriptParameterSelectChanged();
+//	pThis->CScriptTypesExt::OnActionParameterSelectChanged();
 //	return 0x4D7AB8;
 //}
 //
 //DEFINE_HOOK(4D7AC0, CScriptTypes_OnBNAddActionClicked, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnBNAddActionClicked();
+//	pThis->CScriptTypesExt::OnActionAdd();
 //	return 0x4D7DC7;
 //}
 //
 //DEFINE_HOOK(4D7DD0, CScriptTypes_OnBNDeleteActionClicked, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnBNDeleteActionClicked();
+//	pThis->CScriptTypesExt::OnActionDelete();
 //	return 0x4D8388;
 //}
 //
 //DEFINE_HOOK(4D8390, CScriptTypes_OnBNAddScriptClicked, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnBNAddScriptClicked();
+//	pThis->CScriptTypesExt::OnScriptTypeAdd();
 //	return 0x4D8721;
 //}
 //DEFINE_HOOK(4D8390, CScriptTypes_OnBNAddScriptClicked, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnBNAddScriptClickedExt();
+//	pThis->CScriptTypesExt::OnScriptTypeAddExt();
 //	return 0x4D8721;
 //}
 //
 //DEFINE_HOOK(4D8730, CScriptTypes_OnBNDeleteScriptClicked, 7)
 //{
 //	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnBNDeleteScriptClicked();
+//	pThis->CScriptTypesExt::OnScriptTypeDelete();
 //	return 0x4D8AB6;
 //}

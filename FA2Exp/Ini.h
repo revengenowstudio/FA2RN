@@ -26,7 +26,8 @@ private:
 public:
 	ScriptTemplate();
 	ScriptTemplate(std::vector<std::string> init);
-	std::pair<std::string, std::string>* operator[](int index);
+	std::pair<std::string, std::string>& operator[](int index);
+	const std::pair<std::string, std::string>& operator[](int index) const;
 	int Count();
 	void Resize(int size);
 };

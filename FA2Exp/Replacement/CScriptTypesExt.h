@@ -33,35 +33,36 @@ public:
 
 	BOOL OnInitDialogHook();
 
-	void OnCBCurrentActionEditChanged();
-	void OnCBScriptParameterEditChanged();
-	void OnLBScriptActionsSelectChanged();
+	void OnActionTypeEditChangedExt();
+	void OnActionParameterEditChangedExt();
+	void OnActionLineSelectChangedExt();
 
 	/*void DoDataExchange(CDataExchange* pDX);
 
-	void OnCBCurrentScriptSelectChanged();
+	void OnScriptTypeSelectChanged();
 	void OnETScriptNameChanged();
 
 	void OnCBCurrentActionSelectChanged();
-	void OnCBScriptParameterSelectChanged();
+	void OnActionParameterSelectChanged();
 	*/
-	void OnBNAddActionClickedExt();
+	void OnActionTypeAddExt();
 	/*
-	void OnBNDeleteActionClicked();
-	void OnBNAddScriptClicked();
-	void OnBNDeleteScriptClicked();*/
+	void OnActionDelete();
+	void OnScriptTypeAdd();
+	void OnScriptTypeDelete();*/
 
-	//void OnBNDeleteActionClicked();
-	void OnBNAddScriptClickedExt();
-	//void OnBNDeleteScriptClicked();
+	//void OnActionDelete();
+	void OnScriptTypeAddExt();
+	//void OnScriptTypeDelete();
 
 
 	CScriptTypesExt() {};
 	~CScriptTypesExt() {};
 
 	// Functional Functions
-	void OnBNCloneScriptClicked();
-	void OnBNCloneItemClicked();
+	void OnScriptTypeCloneExt();
+	void OnActionLineCloneExt();
+	void OnTemplateLoadExt();
 
 	static std::map<int, CScriptTypeAction> ExtActions;
 	static std::map<int, CScriptTypeParam> ExtParams;

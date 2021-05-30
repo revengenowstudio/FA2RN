@@ -57,8 +57,8 @@ protected:
 	void* m_lpDialogInit;           // DLGINIT resource data
 	CWnd* m_pParentWnd;             // parent/owner window
 	HWND m_hWndTop;                 // top level parent window (may be disabled)
-
-#ifndef _AFX_NO_OCC_SUPPORT
+	//MFC macro, but always undefined because FA2 already uses
+#if !defined (_AFX_NO_OCC_SUPPORT) || 1
 	_AFX_OCC_DIALOG_INFO* m_pOccDialogInfo;
 	virtual BOOL SetOccDialogInfo(_AFX_OCC_DIALOG_INFO* pOccDialogInfo) { JMP_THIS(0x551D5E); }
 #endif

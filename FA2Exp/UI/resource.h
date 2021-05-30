@@ -96,6 +96,8 @@ namespace WND_Script
 	constexpr int ListBoxActions = 1170;
 	constexpr int ComboBoxActionType = 1064;
 	constexpr int ComboBoxParameter = 1196;
+	constexpr int ComboBoxScriptType = 1193;
+	constexpr int EditScriptName = 1010;
 }
 
 /*

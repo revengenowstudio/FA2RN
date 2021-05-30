@@ -31,8 +31,12 @@ void ScriptTemplate::Resize(int size) {
 	return;
 }
 
-std::pair<std::string, std::string>* ScriptTemplate::operator[] (int index) {
-	return &Data[index];
+std::pair<std::string, std::string>& ScriptTemplate::operator[] (int index) {
+	return Data[index];
+}
+const std::pair<std::string, std::string>& ScriptTemplate::operator[] (int index) const {
+	auto non_const_ptr = const_cast<std::remove_const_t<std::remove_pointer_t<decltype(this)>>*>(this);
+	return non_const_ptr->operator[](index);
 }
 #pragma endregion
 
