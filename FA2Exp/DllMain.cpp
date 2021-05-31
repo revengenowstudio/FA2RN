@@ -35,7 +35,6 @@ HWND g_SysTreeView;
 
 // Store templates
 std::vector<TeamTemplate> g_TeamTemplates;
-std::vector<ScriptTemplate> g_ScriptTemplates;
 
 // Global strings for further use
 std::string g_TerrainTheater;
@@ -79,7 +78,6 @@ BOOL CALLBACK HouseDlgProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 std::string GetPath();
 
 void LoadTeamTemplates();
-void LoadScriptTemplates();
 void GetTreeViewHwnd();
 void LoadINI();
 void LoadFA2CopyConfig();
@@ -712,92 +710,6 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			//Scripts
 #if defined(OldScript)
-			case 9976: {//Override Add Script for Templates
-				logger::g_logger.Info("Add Script");
-				HWND ScriptWnd = FindWindow(
-					g_FindWindowConfig.DialogClass.c_str(),
-					g_FindWindowConfig.ScriptWnd.c_str()
-				);
-				HWND ComboScriptTemplate = GetDlgItem(ScriptWnd, 9978);
-				HWND CheckBox = GetDlgItem(ScriptWnd, 9993);
-				HWND EditName = GetDlgItem(ScriptWnd, 1010);
-				HWND ListBox = GetDlgItem(ScriptWnd, 1170);
-				HWND ComboType = GetDlgItem(ScriptWnd, 1064);
-				HWND ComboPara = GetDlgItem(ScriptWnd, 1196);
-				int curTemplateComboCount = SendMessage(ComboScriptTemplate, CB_GETCOUNT, NULL, NULL);
-				if (curTemplateComboCount <= 0) {
-					HWND BtnLoad = GetDlgItem(ScriptWnd, 9977);
-					SendMessage(BtnLoad, WM_LBUTTONDOWN, 9977, NULL);
-					SendMessage(BtnLoad, WM_LBUTTONUP, 9977, NULL);
-				}
-				int curTemplateIndex = SendMessage(ComboScriptTemplate, CB_GETCURSEL, NULL, NULL);
-				ScriptTemplate& curTemplate = g_ScriptTemplates[curTemplateIndex];
-				logger::g_logger.Info("Now using Script Template "+curTemplate[0]->first);
-
-				HWND AllScriptCombo = GetDlgItem(ScriptWnd, 1193);
-				int ScriptCount = SendMessage(AllScriptCombo, CB_GETCOUNT, 0, 0);
-				std::vector<TCHAR*> ScriptDictionary(ScriptCount);
-				for (int i = 0; i < ScriptCount; ++i) {
-					int strLen = SendMessage(AllScriptCombo, CB_GETLBTEXTLEN, i, NULL) + 1;
-					ScriptDictionary[i] = new TCHAR[strLen];
-					SendMessage(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)ScriptDictionary[i]);
-				}
-
-				HWND BtnNew = GetDlgItem(ScriptWnd, 1154);
-				SendMessage(BtnNew, WM_LBUTTONDOWN, 1154, 0);
-				SendMessage(BtnNew, WM_LBUTTONUP, 1154, 0);
-
-				int i;
-				for (i = 0; i < ScriptCount; ++i) {
-					int strLen = SendMessage(AllScriptCombo, CB_GETLBTEXTLEN, i, NULL) + 1;
-					TCHAR* str = new TCHAR[strLen];
-					SendMessage(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)str);
-					if (strcmp(str, ScriptDictionary[i]) != 0) {
-						delete[] str;
-						break;
-					}
-					delete[] str;
-				}
-
-				SendMessage(AllScriptCombo, CB_SETCURSEL, i, NULL);
-				SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1193, CBN_SELCHANGE), (LPARAM)AllScriptCombo);
-
-				HWND BtnAdd = GetDlgItem(ScriptWnd, 1173);
-				int KeyCount = curTemplate.Count();
-				SetWindowText(EditName, curTemplate[0]->second.c_str());
-
-				for (int i = 1; i <= KeyCount; ++i) {
-					SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
-					SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
-					SendMessage(ListBox, LB_SETCURSEL, i - 1, NULL);
-					SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-					SendMessage(ComboType, CB_SETCURSEL, atoi(curTemplate[i]->first.c_str()), NULL);
-					SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
-					if (curTemplate[i]->second == "EMPTY")	continue;
-					SetWindowText(ComboPara, curTemplate[i]->second.c_str());
-					SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
-				}
-
-				for (auto x : ScriptDictionary)	delete[] x;
-
-				break;
-			}
-			case 9977: {//Load ScriptTemplates
-				logger::g_logger.Info("Load Script Templates");
-				LoadScriptTemplates();
-				HWND ScriptWnd = FindWindow(
-					g_FindWindowConfig.DialogClass.c_str(),
-					g_FindWindowConfig.ScriptWnd.c_str()
-				);
-				HWND ComboScriptTemplate = GetDlgItem(ScriptWnd, 9978);
-				SendMessage(ComboScriptTemplate, CB_RESETCONTENT, NULL, NULL);
-				int ScriptTemplateCount = g_ScriptTemplates.size();
-				for (int i = 0; i < ScriptTemplateCount; ++i)
-					SendMessage(ComboScriptTemplate, CB_ADDSTRING, NULL, (LPARAM)(g_ScriptTemplates[i][0]->first.c_str()));
-				SendMessage(ComboScriptTemplate, CB_SETCURSEL, 0, NULL);
-				SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(9978, CBN_SELCHANGE), (LPARAM)ComboScriptTemplate);
-				break;
-			}
 			case 9992: {//Add Script Member (Override 1173)
 				logger::g_logger.Info("Add Script Member");
 				HWND ScriptWnd = FindWindow(
@@ -1508,38 +1420,6 @@ void LoadTeamTemplates() {
 		std::string curstr = ini.Read("TeamTemplates", std::to_string(i));
 		TeamTemplate teamTemplate = ini.Split(curstr, ',');
 		g_TeamTemplates[i] = teamTemplate;
-	}
-
-	return;
-}
-void LoadScriptTemplates() {
-	Ini& ini = Ini::ConfigIni;
-	g_ScriptTemplates.clear();
-
-	//Read Team Templates
-	int ScriptTemplatesCount = atoi(ini.Read("ScriptTemplates", "Counts").c_str());
-	if (ini.Exist() == FALSE) {
-		MessageBox(
-			NULL,
-			MessageBoxConfig::Instance.Message.IniNotExist.c_str(),
-			MessageBoxConfig::Instance.Captain.Error.c_str(),
-			MB_OK
-		);
-		ScriptTemplatesCount = 0;
-	}
-	if (ScriptTemplatesCount < 0)	ScriptTemplatesCount = 0;
-
-	logger::g_logger.Info(std::to_string(ScriptTemplatesCount) + " Script Templates Loading");
-
-	g_ScriptTemplates.resize(ScriptTemplatesCount + 1);
-	g_ScriptTemplates[0].Resize(1);
-	g_ScriptTemplates[0][0]->first = ini.Read("ScriptTemplates", "DefaultName");
-	g_ScriptTemplates[0][0]->second = "New script";
-
-	for (int i = 1; i <= ScriptTemplatesCount; ++i) {
-		std::string curstr = ini.Read("ScriptTemplates", std::to_string(i));
-		ScriptTemplate scriptTemplate = ini.Split(curstr, ',');
-		g_ScriptTemplates[i] = scriptTemplate;
 	}
 
 	return;
