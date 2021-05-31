@@ -21,7 +21,7 @@ public:
 	FA2::CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") const;
 
 	IndiceStorage GetIndices(const char* pSection, bool bParseIntoValue = false) const;
-	SequencedSection GetSection(const char* pSection) const;
+	SequencedSection GetSectionItems(const char* pSection) const;
 
 private:
 	void AddINI(INIClass& INI);
@@ -38,9 +38,10 @@ public:
 	static INIMetaGroup GetRules();
 	static INIMetaGroup GetDocument();
 
+	static SequencedSection GetSectionItems(const INIClass& ini, const char* pSection);
 	static IndiceStorage GetIndicies(const INIClass& ini, const char* pSection);
 
-	static bool IsNullOrEmpty(const FA2::CString& value) { return isNullOrEmpty (value); }
+	static bool IsNullOrEmpty(const FA2::CString& value) { return isNullOrEmpty(value); }
 
 private:
 	static bool isNullOrEmpty(const FA2::CString& value);

@@ -44,7 +44,6 @@ DEFINE_HOOK(41FDDB, FA2Main_GetFilePath_2, 6)
 	return 0x41FDE9;
 }
 
-#if 0
 DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 {
 	auto& rules = GlobalVars::INIFiles::Rules();
@@ -72,7 +71,6 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	R->ECX<const char*>(name);
 	return 0;
 }
-#endif
 
 __declspec(naked) void ret_func()
 {

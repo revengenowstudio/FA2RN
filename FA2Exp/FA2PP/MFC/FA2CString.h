@@ -31,7 +31,7 @@ public:
 	~CString() FA2MFC_THISCALL(0x555F0F);
 
 	//helper:
-	//CString(CString&& rhs)
+	//CString(CString&& rhs) : CString()
 	//{ 
 	//	std::swap(*(reinterpret_cast<CStringData*>(m_pchData) - 1), *(reinterpret_cast<CStringData*>(rhs.m_pchData - 1)));
 	//	std::swap(m_pchData, rhs.m_pchData);

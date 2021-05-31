@@ -143,7 +143,7 @@ void ObjectBrowserControlExt::Redraw_Initialize()
 	auto loadSet = [&mmh](const char* pTypeName, TreeViewTechnoType nType)
 	{
 		ExtSets[static_cast<int>(nType)].clear();
-		auto& section = mmh.GetSection(pTypeName);
+		auto& section = mmh.GetSectionItems(pTypeName);
 		for (auto& item : section) {
 			ExtSets[static_cast<int>(nType)].insert(std::string(item));
 		}
@@ -228,10 +228,9 @@ void ObjectBrowserControlExt::Redraw_Owner()
 	}
 
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
-	auto const& mmh = INIMeta::GetDocument();
 
 	bool bMultiplayer = doc.GetBool("Basic", "MultiplayerOnly");
-	auto const& orderedSections = mmh.GetIndices("Houses", true);
+	auto const& orderedSections = INIMeta::GetSectionItems(doc, "Houses");
 
 #if defined(HintNonMultiplayerOwner)
 	bool &bLoadOnlySpecial = bMultiplayer;
@@ -249,7 +248,7 @@ void ObjectBrowserControlExt::Redraw_Owner()
 	}
 #endif
 	for (size_t i = 0;  i < orderedSections.size(); ++i) {
-		auto const& section = orderedSections[i];
+		auto houseName = orderedSections[i];
 #if defined(HintNonMultiplayerOwner)
 		if (bMultiplayer
 			&& section != "Neutral House" 
@@ -257,11 +256,16 @@ void ObjectBrowserControlExt::Redraw_Owner()
 			continue;
 		}
 #endif
-		if (section == "GDI" || section == "Nod") {
+		if (houseName == "GDI" || houseName == "Nod") {
 			continue;
 		}
-		auto const& houseName = CSFTable::GetUIName(section);
-		this->InsertString(houseName, Const_House + i, hOwner);
+		//remove ' House' suffix
+		auto const spacePos = houseName.Find(' ');
+		if (spacePos >= 0) {
+			houseName = houseName.Mid(0, spacePos);
+		}
+		houseName = CSFTable::GetUIName(houseName);
+		this->InsertString(adjustedName, Const_House + i, hOwner);
 	}
 }
 
@@ -275,7 +279,7 @@ void ObjectBrowserControlExt::Redraw_Infantry()
 	this->insertItemBySides(TreeViewTechnoType::Infantry, subNodes, hInfantry);
 
 	auto const& mmh = INIMeta::GetRules();
-	auto& infantries = mmh.GetSection("InfantryTypes");
+	auto& infantries = mmh.GetSectionItems("InfantryTypes");
 	auto index = 0;
 	for (auto& inf : infantries) {
 		index++;
@@ -316,7 +320,7 @@ void ObjectBrowserControlExt::Redraw_Vehicle()
 	this->insertItemBySides(TreeViewTechnoType::Vehicle, subNodes, hVehicle);
 
 	auto const& mmh = INIMeta::GetRules();
-	auto& vehicles = mmh.GetSection("VehicleTypes");
+	auto& vehicles = mmh.GetSectionItems("VehicleTypes");
 	auto index = 0;
 	for (auto& veh : vehicles) {
 		index++;
@@ -356,7 +360,7 @@ void ObjectBrowserControlExt::Redraw_Aircraft()
 	this->insertItemBySides(TreeViewTechnoType::Aircraft, subNodes, hAircraft);
 
 	auto const& mmh = INIMeta::GetRules();
-	auto& aircrafts = mmh.GetSection("AircraftTypes");
+	auto& aircrafts = mmh.GetSectionItems("AircraftTypes");
 	auto index = 0;
 	for (auto& air : aircrafts) {
 		index++;
@@ -395,7 +399,7 @@ void ObjectBrowserControlExt::Redraw_Building()
 	this->insertItemBySides(TreeViewTechnoType::Building, subNodes, hBuilding);
 
 	auto const& mmh = INIMeta::GetRules();
-	auto& buildings = mmh.GetSection("BuildingTypes");
+	auto& buildings = mmh.GetSectionItems("BuildingTypes");
 	auto index = 0;
 	for (auto& bud : buildings)
 	{
@@ -434,7 +438,7 @@ void ObjectBrowserControlExt::Redraw_Terrain()
 	this->InsertTranslatedString("RndTreeObList", 50999, hTerrain);
 
 	auto& rules = GlobalVars::INIFiles::Rules();
-	auto const& indices = INIMeta::GetIndicies(rules, "TerrainTypes");
+	auto const& indices = INIMeta::GetSectionItems(rules, "TerrainTypes");
 
 	for (auto i = 0; i < indices.size(); ++i) {
 		auto const& item = indices[i];
@@ -453,7 +457,7 @@ void ObjectBrowserControlExt::Redraw_Smudge()
 	}
 
 	auto& rules = GlobalVars::INIFiles::Rules();
-	auto const& indices = INIMeta::GetIndicies(rules, "SmudgeTypes");
+	auto const& indices = INIMeta::GetSectionItems(rules, "SmudgeTypes");
 
 	for (size_t i = 0;i < indices.size(); ++i) {
 		auto const& item = indices[i];
@@ -466,7 +470,9 @@ void ObjectBrowserControlExt::Redraw_Smudge()
 void ObjectBrowserControlExt::Redraw_Overlay()
 {
 	HTREEITEM& hOverlay = ExtNodes[Root_Overlay];
-	if (hOverlay == NULL)   return;
+	if (hOverlay == NULL) {
+		return;
+	}
 
 	auto& rules = GlobalVars::INIFiles::Rules();
 
@@ -502,19 +508,17 @@ void ObjectBrowserControlExt::Redraw_Overlay()
 	// a rough support for tracks
 	this->InsertTranslatedString("Tracks", Const_Overlay + 39, hOverlay);
 
-	auto const& indices = INIMeta::GetIndicies(rules, "OverlayTypes");
+	auto const& indices = INIMeta::GetSectionItems(rules, "OverlayTypes");
 	auto const indiceSize = std::min<unsigned int>(indices.size(), 255);
 	for (size_t i = 0;i < indiceSize; ++i) {
 		auto const& item = indices[i];
 		auto const& name = CSFTable::GetUIName(item);
-		if (rules.GetBool(item, "Wall"))
-			this->InsertString(
-				name,
-				Const_Overlay + i,
-				hWalls
-			);
-		if (IgnoreSet.find(item.operator LPCTSTR()) == IgnoreSet.end())
+		if (rules.GetBool(item, "Wall") && rules.GetBool(item, "Wall.HasConnection", true)) {
+			this->InsertString( name, Const_Overlay + i, hWalls);
+		}
+		if (IgnoreSet.find(item.operator LPCTSTR()) == IgnoreSet.end()) {
 			this->InsertString(name, Const_Overlay + i, hTemp);
+		}
 	}
 }
 

@@ -79,33 +79,21 @@ IndiceStorage INIMetaGroup::GetIndices(const char* pSection, bool bParseIntoValu
 }
 
 //#define SkipEmpty
-SequencedSection INIMetaGroup::GetSection(const char* pSection) const
+SequencedSection INIMetaGroup::GetSectionItems(const char* pSection) const
 {
 	SequencedSection ret;
+	std::set<FA2::CString> record;
 	for (auto& pINI : group) {
 		if (!pINI) {
 			continue;
 		}
-		if (auto const pSectionData = pINI->TryGetSection(pSection)) {
-			for (auto& pair : pSectionData->EntriesDictionary)
-			{
-#if defined(SkipEmpty)
-				if (INIMeta::isNullOrEmpty(pair.first) ||
-					INIMeta::isNullOrEmpty(pair.second)
-					) {
-					ret.push_back("");
-					continue;
-				}
-#endif
-				if (pair.first == "Name") {
-					ret.push_back("");
-					continue;
-				}
-				ret.push_back(pair.second);
+		for (auto& item : INIMeta::GetSectionItems(*pINI, pSection)) {
+			if (record.find(item) == record.end()) {
+				record.insert(item);
+				ret.emplace_back(item);
 			}
 		}
 	}
-
 	return ret;
 }
 
@@ -127,6 +115,30 @@ INIMetaGroup INIMeta::GetDocument()
 bool INIMeta::isNullOrEmpty(const FA2::CString& value)
 {
 	return !value.GetLength() || value == "none" || value == "<none>";
+}
+
+SequencedSection INIMeta::GetSectionItems(const INIClass& ini, const char* pSection)
+{
+	SequencedSection ret;
+	if (auto const pSectionData = ini.TryGetSection(pSection)) {
+		for (auto& pair : pSectionData->EntriesDictionary)
+		{
+#if defined(SkipEmpty)
+			if (INIMeta::isNullOrEmpty(pair.first) ||
+				INIMeta::isNullOrEmpty(pair.second)
+				) {
+				ret.push_back("");
+				continue;
+			}
+#endif
+			if (pair.first == "Name") {
+				ret.push_back("");
+				continue;
+			}
+			ret.push_back(pair.second);
+		}
+	}
+	return ret;
 }
 
 IndiceStorage INIMeta::GetIndicies(const INIClass& ini, const char* pSection)
