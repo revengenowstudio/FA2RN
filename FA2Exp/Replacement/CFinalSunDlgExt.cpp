@@ -265,7 +265,7 @@ void ObjectBrowserControlExt::Redraw_Owner()
 			houseName = houseName.Mid(0, spacePos);
 		}
 		houseName = CSFTable::GetUIName(houseName);
-		this->InsertString(adjustedName, Const_House + i, hOwner);
+		this->InsertString(houseName, Const_House + i, hOwner);
 	}
 }
 
