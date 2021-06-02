@@ -479,65 +479,52 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 //{
 //}
 //
+
+void CScriptTypesExt::insertAction(int curSel, const FA2::CString& scriptTypeId, const FA2::CString& value)
+{
+	FA2::CString idxStr;
+	std::vector<FA2::CString> oldItems;
+	auto& doc = GlobalVars::INIFiles::CurrentDocument();
+	//record old values from next line
+	for (auto idx = curSel + 1; idx < this->ListActions.GetCount(); ++idx) {
+		idxStr.Format("%d", idx);
+		oldItems.push_back(doc.GetString(scriptTypeId, idxStr, "0,0"));
+	}
+	idxStr.Format("%d", curSel + 1);
+	doc.WriteString(scriptTypeId, idxStr, value);
+	auto newIdx = curSel + 2;
+	for (auto& val : oldItems) {
+		idxStr.Format("%d", newIdx);
+		doc.WriteString(scriptTypeId, idxStr, val);
+		newIdx++;
+	}
+	this->ListActions.InsertString(this->ListActions.GetCount(), idxStr);
+	this->ListActions.SetCurSel(curSel + 1);
+	this->OnActionLineSelectChangedExt();
+}
+
+FA2::CString CScriptTypesExt::getCurrentTypeID()
+{
+	FA2::CString scriptTypeId;
+	auto& doc = GlobalVars::INIFiles::CurrentDocument();
+	this->ComboBoxScriptType.GetLBText(this->ComboBoxScriptType.GetCurSel(), scriptTypeId);
+	utilities::trim_index(scriptTypeId);
+	return scriptTypeId;
+}
+
 void CScriptTypesExt::OnActionTypeAddExt()
 {
 	logger::g_logger.Debug("Add Script Member");
-	HWND ScriptWnd = this->m_hWnd;
-
+	HWND ScriptWnd = this->GetSafeHwnd();
 	HWND CheckBox = ::GetDlgItem(ScriptWnd, WND_Script::CheckBoxToggleInsert);
-	HWND BtnAdd = ::GetDlgItem(ScriptWnd, WND_Script::ButtonFA2NewLine);
-	HWND ListBox = ::GetDlgItem(ScriptWnd, WND_Script::ListBoxActions);
-	HWND ComboType = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxActionType);
-	HWND ComboPara = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxParameter);
-	int IsChecked = ::SendMessage(CheckBox, BM_GETCHECK, NULL, NULL);
-	int ScriptCount = ::SendMessage(ListBox, LB_GETCOUNT, 0, 0);
-	int CurSelIndex = ::SendMessage(ListBox, LB_GETCURSEL, 0, 0);
-
-	if (IsChecked == BST_CHECKED && ScriptCount > 0) {
-		logger::g_logger.Info("Script Member - Insert Mode ON");
-		MessageBoxA("Insert mode not supported yet, fallback to insert at the end", "Error");
-		//std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
-		//std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
-		//for (int i = CurSelIndex; i < ScriptCount; ++i) {
-		//	::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
-		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		//	CurType[i - CurSelIndex] = ::SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
-		//	int strLen = ::GetWindowTextLength(ComboPara) + 1;
-		//	CurPara[i - CurSelIndex] = new TCHAR[strLen];
-		//	::GetWindowText(ComboPara, CurPara[i - CurSelIndex], strLen);
-		//}
-		//::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
-		//::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
-		//++ScriptCount;
-		//for (int i = CurSelIndex + 1; i < ScriptCount; ++i) {
-		//	::SendMessage(ListBox, LB_SETCURSEL, i, NULL);
-		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-		//	::SendMessage(ComboType, CB_SETCURSEL, CurType[i - CurSelIndex - 1], NULL);
-		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
-		//	::SetWindowText(ComboPara, CurPara[i - CurSelIndex - 1]);
-		//	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
-		//}
-		//::SendMessage(ListBox, LB_SETCURSEL, CurSelIndex, NULL);
-		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-
-		//::SendMessage(ComboType, CB_SETCURSEL, 0, NULL);
-		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1064, CBN_SELCHANGE), (LPARAM)ComboType);
-		//::SetWindowText(ComboPara, "0");
-		//::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1196, CBN_SELCHANGE), (LPARAM)ComboPara);
-		//for (auto x : CurPara) { 
-		//	delete[] x; 
-		//}
-		//return;
+	bool isInsert = ::SendMessageA(CheckBox, BM_GETCHECK, NULL, NULL) == BST_CHECKED;
+	auto const curSel = this->ListActions.GetCurSel();
+	if (curSel < 0) {
+		isInsert = false;
 	}
-
-	logger::g_logger.Info("Script Member - Insert Mode OFF");
-	this->OnActionAdd();
-	//::SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
-	//::SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
-	::SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
-	::SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
-
+	//get selected value :
+	
+	insertAction(isInsert ? curSel : this->ListActions.GetCount(), getCurrentTypeID(), "0,0");
 	return;
 }
 //
@@ -689,25 +676,13 @@ void CScriptTypesExt::OnActionLineCloneExt()
 		return;
 	}
 
-	if (!isInsert) {
-		auto& doc = GlobalVars::INIFiles::CurrentDocument();
-		FA2::CString scriptTypeId;
-		this->ComboBoxScriptType.GetLBText(this->ComboBoxScriptType.GetCurSel(), scriptTypeId);
-		utilities::trim_index(scriptTypeId);
-		FA2::CString idxStr;
-		idxStr.Format("%d", curSel);
-		auto value = doc.GetString(scriptTypeId, idxStr, "0,0");
-		auto const newIdx = this->ListActions.GetCount();
-		idxStr.Format("%d", newIdx);
-		doc.WriteString(scriptTypeId, idxStr, value);
-		this->ListActions.InsertString(newIdx, idxStr);
-		this->ListActions.SetCurSel(newIdx);
-		this->OnActionLineSelectChangedExt();
-
-		return;
-	}
-
-
+	//get selected value :
+	FA2::CString idxStr;
+	auto& doc = GlobalVars::INIFiles::CurrentDocument();
+	FA2::CString scriptTypeId = getCurrentTypeID();
+	idxStr.Format("%d", curSel);
+	auto value = doc.GetString(scriptTypeId, idxStr, "0,0");
+	insertAction(isInsert ? curSel : this->ListActions.GetCount(), scriptTypeId, value);
 }
 
 void LoadScriptTemplates() {
