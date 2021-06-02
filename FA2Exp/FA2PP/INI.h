@@ -57,6 +57,7 @@ public:
 
 INIStringDict::_Pairib INIStringDict::insert(const INIStringDict::value_type& pair) { JMP_THIS(0x40A010); }
 INIDict::_Pairib INIDict::insert(const INIDict::value_type& pair) { JMP_THIS(0x4026D0); }
+FA2::CString& INIStringDict::operator[](const FA2::CString& Key) { JMP_THIS(0x407CA0); }
 
 class NOVTABLE INISection {
 public:
@@ -69,8 +70,8 @@ public:
 	int GetItemCount(FA2::CString Key) const//0 means section exists but no content, -1 means section not exists
 		{ JMP_THIS(0x4023B0); }
 
-	const FA2::CString& GetValue(const FA2::CString& Key) const
-		{ JMP_THIS(0x407CA0);}
+	FA2::CString& operator[](const FA2::CString& Key)
+	{ return this->EntriesDictionary[Key]; }
 
 //private:
 	INIStringDict EntriesDictionary;
@@ -162,7 +163,9 @@ public:
 	bool WriteString(const char* pSection, const char* pKey, const char* pValue)
 	{
 		auto itr = data.find(pSection);
-		if (itr == data.end())	return false;
+		if (itr == data.end()) { 
+			return false; 
+		}
 		auto& dict = itr->second.EntriesDictionary;
 		auto pair = Insert(dict, pKey, pValue);
 		if (!pair.second) {
@@ -247,28 +250,6 @@ public:
 			return false;
 		default:
 			return nDefault;
-		}
-	}
-
-	bool GetBoolean(const FA2::CString& Section, const FA2::CString& Key, bool Default = false)
-	{
-		auto const section = this->TryGetSection(Section);
-		if (!section) {
-			return Default;
-		}
-		auto const& value = section->GetValue(Key);
-		switch (toupper(static_cast<unsigned char>(value[0])))
-		{
-		case '1':
-		case 'T':
-		case 'Y':
-			return true;
-		case '0':
-		case 'F':
-		case 'N':
-			return false;
-		default:
-			return Default;
 		}
 	}
 private:
