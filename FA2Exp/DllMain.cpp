@@ -9,6 +9,8 @@
 #include "Replacement/CTileSetDialogBarExt.h"
 #include <GlobalVars.h>
 
+//#define OldScript
+
 #pragma region Global Variables
 // Global Variables
 
@@ -1424,7 +1426,6 @@ void LoadTeamTemplates() {
 
 	return;
 }
-
 void GetTreeViewHwnd() {
 	logger::g_logger.Info("Tree View Handle has gotten");
 	HWND Hwnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
