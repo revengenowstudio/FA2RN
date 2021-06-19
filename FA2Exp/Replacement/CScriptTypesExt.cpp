@@ -100,6 +100,7 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
 {
+	//LogDebug(__FUNCTION__" type = %d", type);
 	HWND text = ::GetDlgItem(this->m_hWnd, WND_Script::TextExtParameter);
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
 	switch (type) {
@@ -108,6 +109,7 @@ void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int valu
 			::EnableWindow(text, FALSE);
 			extParamCmbBox.Clear();
 			extParamCmbBox.EnableWindow(false);
+			extParamCmbBox.SetWindowTextA("");
 			break;
 		case ExtraParameterType::ScanType: {
 			::EnableWindow(text, TRUE);
@@ -115,8 +117,9 @@ void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int valu
 			char buffer[0x20];
 			_itoa_s(value, buffer, 10);
 			extParamCmbBox.SetWindowTextA(buffer);
+			//LogDebug(__FUNCTION__" [%X] window enabled", extParamCmbBox.GetHWND());
 		}
-		break;
+			break;
 		case ExtraParameterType::Counter:
 			::EnableWindow(text, TRUE);
 			extParamCmbBox.EnableWindow(true);
@@ -149,7 +152,7 @@ ExtraParameterType getExtraParamType(int paramType)
 		case 19:
 		case 20:
 			return ExtraParameterType::None;
-		case 16:
+		case PRM_BuildingType:
 			return ExtraParameterType::ScanType;
 	}
 }
@@ -162,7 +165,8 @@ void CScriptTypesExt::updateExtraValue(int paramType, FA2::CString& paramNumStr)
 		paramNumStr.Format("%d", LOWORD(rawNum));
 		extraValue = HIWORD(rawNum);
 	}
-	updateExtraParamComboBox(getExtraParamType(paramType));
+	logger::debug(__FUNCTION__" paramType = %d" + std::to_string(paramType));
+	updateExtraParamComboBox(getExtraParamType(paramType), extraValue);
 }
 
 void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
@@ -539,6 +543,7 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 		utilities::trim_index(paramStr);
 		tmp.Format("%s,%s", buffer, paramStr);
 		listStr.Format("%d", listIndex);
+		//TODO: special handling for attack building
 		doc.WriteString(scriptId, listStr, tmp);
 	}
 }
