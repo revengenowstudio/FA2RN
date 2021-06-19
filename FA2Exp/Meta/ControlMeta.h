@@ -9,6 +9,20 @@ FA2MFC_END
 
 namespace ControlMeta
 {
+	class ComboBoxWrapper
+	{
+	public:
+		ComboBoxWrapper(HWND hwnd) : m_hwnd(hwnd)
+		{}
+
+		void Clear();
+		void EnableWindow(bool enable);
+		void SetWindowText(LPCSTR lpsz);
+
+	private:
+		HWND m_hwnd;
+	};
+
 	class ComboBox
 	{
 	public:

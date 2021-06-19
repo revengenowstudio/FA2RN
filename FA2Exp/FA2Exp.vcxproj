@@ -49,7 +49,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSt|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
@@ -105,8 +105,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSt|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Reference\MFC42\include;$(SolutionDir)$(ProjectName)\FA2PP;$(WindowsSDK_IncludePath);$(VC_VC_IncludePath);$(VC_VS_IncludePath);$(UniversalCRT_IncludePath)</IncludePath>
-    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)$(NETFXKitsDir)Lib\um\x86;$(VC_LibraryPath_VC_x86);$(VC_VS_LibraryPath_VC_VS_x86);$(UniversalCRT_LibraryPath_x86)</LibraryPath>
+    <IncludePath>$(VC_VC_IncludePath);$(VC_VS_IncludePath);$(WindowsSDK_71A_IncludePath);$(UniversalCRT_IncludePath)</IncludePath>
+    <LibraryPath>$(WindowsSDK_71A_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)$(NETFXKitsDir)Lib\um\x86;$(VC_LibraryPath_VC_x86);$(VC_VS_LibraryPath_VC_VS_x86);$(UniversalCRT_LibraryPath_x86)</LibraryPath>
     <OutDir>$(SolutionDir)Release\</OutDir>
     <IntDir>Release\</IntDir>
     <ExcludePath>$(CommonExcludePath);$(ExcludePath)</ExcludePath>
@@ -188,6 +188,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <LanguageStandard>stdcpp14</LanguageStandard>
       <DisableSpecificWarnings>4731;</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\FA2PP;$(SolutionDir)Reference\MFC42\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -272,6 +273,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="FA2Expand.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="logger.cpp" />
+    <ClCompile Include="Meta\ComboBoxWrapper.cpp" />
     <ClCompile Include="Meta\ControlMeta.cpp" />
     <ClCompile Include="Meta\INIMeta.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />

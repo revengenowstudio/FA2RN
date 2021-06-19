@@ -98,6 +98,8 @@ namespace WND_Script
 	constexpr int ComboBoxParameter = 1196;
 	constexpr int ComboBoxScriptType = 1193;
 	constexpr int EditScriptName = 1010;
+	constexpr int TextExtParameter = 2101;
+	constexpr int ComboBoxExtParameter = 2102;
 }
 
 /*

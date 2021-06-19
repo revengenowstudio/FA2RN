@@ -10,11 +10,13 @@
 #define SAFE_RELEASE(ptr) {if(!ptr) delete[] ptr;}
 
 std::vector<ScriptTemplate> g_ScriptTemplates;
+FA2::CString CScriptTypesExt::_placeholderCstr;
+
 
 int scriptTypeIndexToComboBoxIndex(FA2::CComboBox& comboBox, int scriptTypeIndex)
 {
-	// As we know, the data sequence is ¡ü
-	// So divide it!
+	// As we know, the data sequence is acending(¡ü)
+	// So use lowerbound search
 	int selectIndex = 0;
 	auto L = 0;
 	auto R = comboBox.GetCount() - 1;
@@ -96,12 +98,79 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
-void CScriptTypesExt::UpdateParams(int actionIndex)
+void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
+{
+	HWND text = ::GetDlgItem(this->m_hWnd, WND_Script::TextExtParameter);
+	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
+	switch (type) {
+		default:
+		case ExtraParameterType::None:
+			::EnableWindow(text, FALSE);
+			extParamCmbBox.Clear();
+			extParamCmbBox.EnableWindow(false);
+			break;
+		case ExtraParameterType::ScanType: {
+			::EnableWindow(text, TRUE);
+			extParamCmbBox.EnableWindow(true);
+			char buffer[0x20];
+			_itoa_s(value, buffer, 10);
+			extParamCmbBox.SetWindowTextA(buffer);
+		}
+		break;
+		case ExtraParameterType::Counter:
+			::EnableWindow(text, TRUE);
+			extParamCmbBox.EnableWindow(true);
+			break;
+	}
+}
+
+ExtraParameterType getExtraParamType(int paramType)
+{
+	switch (paramType) {
+		default:
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+		case 17:
+		case 18:
+		case 19:
+		case 20:
+			return ExtraParameterType::None;
+		case 16:
+			return ExtraParameterType::ScanType;
+	}
+}
+
+void CScriptTypesExt::updateExtraValue(int paramType, FA2::CString& paramNumStr)
+{
+	int extraValue = 0;
+	if (paramType == PRM_BuildingType) {
+		DWORD rawNum = atoi(paramNumStr);
+		paramNumStr.Format("%d", LOWORD(rawNum));
+		extraValue = HIWORD(rawNum);
+	}
+	updateExtraParamComboBox(getExtraParamType(paramType));
+}
+
+void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 {
 	static int LastActionID = -1;
-	auto const& action = ExtActions[actionIndex];
-	auto const& param = ExtParams[action.ParamCode_];
-	auto const paramType = param.Param_;
+	auto const& actionDefinition = ExtActions[actionIndex];
+	auto const& paramDefinition = ExtParams[actionDefinition.ParamCode_];
+	auto const paramType = paramDefinition.Param_;
 	auto const lastActionID = std::exchange(LastActionID, actionIndex);
 	
 	//logger::g_logger.Debug(__FUNCTION__
@@ -109,15 +178,14 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 	//	" actionIndex = " + std::to_string(actionIndex) +
 	//	" paramType = " + std::to_string(paramType)
 	//);
-
+	updateExtraValue(paramType, paramNumStr);
 	if (lastActionID == actionIndex) {
 		return;
 	}
-
 	switch (paramType)
 	{
 		default:
-		case 0:
+		case PRM_None:
 			while (this->ComboBoxActionParameter.DeleteString(0) != -1);
 			break;
 		case 1:
@@ -169,7 +237,7 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 		case 15:
 			CScriptTypesFunctions::LoadParams_Facing(this->ComboBoxActionParameter);
 			break;
-		case 16:
+		case PRM_BuildingType:
 			CScriptTypesFunctions::LoadParams_BuildingTypes(this->ComboBoxActionParameter);
 			break;
 		case 17:
@@ -182,13 +250,13 @@ void CScriptTypesExt::UpdateParams(int actionIndex)
 			CScriptTypesFunctions::LoadParams_Mission(this->ComboBoxActionParameter);
 			break;
 		case 20:
-			CScriptTypesFunctions::LoadParams_Boolean(this->ComboBoxActionParameter);
+			CScriptTypesFunctions::LoadParams_Boolean(this->ComboBoxActionParameter);			
 			break;
 	}
-	this->TextParameterLabel.SetWindowText(param.Label_);
-	this->TextParameterLabel.EnableWindow(action.Editable_);
-	this->ComboBoxActionParameter.EnableWindow(action.Editable_);
-	this->EditDescription.SetWindowText(action.Description_);
+	this->TextParameterLabel.SetWindowText(paramDefinition.Label_);
+	this->TextParameterLabel.EnableWindow(actionDefinition.Editable_);
+	this->ComboBoxActionParameter.EnableWindow(actionDefinition.Editable_);
+	this->EditDescription.SetWindowText(actionDefinition.Description_);
 }
 
 //
@@ -366,7 +434,7 @@ void CScriptTypesExt::OnActionLineSelectChangedExt()
 		selectIndex = scriptTypeIndexToComboBoxIndex(this->ComboBoxActionType, actionIndex);
 
 		this->ComboBoxActionType.SetCurSel(selectIndex);
-		this->UpdateParams(actionIndex);
+		this->UpdateParams(actionIndex, paramNumStr);
 		this->ComboBoxActionParameter.SetWindowTextA(paramNumStr);
 	}
 }
