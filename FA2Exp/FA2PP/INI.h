@@ -98,7 +98,7 @@ public:
 	{
 		return data;
 	}
-
+	#if 0
 	bool DebugToFile(const char* path)
 	{
 		std::ofstream fout;
@@ -118,6 +118,7 @@ public:
 		fout.close();
 		return true;
 	}
+	#endif
 
 	static FA2::CString* __cdecl GetAvailableIndex(FA2::CString*) { JMP_STD(0x446520); }
 	static FA2::CString* GetAvailableKey(FA2::CString* ret,const char* pSection) { JMP_STD(0x499E80); }
