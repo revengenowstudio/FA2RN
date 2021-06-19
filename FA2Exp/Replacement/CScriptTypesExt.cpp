@@ -596,8 +596,8 @@ void CScriptTypesExt::OnActionTypeAddExt()
 		isInsert = false;
 	}
 	//get selected value :
-	
-	insertAction(isInsert ? curSel : this->ListActions.GetCount(), getCurrentTypeID(), "0,0");
+	auto const insertIdx = (isInsert ? curSel : this->ListActions.GetCount()) - 1;
+	insertAction(insertIdx, getCurrentTypeID(), "0,0");
 	return;
 }
 //
