@@ -1387,7 +1387,7 @@ std::string GetPath() {
 	if (path != NULL)
 		ret = path;
 	delete[] path;
-	logger::g_logger.Custom("", "Dll Path :" + ret, false);
+	logger::g_logger.WriteLine("", "Dll Path : %s", ret.c_str());
 	return ret;
 }
 
@@ -1497,7 +1497,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	{
 	case DLL_PROCESS_ATTACH:{
 		g_hModule = hModule;
-		logger::g_logger.Custom(
+		logger::g_logger.WriteLine(
 			"[Global]",
 			"FA2Copy.dll is attaching...",
 			true
@@ -1516,7 +1516,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 		break;
 	}
 	case DLL_PROCESS_DETACH:{
-		logger::g_logger.Custom(
+		logger::g_logger.WriteLine(
 			"[Global]",
 			"FA2Copy.dll is detaching...",
 			true
