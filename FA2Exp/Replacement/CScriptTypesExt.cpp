@@ -95,7 +95,7 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 	return -1;
 }
 
-BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
+BOOL CScriptTypesExt::PreTranslateMessageHook(MSG* pMsg)
 {
 	int ret = -1;
 	if (pMsg->message == WM_KEYDOWN) {
@@ -103,15 +103,24 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 	} else if (pMsg->message == WM_LBUTTONUP) {
 		ret = onMessageKeyUp(pMsg);
 	}
+
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
 BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 {
+	int ret = -1;
 	auto const msgType = HIWORD(wParam);
 	auto const nID = LOWORD(wParam);
-	LogDebug(__FUNCTION__" %X, %X", wParam, lParam);
-	return this->FA2CDialog::OnCommand(wParam, lParam);
+	LogDebug(__FUNCTION__" nID %d, msgType %X", nID, msgType);
+
+	if (nID == WND_Script::ComboBoxExtParameter) {
+		if (msgType == CBN_SELCHANGE || msgType == CBN_EDITCHANGE) {
+			this->OnActionParameterEditChangedExt(); 
+		}
+	}
+
+	return ret < 0 ? this->FA2CDialog::OnCommand(wParam, lParam) : ret;
 }
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
@@ -553,10 +562,8 @@ int CScriptTypesExt::getExtraValue()
 	auto const paramType = getParameterType(actionData);
 	auto const extParamType = getExtraParamType(paramType);
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
-	//auto const curExtParamData = extParamCmbBox.GetItemData();
-	auto& curParamContent = this->ComboBoxActionParameter.GetText();
 	auto& curExtParamContent = extParamCmbBox.GetText();
-	LogDebug(__FUNCTION__" curParamContent = %s, curExtParamContent = %s", curParamContent, curExtParamContent);
+	LogDebug(__FUNCTION__" curExtParamContent = %s", curExtParamContent);
 	return atoi(curExtParamContent);
 }
 
@@ -579,6 +586,7 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 		}
 		buffer = buffer.Mid(0, actionIndex);
 		this->ComboBoxActionParameter.GetWindowTextA(paramStr);
+		//paramStr = this->ComboBoxActionParameter.GetText();
 		utilities::trim_index(paramStr);
 		//
 		//LogDebug(__FUNCTION__" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
