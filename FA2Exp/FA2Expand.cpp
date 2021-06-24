@@ -20,7 +20,7 @@ SYRINGE_HANDSHAKE(pInfo)
 	if (pInfo) {
 		// generate the output message
 		if (pInfo->Message) {
-			sprintf_s(pInfo->Message, pInfo->cchMessage, "Found FA2Copy Module");
+			sprintf_s(pInfo->Message, pInfo->cchMessage, "Found FA2Exp Module");
 		}
 		return S_OK;
 	}
@@ -56,6 +56,7 @@ void updateExecutionPath()
 
 void __stdcall FA2Expand::ExeRun()
 {
+	logger::Init();
 #if 0
 	auto const process = GetCurrentProcess();
 	DWORD_PTR const processAffinityMask = 1; // limit to first processor
@@ -79,7 +80,7 @@ void __stdcall FA2Expand::ExeRun()
 	Translations::Initialize();
 
 	constexpr char title[] = "Final Alert for \"Revenge Now !\"";
-	constexpr char delWarn[] = "确定要删除这个脚本吗？不要忘记删除调用这个脚本的小队";
+	constexpr char delWarn[] = "纭畾瑕佸垹闄よ繖涓剼鏈悧锛熶笉瑕佸繕璁板垹闄よ皟鐢ㄨ繖涓剼鏈殑灏忛槦";
 	RunTime::ResetMemoryContentAt(0x5CD808, title, sizeof(title));
 	RunTime::ResetMemoryContentAt(0x5D15A0, delWarn, sizeof(delWarn));
 	CFinalSunDlgExt::ProgramStartupInit();
