@@ -96,6 +96,7 @@ private:
 	BOOL onMessageKeyUp(MSG* pMsg);
 	void insertAction(int curSel, const FA2::CString& scriptTypeId, const FA2::CString& value);
 	FA2::CString getCurrentTypeID();
+	int getExtraValue();
 
 	static FA2::CString _placeholderCstr;
 };

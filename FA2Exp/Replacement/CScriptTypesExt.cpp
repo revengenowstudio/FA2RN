@@ -546,6 +546,20 @@ void CScriptTypesExt::OnActionTypeSelectChangedExt()
 	}
 }
 
+int CScriptTypesExt::getExtraValue()
+{
+	auto const curActionSel = this->ComboBoxActionType.GetCurSel();
+	const int actionData = this->ComboBoxActionType.GetItemData(curActionSel);
+	auto const paramType = getParameterType(actionData);
+	auto const extParamType = getExtraParamType(paramType);
+	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
+	//auto const curExtParamData = extParamCmbBox.GetItemData();
+	auto& curParamContent = this->ComboBoxActionParameter.GetText();
+	auto& curExtParamContent = extParamCmbBox.GetText();
+	LogDebug(__FUNCTION__" curParamContent = %s, curExtParamContent = %s", curParamContent, curExtParamContent);
+	return atoi(curExtParamContent);
+}
+
 void CScriptTypesExt::OnActionParameterEditChangedExt()
 {
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
@@ -566,15 +580,23 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 		buffer = buffer.Mid(0, actionIndex);
 		this->ComboBoxActionParameter.GetWindowTextA(paramStr);
 		utilities::trim_index(paramStr);
+		//
+		//LogDebug(__FUNCTION__" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
+		if (auto const extValue = getExtraValue()) {
+			auto const paramInt = MAKEWPARAM(atoi(paramStr), extValue);
+			paramStr.Format("%d", paramInt);
+		}
+		//
 		tmp.Format("%s,%s", buffer, paramStr);
 		listStr.Format("%d", listIndex);
-		//TODO: special handling for attack building
 		doc.WriteString(scriptId, listStr, tmp);
+		_showCStr(tmp);
 	}
 }
 
 void CScriptTypesExt::OnActionParameterSelectChangedExt()
 {
+#if 0//This functions is not really necessary, since we will finally get to 'OnActionParameterEditChangedExt' when lose focus
 	FA2::CString paramUnified;
 	auto const curActionSel = this->ComboBoxActionType.GetCurSel();
 	const int actionData = this->ComboBoxActionType.GetItemData(curActionSel);
@@ -585,16 +607,11 @@ void CScriptTypesExt::OnActionParameterSelectChangedExt()
 		this->OnActionParameterSelectChanged();
 		return;
 	}
-	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
-	//auto const curExtParamData = extParamCmbBox.GetItemData();
 	auto& curParamContent = this->ComboBoxActionParameter.GetText();
-	auto& curExtParamContent = extParamCmbBox.GetWindowTextA();
 	utilities::trim_index(curParamContent);
-	utilities::trim_index(curExtParamContent);
-	LogDebug(__FUNCTION__" curParamContent = %s, curExtParamContent = %s", curParamContent, curExtParamContent);
 	//unify data by extra type
 	if (extParamType == ExtraParameterType::ScanType) {
-		auto const paramInt = MAKEWPARAM(atoi(curParamContent), atoi(curExtParamContent));
+		auto const paramInt = MAKEWPARAM(atoi(curParamContent), getExtraValue());
 		paramUnified.Format("%d", paramInt);
 	}
 
@@ -608,7 +625,7 @@ void CScriptTypesExt::OnActionParameterSelectChangedExt()
 	auto& doc = GlobalVars::INIFiles::CurrentDocument();
 	auto const scriptId = getCurrentTypeID();
 	doc.WriteString(scriptId, actionINIIndexValue, actionINIValue);
-	_showCStr(actionINIValue);
+#endif
 }
 
 
@@ -915,13 +932,6 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 	return 0x4D676C;
 }
 
-//DEFINE_HOOK(4D7A50, CScriptTypes_OnCBScriptParameterSelectChanged, 7)
-//{
-//	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->OnActionParameterSelectChangedExt();
-//	return 0x4D7AB8;
-//}
-//
 //DEFINE_HOOK(4D5BE0, CScriptTypes_DoDataExchange, 8)
 //{
 //	return 0;
