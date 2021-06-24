@@ -89,9 +89,9 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 		this->OnTemplateLoadExt();
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNew)->GetSafeHwnd()) {
 		this->OnScriptTypeAddExt();
-	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ComboBoxExtParameter)->GetSafeHwnd()) {
+	}/* else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ComboBoxExtParameter)->GetSafeHwnd()) {
 		this->OnActionParameterSelectChangedExt();
-	}
+	}*/
 	return -1;
 }
 
@@ -587,7 +587,7 @@ void CScriptTypesExt::OnActionParameterSelectChangedExt()
 	}
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
 	//auto const curExtParamData = extParamCmbBox.GetItemData();
-	auto& curParamContent = this->ComboBoxActionParameter.GetWindowTextA();
+	auto& curParamContent = this->ComboBoxActionParameter.GetText();
 	auto& curExtParamContent = extParamCmbBox.GetWindowTextA();
 	utilities::trim_index(curParamContent);
 	utilities::trim_index(curExtParamContent);

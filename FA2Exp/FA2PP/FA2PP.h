@@ -25,7 +25,7 @@ public:
 	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL, UINT nType = MB_OK) { JMP_THIS(0x553E53); }
 
 	//helper function;
-	CString GetWindowText()
+	CString GetWindowText() const
 	{
 		CString ret;
 		GetWindowText(ret);

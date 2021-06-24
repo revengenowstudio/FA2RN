@@ -96,7 +96,17 @@ _AFXWIN_INLINE int GetDroppedWidth() const
 #endif
 
 	void GetLBText(int nIndex, FA2::CString& rString) const { JMP_THIS(0x561616); }
-
+	FA2::CString GetLBText(int nIndex) const
+	{
+		  FA2::CString ret;
+		  GetLBText(nIndex, ret);
+		  return ret;
+	}
+	FA2::CString GetText() const
+	{
+		auto const curSel = GetCurSel();
+		return curSel != -1 ? GetLBText(curSel) : GetWindowText();
+	}//43EBC0, looks like FA2 own wrapper
 
 private:
 };
