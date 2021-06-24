@@ -9,6 +9,45 @@
 
 namespace ControlMeta
 {
+	//definitions
+	FA2::CString ComboBoxWrapper::GetWindowText() const
+	{
+		FA2::CString ret;
+		auto const len = GetWindowTextLengthA(this->m_hWnd);
+		auto const bufferSiz = len + 1;
+		::GetWindowText(this->m_hWnd, ret.GetBufferSetLength(len), bufferSiz);
+		ret.ReleaseBuffer();
+		return ret;
+	}
+
+	int ComboBoxWrapper::GetItemData(int nIndex) const
+	{
+		if (nIndex < 0) {
+			nIndex = GetCurSel();
+		}
+		return ::SendMessage(m_hWnd, CB_GETITEMDATA, nIndex, 0);
+	}
+
+	FA2::CString ComboBoxWrapper::GetLBText(int nIndex) const
+	{
+		FA2::CString ret;
+		GetLBText(nIndex, ret);
+		return ret;
+	}
+
+	FA2::CString ComboBoxWrapper::GetText() const
+	{
+		auto const curSel = GetCurSel();
+		return curSel != -1 ? GetLBText(curSel) : GetWindowText();
+	}
+
+	void ComboBoxWrapper::GetLBText(int nIndex, FA2::CString& rString) const
+	{
+		auto const dataLen = GetLBTextLen(nIndex);
+		GetLBText(nIndex, rString.GetBufferSetLength(dataLen));
+		rString.ReleaseBuffer();
+	}
+
 	void ComboBox::Clear(FA2::CComboBox& combobox)
 	{
 		while (combobox.DeleteString(0) != -1);

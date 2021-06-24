@@ -137,18 +137,29 @@ void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int valu
 			extParamCmbBox.SetWindowTextA("");
 			break;
 		case ExtraParameterType::ScanType: {
-			::EnableWindow(text, TRUE);
+			::EnableWindow(text, TRUE);			
+			extParamCmbBox.Clear();
 			extParamCmbBox.EnableWindow(true);
+			extParamCmbBox.AddString("0 - Least threat");
+			extParamCmbBox.AddString("1 - Most threat");
+			extParamCmbBox.AddString("2 - Least distant");
+			extParamCmbBox.AddString("3 - Most distant");
+			extParamCmbBox.SetCurSel(value);
 			char buffer[0x20];
 			_itoa_s(value, buffer, 10);
 			extParamCmbBox.SetWindowTextA(buffer);
 			//LogDebug(__FUNCTION__" [%X] window enabled", extParamCmbBox.GetHWND());
 		}
 			break;
-		case ExtraParameterType::Counter:
+		case ExtraParameterType::Counter: {
 			::EnableWindow(text, TRUE);
+			extParamCmbBox.Clear();
 			extParamCmbBox.EnableWindow(true);
+			char buffer[0x20];
+			_itoa_s(value, buffer, 10);
+			extParamCmbBox.SetWindowTextA(buffer);
 			break;
+		}
 	}
 }
 
