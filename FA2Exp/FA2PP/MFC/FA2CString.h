@@ -226,7 +226,7 @@ public:
 
     LPTSTR GetBuffer(int nMinBufLength)
         FA2MFC_THISCALL(0x55633F);
-
+	//shrink to fit
     void ReleaseBuffer(int nNewLength = -1)
         FA2MFC_THISCALL(0x55638E);
 
