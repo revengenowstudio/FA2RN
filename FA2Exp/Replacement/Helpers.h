@@ -54,6 +54,12 @@ public:
 	//};
 
 	template<typename Func>
+	static inline void ResetMessageMemberFunction(DWORD addr, Func func)
+	{
+		RunTime::ResetMemoryContentAt(addr + sizeof(AFX_MSGMAP_ENTRY) - AFXMessageFuncPtrSize, &func, sizeof(Func));
+	}
+
+	template<typename Func>
 	static inline void ResetVirtualMemberFunction(DWORD addr, Func func)
 	{
 		RunTime::ResetMemoryContentAt(addr, &func, sizeof(Func));

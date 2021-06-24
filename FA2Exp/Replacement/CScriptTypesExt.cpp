@@ -12,6 +12,8 @@
 std::vector<ScriptTemplate> g_ScriptTemplates;
 FA2::CString CScriptTypesExt::_placeholderCstr;
 
+std::map<int, CScriptTypeAction> CScriptTypesExt::ExtActions;
+std::map<int, CScriptTypeParam> CScriptTypesExt::ExtParams;
 
 int scriptTypeIndexToComboBoxIndex(FA2::CComboBox& comboBox, int scriptTypeIndex)
 {
@@ -48,6 +50,10 @@ void CScriptTypesExt::ProgramStartupInit()
 
 	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596148), &CScriptTypesExt::PreTranslateMessageHook);
 	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596174), &CScriptTypesExt::OnInitDialogHook);
+	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596130), &CScriptTypesExt::OnCommandHook);
+
+	HackHelper::ResetMessageMemberFunction(AFX_MSG_FUNC(0x596028), &CScriptTypesExt::OnActionParameterSelectChangedExt);
+	
 }
 
 BOOL CScriptTypesExt::onMessageKeyDown(MSG* pMsg)
@@ -83,6 +89,8 @@ BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 		this->OnTemplateLoadExt();
 	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ButtonNew)->GetSafeHwnd()) {
 		this->OnScriptTypeAddExt();
+	} else if (pMsg->hwnd == this->GetDlgItem(WND_Script::ComboBoxExtParameter)->GetSafeHwnd()) {
+		this->OnActionParameterSelectChangedExt();
 	}
 	return -1;
 }
@@ -96,6 +104,14 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG * pMsg)
 		ret = onMessageKeyUp(pMsg);
 	}
 	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
+}
+
+BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
+{
+	auto const msgType = HIWORD(wParam);
+	auto const nID = LOWORD(wParam);
+	LogDebug(__FUNCTION__" %X, %X", wParam, lParam);
+	return this->FA2CDialog::OnCommand(wParam, lParam);
 }
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
@@ -127,7 +143,21 @@ void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int valu
 	}
 }
 
-ExtraParameterType getExtraParamType(int paramType)
+const CScriptTypeAction& getActionData(int actionCbIndex)
+{
+	return CScriptTypesExt::ExtActions[actionCbIndex];
+}
+
+const CScriptTypeParam& getParamData(int paramIndex)
+{
+	return CScriptTypesExt::ExtParams[paramIndex];
+}
+ParameterType getParameterType(int actionCbIndex)
+{
+	return getParamData(getActionData(actionCbIndex).ParamTypeIndex_).Type_;
+}
+
+ExtraParameterType getExtraParamType(ParameterType paramType)
 {
 	switch (paramType) {
 		default:
@@ -157,7 +187,7 @@ ExtraParameterType getExtraParamType(int paramType)
 	}
 }
 
-void CScriptTypesExt::updateExtraValue(int paramType, FA2::CString& paramNumStr)
+void CScriptTypesExt::updateExtraValue(ParameterType paramType, FA2::CString& paramNumStr)
 {
 	int extraValue = 0;
 	if (paramType == PRM_BuildingType) {
@@ -172,9 +202,9 @@ void CScriptTypesExt::updateExtraValue(int paramType, FA2::CString& paramNumStr)
 void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 {
 	static int LastActionID = -1;
-	auto const& actionDefinition = ExtActions[actionIndex];
-	auto const& paramDefinition = ExtParams[actionDefinition.ParamCode_];
-	auto const paramType = paramDefinition.Param_;
+	auto const& actionDefinition = getActionData(actionIndex);
+	auto const& paramDefinition = getParamData(actionDefinition.ParamTypeIndex_);
+	auto const paramType = paramDefinition.Type_;
 	auto const lastActionID = std::exchange(LastActionID, actionIndex);
 	
 	//logger::g_logger.Debug(__FUNCTION__
@@ -266,9 +296,6 @@ void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 //
 // Ext Functions
 //
-
-std::map<int, CScriptTypeAction> CScriptTypesExt::ExtActions;
-std::map<int, CScriptTypeParam> CScriptTypesExt::ExtParams;
 BOOL CScriptTypesExt::OnInitDialogHook()
 {
 	if (!FA2CDialog::OnInitDialog()) {
@@ -329,7 +356,7 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 		curAction.Description_ = _strdup(pDescriptions[i]);
 		curAction.Editable_ = true;
 		curAction.Hide_ = false;
-		curAction.ParamCode_ = 0;
+		curAction.ParamTypeIndex_ = 0;
 	}
 
 	auto& fadata = GlobalVars::INIFiles::FAData();
@@ -347,7 +374,7 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 			{
 				default:
 				case 2:
-					ExtParams[id].Param_ = atoi((const char*)pParseBuffer[1]);
+					ExtParams[id].Type_ = ParameterType(atoi((const char*)pParseBuffer[1]));
 				case 1:
 					ExtParams[id].Label_ = _strdup((const char*)pParseBuffer[0]);
 				case 0:
@@ -358,11 +385,9 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 		SAFE_RELEASE(pParseBuffer[1]);
 	}
 
-	if (fadata.SectionExists("ScriptsRA2")) {
-		auto const entities = fadata.TryGetSection("ScriptsRA2");
+	if (auto const entities = fadata.TryGetSection("ScriptsRA2")) {
 		char* pParseBuffer[5];
-		for (auto& pair : entities->EntriesDictionary)
-		{
+		for (auto& pair : entities->EntriesDictionary) {
 			int id = atoi(pair.first);
 			if (id < 0) continue;
 			auto count =
@@ -377,7 +402,7 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 				case 3:
 					ExtActions[id].Hide_ = utilities::parse_bool((const char*)pParseBuffer[2]);
 				case 2:
-					ExtActions[id].ParamCode_ = atoi((const char*)pParseBuffer[1]);
+					ExtActions[id].ParamTypeIndex_ = atoi((const char*)pParseBuffer[1]);
 				case 1:
 					ExtActions[id].Name_ = _strdup((const char*)pParseBuffer[0]);
 				case 0:
@@ -547,11 +572,45 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 		doc.WriteString(scriptId, listStr, tmp);
 	}
 }
-//
-//void CScriptTypesExt::OnActionParameterSelectChanged()
-//{
-//}
-//
+
+void CScriptTypesExt::OnActionParameterSelectChangedExt()
+{
+	FA2::CString paramUnified;
+	auto const curActionSel = this->ComboBoxActionType.GetCurSel();
+	const int actionData = this->ComboBoxActionType.GetItemData(curActionSel);
+	auto const paramType = getParameterType(actionData);
+	auto const extParamType = getExtraParamType(paramType);
+	LogDebug(__FUNCTION__" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
+	if (extParamType == ExtraParameterType::None) {
+		this->OnActionParameterSelectChanged();
+		return;
+	}
+	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
+	//auto const curExtParamData = extParamCmbBox.GetItemData();
+	auto& curParamContent = this->ComboBoxActionParameter.GetWindowTextA();
+	auto& curExtParamContent = extParamCmbBox.GetWindowTextA();
+	utilities::trim_index(curParamContent);
+	utilities::trim_index(curExtParamContent);
+	LogDebug(__FUNCTION__" curParamContent = %s, curExtParamContent = %s", curParamContent, curExtParamContent);
+	//unify data by extra type
+	if (extParamType == ExtraParameterType::ScanType) {
+		auto const paramInt = MAKEWPARAM(atoi(curParamContent), atoi(curExtParamContent));
+		paramUnified.Format("%d", paramInt);
+	}
+
+	//this->UpdateParams(actionData);
+
+	FA2::CString actionINIIndexValue;
+	FA2::CString actionINIValue;
+	auto const listIndex = this->ListActions.GetCurSel();
+	actionINIValue.Format("%d,%s", actionData, paramUnified);
+	actionINIIndexValue.Format("%d", listIndex);
+	auto& doc = GlobalVars::INIFiles::CurrentDocument();
+	auto const scriptId = getCurrentTypeID();
+	doc.WriteString(scriptId, actionINIIndexValue, actionINIValue);
+	_showCStr(actionINIValue);
+}
+
 
 void CScriptTypesExt::insertAction(int curSel, const FA2::CString& scriptTypeId, const FA2::CString& value)
 {
@@ -856,7 +915,12 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 	return 0x4D676C;
 }
 
-
+//DEFINE_HOOK(4D7A50, CScriptTypes_OnCBScriptParameterSelectChanged, 7)
+//{
+//	GET(CScriptTypesExt*, pThis, ECX);
+//	pThis->OnActionParameterSelectChangedExt();
+//	return 0x4D7AB8;
+//}
 //
 //DEFINE_HOOK(4D5BE0, CScriptTypes_DoDataExchange, 8)
 //{
@@ -909,19 +973,7 @@ DEFINE_HOOK(4D6500, CScriptTypes_OnLBScriptActionsSelectChanged, 7)
 //	return 0x4D7662;
 //}
 //
-//DEFINE_HOOK(4D7670, CScriptTypes_OnCBScriptParameterEditChanged, 7)
-//{
-//	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnActionParameterEditChangedExt();
-//	return 0x4D7A44;
-//}
 //
-//DEFINE_HOOK(4D7A50, CScriptTypes_OnCBScriptParameterSelectChanged, 7)
-//{
-//	GET(CScriptTypesExt*, pThis, ECX);
-//	pThis->CScriptTypesExt::OnActionParameterSelectChanged();
-//	return 0x4D7AB8;
-//}
 //
 //DEFINE_HOOK(4D7AC0, CScriptTypes_OnBNAddActionClicked, 7)
 //{

@@ -12,6 +12,8 @@ FA2MFC_BEGIN
 FA2MFC_CLASS(CWnd) : public ::CWnd
 {
 public:
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) { JMP_THIS(0x553BAC); }
+
 	// get and set window ID, for child windows only
 	CWnd* GetDlgItem(int nID) const { JMP_THIS(0x555452); }
 	// get immediate child with given ID
@@ -21,6 +23,14 @@ public:
 	void SetWindowText(LPCTSTR lpszString) { JMP_THIS(0x5555A2); }
 
 	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL, UINT nType = MB_OK) { JMP_THIS(0x553E53); }
+
+	//helper function;
+	CString GetWindowText()
+	{
+		CString ret;
+		GetWindowText(ret);
+		return ret;
+	}
 
 	// Window State Functions
 	BOOL IsWindowEnabled() const { JMP_THIS(0x5556B2); }

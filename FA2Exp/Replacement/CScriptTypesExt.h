@@ -3,6 +3,12 @@
 #include <CScriptTypes.h>
 #include <map>
 
+enum /*class*/ ActionType
+{
+	ACT_None = 0,
+	ACT_DoMission = 11,
+};
+
 enum /*class*/ ParameterType
 {
 	PRM_None = 0,
@@ -17,16 +23,16 @@ enum class ExtraParameterType
 };
 
 struct CScriptTypeAction {
-	const char* Name_;
-	int ParamCode_;
-	bool Hide_;
-	bool Editable_;
-	const char* Description_;
+	const char* Name_{};
+	int ParamTypeIndex_{};//!< index linked to specific CScriptTypeParam, can be user defined
+	const char* Description_{};
+	bool Hide_{};
+	bool Editable_{};
 };
 
 struct CScriptTypeParam {
-	const char* Label_;
-	int Param_;
+	const char* Label_{};//!< the string displayed for such parameter type
+	ParameterType Type_{};//!< internal predefined paramter type
 };
 
 class CScriptTypesExt : public CScriptTypes
@@ -36,7 +42,7 @@ public:
 	BOOL PreTranslateMessageHook(MSG * pMsg);
 
 	void updateExtraParamComboBox(ExtraParameterType type, int value = 0);
-	void updateExtraValue(int paramType, FA2::CString& paramNumStr);
+	void updateExtraValue(ParameterType paramType, FA2::CString& paramNumStr);
 	void UpdateParams(int actionIndex, FA2::CString& paramNumStr = _placeholderCstr);
 
 	//
@@ -46,9 +52,13 @@ public:
 	/*static void* GetMessageMap();*/
 
 	BOOL OnInitDialogHook();
+	BOOL OnCommandHook(WPARAM wParam, LPARAM lParam);
 
 	void OnActionTypeEditChangedExt();
 	void OnActionParameterEditChangedExt();
+	void OnActionParameterSelectChangedExt();
+	void OnActionExtraParameterSelectChangedExt();
+	void OnActionExtraParameterEditChangedExt();
 	void OnActionLineSelectChangedExt();
 	void OnActionTypeSelectChangedExt();
 
