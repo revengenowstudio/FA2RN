@@ -406,34 +406,32 @@ BOOL CScriptTypesExt::OnInitDialogHook()
 	}
 
 	if (auto const entities = fadata.TryGetSection("ScriptsRA2")) {
-		char* pParseBuffer[5];
 		for (auto& pair : entities->EntriesDictionary) {
 			int id = atoi(pair.first);
-			if (id < 0) continue;
-			auto count =
-				utilities::parse_list(pair.second, (const char**)(pParseBuffer), 5);
-			switch (count)
+			//LogDebug(" id = %d", id);
+			if (id < 0) { 
+				continue; 
+			}
+			auto const& strings = utilities::split_string(pair.second);
+			//LogDebug("pair.second = %s, count = %d", pair.second, strings.size());
+			switch (strings.size())
 			{
 				case 5:
-				default:
-					ExtActions[id].Description_ = _strdup((const char*)pParseBuffer[4]);
+					ExtActions[id].Description_ = _strdup(strings[4].c_str());
+					//LogDebug(" Description_ = %s", ExtActions[id].Description_);
 				case 4:
-					ExtActions[id].Editable_ = utilities::parse_bool((const char*)pParseBuffer[3]);
+					ExtActions[id].Editable_ = utilities::parse_bool(strings[3].c_str());
 				case 3:
-					ExtActions[id].Hide_ = utilities::parse_bool((const char*)pParseBuffer[2]);
+					ExtActions[id].Hide_ = utilities::parse_bool(strings[2].c_str());
 				case 2:
-					ExtActions[id].ParamTypeIndex_ = atoi((const char*)pParseBuffer[1]);
+					ExtActions[id].ParamTypeIndex_ = atoi(strings[1].c_str());
 				case 1:
-					ExtActions[id].Name_ = _strdup((const char*)pParseBuffer[0]);
+					ExtActions[id].Name_ = _strdup(strings[0].c_str());
 				case 0:
+				default:
 					continue;
 			}
 		}
-		SAFE_RELEASE(pParseBuffer[0]);
-		SAFE_RELEASE(pParseBuffer[1]);
-		SAFE_RELEASE(pParseBuffer[2]);
-		SAFE_RELEASE(pParseBuffer[3]);
-		SAFE_RELEASE(pParseBuffer[4]);
 	}
 
 	int counter = 0;
