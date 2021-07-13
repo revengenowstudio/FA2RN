@@ -93,6 +93,13 @@ public:
 	DWORD unk2;
 };
 
+class NOVTABLE FA2CView : public CView
+{
+public:
+	// Cwnd
+	virtual BOOL PreTransateMessage(MSG* pMsg) { JMP_THIS(0x55304D); }
+};
+
 class NOVTABLE FA2CWinApp : public CWinApp
 {
 
