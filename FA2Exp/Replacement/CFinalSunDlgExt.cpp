@@ -264,7 +264,10 @@ void ObjectBrowserControlExt::Redraw_Owner()
 		if (spacePos >= 0) {
 			houseName = houseName.Mid(0, spacePos);
 		}
-		houseName = CSFTable::GetUIName(houseName);
+		auto csfName = CSFTable::GetUIName(houseName);
+		if (csfName != "MISSING") {
+			houseName = csfName;
+		}
 		this->InsertString(houseName, Const_House + i, hOwner);
 	}
 }
