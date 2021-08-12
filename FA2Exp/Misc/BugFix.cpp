@@ -200,7 +200,36 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 }
 #endif
 
+// Fix the bug of SHP turret draws only one face
+DEFINE_HOOK(483EA4, CLoading_LoadObjects_SHPTurretFix_1, 7)
+{
+	REF_STACK(int, nFacingCount, STACK_OFFS(0x868, 0x4C));
+	// GET_STACK(bool, bIsBuilding, STACK_OFFS(0x868, 0x8C));
+	GET_STACK(FA2::CString, pRegName, STACK_OFFS(0x868, -0x4));
+
+	if (GlobalVars::INIFiles::Rules->GetBool(pRegName, "Turret")) {
+		nFacingCount = 8;
+	}
+	else {
+		nFacingCount = 1;
+	}
+	return 0x483EAB;
+}
+
+DEFINE_HOOK(483F9D, CLoading_LoadObjects_SHPTurretFix_2, 5)
+{
+	REF_STACK(int, nFlags, STACK_OFFS(0x868, 0x4C));
+	GET_STACK(bool, bIsBuilding, STACK_OFFS(0x868, 0x8C));
+	GET_STACK(FA2::CString, pRegName, STACK_OFFS(0x868, -0x4));
+
+	if (GlobalVars::INIFiles::Rules->GetBool(pRegName, "Turret") && bIsBuilding) {
+		return 0x483FA4;
+	}
+	
+	return 0x483FC2;
+}
 //tracers
+#if defined(TRACE_DRAW_BUILDING)
 DEFINE_HOOK(470B6C, CIsoView_UpdatePaint_Building_Debug, B)
 {
 	GET_STACK(const FA2::CString, BuildingID, 0x320);
@@ -217,11 +246,11 @@ DEFINE_HOOK(4709AC, CIsoView_UpdatePaint_Building_GetFrameInfo, A)
 
 	logger::info(std::string(__FUNCTION__" : BuildingID ") + static_cast<const char*>(BuildingID.Name) + " facing : " + std::to_string(BuildingID.FacingValue));
 
-	logger::info(std::string(__FUNCTION__" : itemIdx ") + std::to_string(itemIdx));
+	LogDebug(__FUNCTION__" : itemIdx %d", itemIdx);
 
 	for (auto offset = 0; offset < 8; offset++) {
 		auto const& frame = SHPImageCache[itemIdx].Frames[offset];
-		logger::info(std::string(__FUNCTION__" : cache ") + " offIdx : " + std::to_string(offset) + " ptr " + std::to_string(frame.ptr_0));
+		LogDebug(__FUNCTION__" : cache offIdx : %d, ptr = %X", offset, frame.ptr_0);
 	}
 
 
@@ -274,15 +303,16 @@ DEFINE_HOOK(4B606D, sub_4B5460, 5)
 
 DEFINE_HOOK(48344F, CIsoView_LoadImage_Debug, 6)
 {
-	GET_BASE(BOOL, buildingTypeItemExists, -88);
-	GET_BASE(const FA2::CString, ImageID, -0x1C);
-	GET_BASE(const FA2::CString, TurretAnimID, -0x78);
+	REF_BASE(const FA2::CString, buildingTypeItemStr, -88);
+	//GET_BASE(DWORD, buildingTypeItemExists, -88);
+	REF_BASE(const FA2::CString, ImageID, -0x1C);
+	REF_BASE(const FA2::CString, TurretAnimID, -0x78);
 
-	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " BuildingItemCount : " + std::to_string(buildingTypeItemExists));
-	logger::g_logger.Info(std::string(__FUNCTION__" : TurretAnimID ") + static_cast<const char*>(TurretAnimID));
+	LogDebug(__FUNCTION__" : ImageID %s,  buildingTypeItemStr : %s", ImageID, buildingTypeItemStr);
+	LogDebug(__FUNCTION__" : TurretAnimID %s", TurretAnimID);
 
 
-	return buildingTypeItemExists ? 0x48345B : 0x483B6D;
+	return buildingTypeItemStr ? 0x48345B : 0x483B6D;
 }
 
 DEFINE_HOOK(483670, CIsoView_LoadImage_SHPTurretDebug, 5)
@@ -290,7 +320,7 @@ DEFINE_HOOK(483670, CIsoView_LoadImage_SHPTurretDebug, 5)
 	GET(int, unk, ESI);
 	GET(const char*, pString, EAX);
 
-	logger::g_logger.Info(std::string(__FUNCTION__" : pString ") + pString + " unk : " + std::to_string(unk));
+	LogDebug(__FUNCTION__" : pString %s unk : %d", pString, unk);
 
 	PUSH_REG(unk);
 	PUSH_REG(pString);
@@ -301,12 +331,12 @@ DEFINE_HOOK(483670, CIsoView_LoadImage_SHPTurretDebug, 5)
 
 DEFINE_HOOK(483491, CIsoView_LoadImage_Turret_Debug, 5)
 {
-	GET_BASE(const FA2::CString, ImageID, -0x1C);
-	GET_BASE(const FA2::CString, ID, 0x8);
+	REF_BASE(const FA2::CString, ImageID, -0x1C);
+	REF_BASE(const FA2::CString, ID, 0x8);
 	GET(bool, HasTurret, EAX);
 
-	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(HasTurret));
-	logger::g_logger.Info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
+	LogDebug(__FUNCTION__" : ImageID %s hasTurret : %d", ImageID, HasTurret);
+	LogDebug(__FUNCTION__" : ID %s", ID);
 
 	return 0;
 }
@@ -392,6 +422,7 @@ DEFINE_HOOK(4956BA, sub_494B60_LoadFile_Debug, 5)
 
 	return 0;
 }
+#endif
 
 #if 0
 DEFINE_HOOK(43CE8D, sub_43CE50, 9)
