@@ -213,6 +213,11 @@ public:
 	inline void Base(int offset, T value) {
 		this->_EBP.At(offset, value);
 	}
+
+	template<typename T>
+	inline T& ref_Base(int offset) {
+		return *reinterpret_cast<T*>(this->_EBP.lea(offset));
+	}
 };
 
 //Use this for DLL export functions
