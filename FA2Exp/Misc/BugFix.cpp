@@ -228,6 +228,14 @@ DEFINE_HOOK(483F9D, CLoading_LoadObjects_SHPTurretFix_2, 5)
 	
 	return 0x483FC2;
 }
+
+DEFINE_HOOK(4ACD28, sub_4ACB60_BuildingInitData, E)
+{
+	REF_STACK(BuildingOptionValues, Option, STACK_OFFS(0x194, 0x184));
+	Option.Facing = "0";
+	return 0x4ACD36;
+}
+
 //tracers
 #if defined(TRACE_DRAW_BUILDING)
 DEFINE_HOOK(470B6C, CIsoView_UpdatePaint_Building_Debug, B)
