@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FA2Exp", "FA2Exp\FA2Exp.vcx
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DbgSt|x86 = DbgSt|x86
 		Debug|x86 = Debug|x86
 		LayoutRelease|x86 = LayoutRelease|x86
 		Release|x86 = Release|x86
@@ -14,6 +15,8 @@ Global
 		ReleaseSt|x86 = ReleaseSt|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.DbgSt|x86.ActiveCfg = DbgSt|Win32
+		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.DbgSt|x86.Build.0 = DbgSt|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.Debug|x86.ActiveCfg = Debug|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.Debug|x86.Build.0 = Debug|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.LayoutRelease|x86.ActiveCfg = LayoutRelease|Win32

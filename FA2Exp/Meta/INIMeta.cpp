@@ -34,6 +34,16 @@ FA2::CString INIMetaGroup::GetString(const char* pSection, const char* pKey, con
 	return ret;
 }
 
+bool INIMetaGroup::GetBool(const char* pSection, const char* pKey, bool def) const
+{
+	return INIHelper::StingToBool(GetString(pSection, pKey), def);
+}
+
+int INIMetaGroup::GetInteger(const char* pSection, const char* pKey, int def) const
+{
+	return INIHelper::StringToInteger(GetString(pSection, pKey), def);
+}
+
 IndiceStorage INIMetaGroup::GetIndices(const char* pSection, bool bParseIntoValue) const
 {
 	std::vector<FA2::CString> ret;

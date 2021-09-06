@@ -214,6 +214,7 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 #endif
 
 // Fix the bug of SHP turret draws only one face
+#if defined(DIRECT_FIX)
 DEFINE_HOOK(483EA4, CLoading_LoadObjects_SHPTurretFix_1, 7)
 {
 	REF_STACK(int, nFacingCount, STACK_OFFS(0x868, 0x4C));
@@ -221,6 +222,7 @@ DEFINE_HOOK(483EA4, CLoading_LoadObjects_SHPTurretFix_1, 7)
 	GET_STACK(FA2::CString, pRegName, STACK_OFFS(0x868, -0x4));
 
 	if (GlobalVars::INIFiles::Rules->GetBool(pRegName, "Turret")) {
+		LogDebug("pRegName = %s", pRegName);
 		nFacingCount = 8;
 	}
 	else {
@@ -241,7 +243,9 @@ DEFINE_HOOK(483F9D, CLoading_LoadObjects_SHPTurretFix_2, 5)
 	
 	return 0x483FC2;
 }
+#endif
 
+//
 DEFINE_HOOK(4ACD28, sub_4ACB60_BuildingInitData, E)
 {
 	REF_STACK(BuildingOptionValues, Option, STACK_OFFS(0x194, 0x184));

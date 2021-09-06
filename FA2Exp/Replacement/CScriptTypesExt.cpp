@@ -97,7 +97,7 @@ BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 	int ret = -1;
 	auto const msgType = HIWORD(wParam);
 	auto const nID = LOWORD(wParam);
-	LogDebug(__FUNCTION__" nID %d, msgType %X", nID, msgType);
+	LogDebug(" nID %d, msgType %X", nID, msgType);
 
 	if (nID == WND_Script::ComboBoxExtParameter) {
 		if (msgType == CBN_SELCHANGE || msgType == CBN_EDITCHANGE) {
@@ -557,7 +557,7 @@ int CScriptTypesExt::getExtraValue()
 	auto const extParamType = getExtraParamType(paramType);
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
 	auto& curExtParamContent = extParamCmbBox.GetText();
-	LogDebug(__FUNCTION__" curExtParamContent = %s", curExtParamContent);
+	LogDebug(" curExtParamContent = %s", curExtParamContent);
 	return atoi(curExtParamContent);
 }
 

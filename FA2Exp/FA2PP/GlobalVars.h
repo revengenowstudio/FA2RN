@@ -3,6 +3,10 @@
 #include <INI.h>
 #include <Helper/CompileTime.h>
 
+class CLoading;
+class CFinalSunDlg;
+class CMapData;
+
 class GlobalVars
 {
 public:
@@ -12,6 +16,15 @@ public:
     
 	static constexpr reference<bool, 0x5CE3B8> const ShouldLoadYRFiles{};
 	static constexpr reference<bool, 0x5D32AC> const ShouldSupportYR{};
+
+    static constexpr reference<CMapData, 0x72CBF8> const CMapData{};
+
+    class Dialog
+    {
+    public:
+        static constexpr reference<CLoading*, 0x7EE030> const CLoading{};
+        static constexpr reference<CFinalSunDlg*, 0x7EDF24> const CFinalSunDlg{};
+    };
 
     class INIFiles
     {

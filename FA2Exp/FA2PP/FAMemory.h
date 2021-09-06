@@ -14,12 +14,12 @@ namespace FAMemory {
 	// naked does not support inlining. the inline modifier here means that
 	// multiple definitions are allowed.
 
-	// the game's operator new
+	// the FA2's operator new
 	__declspec(naked) inline void* __cdecl Allocate(size_t sz) {
 		JMP(0x5564D3);
 	}
 
-	// the game's operator delete
+	// the FA2's operator delete
 	__declspec(naked) inline void __cdecl Deallocate(const void* mem) {
 		JMP(0x5564FC);
 	}
@@ -37,19 +37,19 @@ struct needs_vector_delete : std::integral_constant<bool,
 	!std::is_scalar<T>::value && !std::is_trivially_destructible<T>::value> {};
 
 // this is a stateless basic allocator definition that manages memory using the
-// game's operator new and operator delete methods. do not use it directly,
+// FA2's operator new and operator delete methods. do not use it directly,
 // though. use std::allocator_traits, which will fill in the blanks.
 template <typename T>
-struct GameAllocator {
+struct FAAllocator {
 	using value_type = T;
 
-	GameAllocator() {}
+	FAAllocator() {}
 
 	template <typename U>
-	GameAllocator(const GameAllocator<U>&) {}
+	FAAllocator(const FAAllocator<U>&) {}
 
-	bool operator == (const GameAllocator&) const { return true; }
-	bool operator != (const GameAllocator&) const { return false; }
+	bool operator == (const FAAllocator&) const { return true; }
+	bool operator != (const FAAllocator&) const { return false; }
 
 	T* allocate(const size_t count) const {
 		return static_cast<T*>(FAMemory::AllocateChecked(count * sizeof(T)));
@@ -116,30 +116,30 @@ public:
 // helper methods as free functions.
 
 template <typename T, typename... TArgs>
-static inline T* GameCreate(TArgs&&... args) {
+static inline T* FACreate(TArgs&&... args) {
 	static_assert(std::is_constructible<T, TArgs...>::value, "Cannot construct T from TArgs.");
 
-	GameAllocator<T> alloc;
+	FAAllocator<T> alloc;
 	return Memory::Create<T>(alloc, std::forward<TArgs>(args)...);
 }
 
 template<typename T>
-static inline void GameDelete(T* ptr) {
-	GameAllocator<T> alloc;
+static inline void FADelete(T* ptr) {
+	FAAllocator<T> alloc;
 	Memory::Delete(alloc, ptr);
 }
 
 template <typename T, typename... TArgs>
-static inline T* GameCreateArray(size_t capacity, TArgs&&... args) {
+static inline T* FACreateArray(size_t capacity, TArgs&&... args) {
 	static_assert(std::is_constructible<T, TArgs...>::value, "Cannot construct T from TArgs.");
 
-	GameAllocator<T> alloc;
+	FAAllocator<T> alloc;
 	return Memory::CreateArray<T>(alloc, capacity, std::forward<TArgs>(args)...);
 }
 
 template<typename T>
-static inline void GameDeleteArray(T* ptr, size_t capacity) {
-	GameAllocator<T> alloc;
+static inline void FADeleteArray(T* ptr, size_t capacity) {
+	FAAllocator<T> alloc;
 	Memory::DeleteArray(alloc, ptr, capacity);
 }
 
@@ -171,11 +171,11 @@ static inline void DLLDeleteArray(T* ptr, size_t capacity) {
 	Memory::DeleteArray(alloc, ptr, capacity);
 }
 
-struct GameDeleter {
+struct FA2Deleter {
 	template <typename T>
 	void operator ()(T* ptr) {
 		if (ptr) {
-			GameDelete(ptr);
+			FADelete(ptr);
 		}
 	}
 };

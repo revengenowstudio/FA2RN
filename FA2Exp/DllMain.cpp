@@ -1571,7 +1571,7 @@ DEFINE_HOOK(537129, ExeRun, 9)
 
 DEFINE_HOOK(537208, ExeTerminate, 9)
 {
-	//FA2Ext::ExeTerminate();
+	FA2Expand::ExeTerminate();
 	GET(UINT, result, EAX);
 	ExitProcess(result); //teehee
 }

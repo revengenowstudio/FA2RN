@@ -6,6 +6,7 @@
 #include "Replacement/CTaskForceExt.h"
 #include "Replacement/CScriptTypesExt.h"
 #include "Replacement/CTeamTypesExt.h"
+#include "Misc/DrawStuff.h"
 
 typedef  HRSRC
 (WINAPI *FindResourceProc)(
@@ -80,7 +81,6 @@ void __stdcall FA2Expand::ExeRun()
 	#endif // defined(DEBUG)
 
 	updateExecutionPath();
-	//MessageBoxA(nullptr, "Test", "Test", MB_OK);
 	//std::locale::global(std::locale(""));
 	Translations::Initialize();
 
@@ -99,10 +99,13 @@ void __stdcall FA2Expand::ExeRun()
 	//g_FA2FindResourceProc = *reinterpret_cast<FindResourceProc*>(0x5911D8);
 	//RunTime::ResetMemoryContentAt(0x5911D8, &FetchResource, sizeof(&FetchResource));
 
-
+	DrawStuff::init();
 }
 
-
+void FA2Expand::ExeTerminate()
+{
+	DrawStuff::uninit();
+}
 
 
 
