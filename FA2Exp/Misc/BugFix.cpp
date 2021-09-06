@@ -124,7 +124,7 @@ DEFINE_HOOK(473E46, CIsoView_UpdatePaint_InfantryFacing, 9)
 }
 
 //having problems with patched FA2
-#if 0
+#if 1
 DEFINE_HOOK(45AF03, CIsoView_StatusBar_YXTOXY_YToX_1, 7)
 {
 	GET_STACK(int, nPointX, 0x30);
