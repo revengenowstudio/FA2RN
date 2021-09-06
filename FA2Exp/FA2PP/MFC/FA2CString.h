@@ -246,7 +246,7 @@ public:
         FA2MFC_THISCALL(0x556423);
 
     void SetAt(int nIndex, TCHAR ch)
-        FA2MFC_THISCALL(0x556423);
+        FA2MFC_THISCALL(0x556435);
 
     BOOL LoadString(UINT nID)          // load from string resource, 255 chars max
         FA2MFC_THISCALL(0x556507);
