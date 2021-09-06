@@ -4,7 +4,7 @@
 #include <string>
 
 #define LogDebug(Format, ...) \
-	logger::g_logger.WriteLine("[Debug] ", Format, __VA_ARGS__);
+	logger::g_logger.WriteLine("[Debug] (" __FUNCTION__ ") ", Format, __VA_ARGS__);
 
 class logger
 {
