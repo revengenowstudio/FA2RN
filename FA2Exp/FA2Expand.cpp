@@ -74,6 +74,11 @@ void __stdcall FA2Expand::ExeRun()
 #endif
 
 #endif
+	#if defined(DEBUG)
+	system("taskkill /F /IM syringe.exe");
+	MessageBoxA(nullptr, "Test", "", MB_OK);
+	#endif // defined(DEBUG)
+
 	updateExecutionPath();
 	//MessageBoxA(nullptr, "Test", "Test", MB_OK);
 	//std::locale::global(std::locale(""));
