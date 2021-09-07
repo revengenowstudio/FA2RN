@@ -443,7 +443,7 @@ void ObjectBrowserControlExt::Redraw_Terrain()
 	auto& rules = GlobalVars::INIFiles::Rules();
 	auto const& indices = INIMeta::GetSectionItems(rules, "TerrainTypes");
 
-	for (auto i = 0; i < indices.size(); ++i) {
+	for (size_t i = 0; i < indices.size(); ++i) {
 		auto const& item = indices[i];
 		if (IgnoreSet.find(item.operator LPCTSTR()) == IgnoreSet.end()) {
 			FA2::CString buffer = CSFTable::GetUIName(item);
@@ -630,14 +630,16 @@ int ObjectBrowserControlExt::GuessBuildingSide(const char* pRegName)
 		return planning;
 	}
 	auto& cons = utilities::split_string(rules.GetString("AI", "BuildConst"));
-	int i;
-	for (i = 0; i < cons.size(); ++i)
+	size_t i = 0;
+	for (; i < cons.size(); ++i)
 	{
-		if (cons[i] == pRegName)
+		if (cons[i] == pRegName) {
 			return i;
+		}
 	}
-	if (i >= rules.GetKeyCount("Sides"))
+	if (i >= static_cast<size_t>(rules.GetKeyCount("Sides"))) {
 		return -1;
+	}
 	return GuessGenericSide(pRegName, TreeViewTechnoType::Building);
 }
 
