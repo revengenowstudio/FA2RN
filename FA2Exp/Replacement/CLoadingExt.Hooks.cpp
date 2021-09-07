@@ -618,10 +618,12 @@ void CLoadingExt::SetImageData(unsigned char* pBuffer, const FA2::CString& NameI
 
 void CLoadingExt::SetImageData(unsigned char* pBuffer, ImageDataClass* pData, int FullWidth, int FullHeight, Palette* pPal)
 {
-	if (pData->pImageBuffer)
+	if (pData->pImageBuffer) {
 		FADeleteArray(pData->pImageBuffer, pData->FullWidth * pData->FullHeight);
-	if (pData->pPixelValidRanges)
+	}
+	if (pData->pPixelValidRanges) {
 		FADeleteArray(pData->pPixelValidRanges, pData->FullHeight);
+	}
 
 	pData->pImageBuffer = pBuffer;
 	pData->FullHeight = FullHeight;
