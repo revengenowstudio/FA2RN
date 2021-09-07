@@ -347,21 +347,23 @@ void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 		} else {//SHP anim
 			FA2::CString TurName = INIMeta::GetRules().GetString(ID, "TurretAnim", ID + "tur");
 			int nStartFrame = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopStart");
-			for (int i = 0; i < 8; ++i) {
+			for (int seqIdx = 0; seqIdx < 8; ++seqIdx) {
 				auto pTempBuf = FACreateArray<unsigned char>(width * height);
 				memcpy_s(pTempBuf, width * height, pBuffer, width * height);
 				UnionSHP_Add(pTempBuf, width, height);
 
 				int deltaX = INIMeta::GetRules().GetInteger(ID, "TurretAnimX", 0);
 				int deltaY = INIMeta::GetRules().GetInteger(ID, "TurretAnimY", 0);
-				loadSingleFrameShape(GlobalVars::INIFiles::Art->GetString(TurName, "Image", TurName),
-					nStartFrame + i * 4, deltaX, deltaY);
+				auto const turImageName = GlobalVars::INIFiles::Art->GetString(TurName, "Image", TurName);
+				auto const frameCount = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopEnd", 32);
+				auto const frameInterval = frameCount / 8;
+				loadSingleFrameShape(turImageName, nStartFrame + seqIdx * frameInterval, deltaX, deltaY);
 
 				unsigned char* pImage;
 				int width1, height1;
 				UnionSHP_GetAndClear(pImage, &width1, &height1);
 
-				DictName.Format("%s%d", ID, i);
+				DictName.Format("%s%d", ID, seqIdx);
 				SetImageData(pImage, DictName, width1, height1, Palettes::LoadPalette(PaletteName));
 			}
 			FADelete(pBuffer);
