@@ -2,6 +2,10 @@
 #include <CTaskForce.h>
 #include <GlobalVars.h>
 #include <ObjectOptions.h>
+#include <Drawing.h>
+#include <CMapData.h>
+#include "../Meta/INIMeta.h"
+#include "../Replacement/CLoadingExt.h"
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -193,6 +197,34 @@ DEFINE_HOOK(4834C7, CIsoView_LoadImage_TurretIsVoxel, 5)
 
 	R->EDX(&ID);
 	return 0;
+}
+
+DEFINE_HOOK(470986, CIsoView_Draw_BuildingImageDataQuery_1, 8)
+{
+	REF_STACK(ImageDataClass, image, STACK_OFFS(0xD18, 0xAFC));
+	REF_STACK(StructureData, structure, STACK_OFFS(0xD18, 0xC0C));
+
+	int nFacing = 0;
+	if (INIMeta::GetRules().GetBool(structure.ID, "Turret")) {
+		nFacing = 7 - (structure.Facing / 32) % 8;
+	}
+	image = *ImageDataMapHelper::GetImageDataFromMap(CLoadingExt::GetImageName(structure.ID, nFacing));
+
+	return 0x4709E1;
+}
+
+DEFINE_HOOK(470AE3, CIsoView_Draw_BuildingImageDataQuery_2, 7)
+{
+	REF_STACK(ImageDataClass, image, STACK_OFFS(0xD18, 0xAFC));
+	REF_STACK(StructureData, structure, STACK_OFFS(0xD18, 0xC0C));
+
+	int nFacing = 0;
+	if (INIMeta::GetRules().GetBool(structure.ID, "Turret")) {
+		nFacing = (7 - structure.Facing / 32) % 8;
+	}
+	image = *ImageDataMapHelper::GetImageDataFromMap(CLoadingExt::GetImageName(structure.ID, nFacing));
+
+	return 0x470B4D;
 }
 
 #if 0 //GetBoolean do not work

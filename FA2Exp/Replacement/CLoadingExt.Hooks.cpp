@@ -35,8 +35,7 @@ FA2::CString CLoadingExt::GetImageName(const FA2::CString& ID, int nFacing)
 			DictName.Format("%s%d", ImageID, nFacing);
 			return DictName;
 		case ObjectType::Building:
-			ImageID = pLoading->GetBuildingFileID(ID);
-			DictName.Format("%s%d", ImageID, nFacing);
+			DictName.Format("%s%d", ID, nFacing);
 			return DictName;
 		default: // NEVER GET TO HERE PLS
 			return "NMSL";
