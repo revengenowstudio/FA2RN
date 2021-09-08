@@ -356,6 +356,9 @@
     <ClInclude Include="Misc\Palettes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\HackHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">

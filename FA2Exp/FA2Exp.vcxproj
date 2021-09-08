@@ -434,6 +434,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Syringe.h" />
     <ClInclude Include="UI\resource.h" />
+    <ClInclude Include="Utilities\HackHelper.h" />
     <ClInclude Include="Utilities\INIParser.h" />
     <ClInclude Include="Utilities\StringHelper.h" />
   </ItemGroup>

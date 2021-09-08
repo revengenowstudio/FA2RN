@@ -6,6 +6,7 @@
 #include <CMapData.h>
 #include "../Meta/INIMeta.h"
 #include "../Replacement/CLoadingExt.h"
+#include "../Utilities/HackHelper.h"
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -226,6 +227,18 @@ DEFINE_HOOK(470AE3, CIsoView_Draw_BuildingImageDataQuery_2, 7)
 
 	return 0x470B4D;
 }
+
+//DEFINE_HOOK(5564FC, operator_delete, 9)
+//{
+//	if (R->Stack<DWORD>(0x0) > 0x70000000) {
+//		HackHelper::DumpStack(R, 0x100);
+//	}
+//	auto const val = R->Stack<DWORD>(0x4);
+//	PUSH_VAR32(val);
+//	CALL(0x536106);
+//	ADD_ESP(4);
+//	return 0x556506;
+//}
 
 #if 0 //GetBoolean do not work
 DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
