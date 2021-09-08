@@ -71,3 +71,17 @@ DEFINE_HOOK(49D2C0, CMapData_LoadMap_ClearCLoadingExtData, 5)
     CLoadingExt::ClearItemTypes();
     return 0;
 }
+
+DEFINE_HOOK(491FD4, sub_491D00_SafeFree, 5)
+{
+    GET(ImageDataMap::_Imp::TreeNode*, pNode, ESI);
+    if (auto& imgBuffer = pNode->_Value.second.pImageBuffer) {
+        FAMemory::Deallocate(imgBuffer);
+        imgBuffer = nullptr;
+    }
+    if (auto& pRange = pNode->_Value.second.pPixelValidRanges) {
+        FAMemory::Deallocate(pRange);
+        pRange = nullptr;
+    }
+    return 0x491FF1;
+}

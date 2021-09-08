@@ -66,6 +66,7 @@ namespace std {
     public:
         class iterator;
         friend class iterator;
+        using TreeNode = FATreeNode;
         class iterator : public _Bidit<value_type, ptrdiff_t> {
         public:
             iterator() {}
