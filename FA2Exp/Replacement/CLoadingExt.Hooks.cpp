@@ -69,7 +69,7 @@ CLoadingExt::ObjectType CLoadingExt::GetItemType(const FA2::CString& ID)
 
 void CLoadingExt::LoadObjects(const FA2::CString& ID)
 {
-	LogDebug("CLoadingExt::LoadObjects loading: %s\n", ID);
+	LogDebug("loading: %s", ID);
 
 	// GlobalVars::CMapData->UpdateCurrentDocument();
 	auto eItemType = GetItemType(ID);
