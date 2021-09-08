@@ -68,21 +68,22 @@ using SomeDataMap = std::FAMap<FA2::CString, bool, 0x5D8CD0, 0>;
 class ImageDataMapHelper
 {
 private:
-    ImageDataClass* GetImageDataFromMap_(FA2::CString* ppName) { JMP_THIS(0x4768D0); }
+    ImageDataClass* GetImageDataFromMap_(const FA2::CString* ppName) { JMP_THIS(0x4768D0); }
 public:
-    static bool IsImageLoaded(FA2::CString name)
+    static bool IsImageLoaded(const FA2::CString& name)
     {
-        ImageDataMap& imageDatas = *reinterpret_cast<ImageDataMap*>(0x72CBC8);
-        auto itr = imageDatas.find(name);
-        if (itr == imageDatas.end())
+        ImageDataMap& imageData = *reinterpret_cast<ImageDataMap*>(0x72CBC8);
+        auto itr = imageData.find(name);
+        if (itr == imageData.end()) {
             return false;
+        }
         return itr->second.pImageBuffer != nullptr;
     }
 
-    static ImageDataClass* GetImageDataFromMap(FA2::CString name)
+    static ImageDataClass* GetImageDataFromMap(const FA2::CString& name)
     {
-        ImageDataMap& imageDatas = *reinterpret_cast<ImageDataMap*>(0x72CBC8);
-        return ((ImageDataMapHelper*)&imageDatas)->GetImageDataFromMap_(&name);
+        ImageDataMap& imageData = *reinterpret_cast<ImageDataMap*>(0x72CBC8);
+        return ((ImageDataMapHelper*)&imageData)->GetImageDataFromMap_(&name);
     }
 };
 

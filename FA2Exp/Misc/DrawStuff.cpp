@@ -15,7 +15,7 @@ void DrawStuff::uninit()
     vxl_drawing_lib::deinit();
 }
 
-bool DrawStuff::load_vpl(FA2::CString name)
+bool DrawStuff::load_vpl(const FA2::CString& name)
 {
     bool result = false;
     DWORD dwSize;
@@ -27,7 +27,7 @@ bool DrawStuff::load_vpl(FA2::CString name)
     return result;
 }
 
-bool DrawStuff::load_vxl(FA2::CString name)
+bool DrawStuff::load_vxl(const FA2::CString& name)
 {
     bool result = false;
     DWORD dwSize;
@@ -41,7 +41,7 @@ bool DrawStuff::load_vxl(FA2::CString name)
     return result;
 }
 
-bool DrawStuff::load_hva(FA2::CString name)
+bool DrawStuff::load_hva(const FA2::CString& name)
 {
     bool result = false;
     DWORD dwSize;
