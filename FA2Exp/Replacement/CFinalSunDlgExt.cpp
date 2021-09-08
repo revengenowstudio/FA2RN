@@ -36,7 +36,7 @@ BOOL CFinalSunDlgExt::PreTranslateMessageExt(MSG* pMsg)
 		;
 		///*SetWindowTheme(*this, L"DarkMode_Explorer", NULL);*/
 	}
-	return FA2CDialog::PreTranslateMessage(pMsg);
+	return FA2::CDialog::PreTranslateMessage(pMsg);
 }
 
 using vecSideNodeInfo = std::vector<std::pair<FA2::CString, TechnoTypeMask>>;

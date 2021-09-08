@@ -44,7 +44,7 @@ struct ExpandMixStruct
 
 class Palette;
 
-class NOVTABLE CLoading : public FA2CDialog
+class NOVTABLE CLoading : public FA2::CDialog
 {
 public:
 	CLoading() = default;

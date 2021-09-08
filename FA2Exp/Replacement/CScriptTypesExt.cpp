@@ -89,7 +89,7 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG* pMsg)
 		ret = onMessageKeyUp(pMsg);
 	}
 
-	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
+	return ret < 0 ? this->FA2::CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
 BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
@@ -105,7 +105,7 @@ BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	return ret < 0 ? this->FA2CDialog::OnCommand(wParam, lParam) : ret;
+	return ret < 0 ? this->FA2::CDialog::OnCommand(wParam, lParam) : ret;
 }
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
@@ -303,7 +303,7 @@ void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 //
 BOOL CScriptTypesExt::OnInitDialogHook()
 {
-	if (!FA2CDialog::OnInitDialog()) {
+	if (!FA2::CDialog::OnInitDialog()) {
 		return FALSE;
 	}
 

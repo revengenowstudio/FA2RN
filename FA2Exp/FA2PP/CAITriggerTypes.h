@@ -2,7 +2,7 @@
 
 #include <FA2PP.h>
 
-class NOVTABLE CAITriggerTypes : public FA2CDialog
+class NOVTABLE CAITriggerTypes : public FA2::CDialog
 {
 public:
 	CAITriggerTypes() = default;

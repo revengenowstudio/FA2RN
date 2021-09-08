@@ -3,7 +3,7 @@
 #include <MFC/FA2CCombobox.h>
 #include <MFC/FA2CListBox.h>
 
-class NOVTABLE CTaskForce : public FA2CDialog
+class NOVTABLE CTaskForce : public FA2::CDialog
 {
 public:
 	CTaskForce() = default;

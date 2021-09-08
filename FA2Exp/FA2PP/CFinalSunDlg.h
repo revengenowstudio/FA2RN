@@ -30,7 +30,7 @@ class NOVTABLE ObjectBrowserControl : public FA2CTreeCtrl
 
 };
 
-class NOVTABLE CFinalSunDlg : public FA2CDialog
+class NOVTABLE CFinalSunDlg : public FA2::CDialog
 {
 protected:
 	void UpdateDialogs_(int a2, int a3)

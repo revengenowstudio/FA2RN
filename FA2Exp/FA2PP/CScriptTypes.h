@@ -6,7 +6,7 @@
 #include <MFC/FA2CListBox.h>
 #include <MFC/FA2CCombobox.h>
 
-class NOVTABLE CScriptTypes : public FA2CDialog
+class NOVTABLE CScriptTypes : public FA2::CDialog
 {
 public:
 	CScriptTypes() { JMP_THIS(0x4D5A10); }
