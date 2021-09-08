@@ -1,6 +1,7 @@
 #include "logger.h"
 #include <FA2PP.h>
 #include <mutex>
+#include <sstream>
 
 logger logger::g_logger;//default initialization, do nothing, because syringe would also create such item
 FILE* pFile;
@@ -74,20 +75,21 @@ void logger::WriteLine(const char* Prefix, const char* Format, ...)
 
 void logger::writeLine(const char* Prefix, const char* Format, const va_list Args)
 {
-	auto const& time = currentTime();
+	char Buffer[defaultBufferLength];
+	auto const& prefixInf = prefixInfo();
 	auto constexpr extraLen = 1;//2;//1 for 0 end, 1 for \n
 	const size_t prefixCategoryLen = strlen(Prefix);
-	const size_t prefixTotalLen = time.size() + prefixCategoryLen;
+	const size_t prefixTotalLen = prefixInf.size() + prefixCategoryLen;
 	const size_t contentLen = vsnprintf(nullptr, 0, Format, Args) + prefixTotalLen;
 	const size_t bufferWantedLen = contentLen + extraLen;
 	bool dynamicBufferRequired = bufferWantedLen > defaultBufferLength;
-	char* pBuffer = this->Buffer;
+	char* pBuffer = Buffer;
 	if (dynamicBufferRequired) {
 		pBuffer = new char[bufferWantedLen];
 	}
 	//insert prefix first
-	memcpy(pBuffer,					time.c_str(),	time.size());
-	memcpy(pBuffer + time.size(),	Prefix,			prefixCategoryLen);
+	memcpy(pBuffer,					prefixInf.c_str(),	prefixInf.size());
+	memcpy(pBuffer + prefixInf.size(),	Prefix,			prefixCategoryLen);
 	//real write
 	vsnprintf(pBuffer + prefixTotalLen, bufferWantedLen, Format, Args);
 	pBuffer[contentLen] = '\n';
@@ -101,7 +103,17 @@ void logger::writeLine(const char* Prefix, const char* Format, const va_list Arg
 	}
 }
 
-std::string logger::currentTime() {
+std::string logger::prefixInfo()
+{
+	std::stringstream ss;
+	ss << '(';
+	ss << std::this_thread::get_id();
+	ss << ')';
+	return currentTime() + ss.str();
+}
+
+std::string logger::currentTime() 
+{
 	SYSTEMTIME Sys;
 	GetLocalTime(&Sys);
 	std::string ret;
