@@ -240,6 +240,14 @@ DEFINE_HOOK(470AE3, CIsoView_Draw_BuildingImageDataQuery_2, 7)
 //	return 0x556506;
 //}
 
+//Free image buffer
+//DEFINE_HOOK(491F36, sub_00491F36, 8)
+//{
+//	//_DumpStack(R, 0x100);
+//	LogDebug("");
+//	return 0;
+//}
+
 #if 0 //GetBoolean do not work
 DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 {
