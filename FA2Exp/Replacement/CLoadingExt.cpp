@@ -159,53 +159,74 @@ FA2::CString CLoadingExt::GetVehicleOrAircraftFileID(const FA2::CString& ID)
 	return ImageID;
 }
 
+bool CLoadingExt::LoadBuildingFrameShape(const FA2::CString& name, int nFrame, int deltaX, int deltaY)
+{
+	FA2::CString file = name + ".SHP";
+	int nMix = SearchFile(file);
+	if (!CMixFile::HasFile(file, nMix))
+		return false;
+
+	ShapeHeader header;
+	unsigned char* pBuffer = nullptr;
+	if (!CMixFile::LoadSHP(file, nMix)) {
+		return false;
+	}
+	if (!CShpFile::GetSHPHeader(&header)) {
+		return false;
+	}
+	if (!CShpFile::LoadFrame(nFrame, 1, &pBuffer)) {
+		return false;
+	}
+
+	UnionSHP_Add(pBuffer, header.Width, header.Height, deltaX, deltaY);
+
+	return true;
+};
+
+bool CLoadingExt::LoadSingleFrameShape(const FA2::CString& name, int nFrame, int deltaX, int deltaY)
+{
+	FA2::CString file = name + ".SHP";
+	SetTheaterLetter(file);
+	int nMix = SearchFile(file);
+	//check whether there can be a valid file
+	do {
+		if (CMixFile::HasFile(file, nMix)) {
+			break;
+		}
+		SetGenericTheaterLetter(file);
+		nMix = SearchFile(file);
+		if (CMixFile::HasFile(file, nMix)) {
+			break;
+		}
+		file = name + ".SHP";
+		nMix = SearchFile(file);
+		if (CMixFile::HasFile(file, nMix)) {
+			break;
+		}
+		return false;
+	} while (0);
+
+	ShapeHeader header;
+	unsigned char* pBuffer = nullptr;
+	if (!CMixFile::LoadSHP(file, nMix)) {
+		return false;
+	}
+	if (!CShpFile::GetSHPHeader(&header)) {
+		return false;
+	}
+	if (!CShpFile::LoadFrame(nFrame, 1, &pBuffer)) {
+		return false;
+	}
+
+	UnionSHP_Add(pBuffer, header.Width, header.Height, deltaX, deltaY);
+
+	return true;
+};
+
 void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 {
 	FA2::CString ArtID = GetArtID(ID);
 	FA2::CString ImageID = GetBuildingFileID(ID);
-
-	auto loadBuildingFrameShape = [&](const FA2::CString& name, int nFrame = 0, int deltaX = 0, int deltaY = 0) -> bool {
-		FA2::CString file = name + ".SHP";
-		int nMix = SearchFile(file);
-		if (!CMixFile::HasFile(file, nMix))
-			return false;
-
-		ShapeHeader header;
-		unsigned char* pBuffer;
-		CMixFile::LoadSHP(file, nMix);
-		CShpFile::GetSHPHeader(&header);
-		CShpFile::LoadFrame(nFrame, 1, &pBuffer);
-
-		UnionSHP_Add(pBuffer, header.Width, header.Height, deltaX, deltaY);
-
-		return true;
-	};
-
-	auto loadSingleFrameShape = [&](const FA2::CString& name, int nFrame = 0, int deltaX = 0, int deltaY = 0) -> bool {
-		FA2::CString file = name + ".SHP";
-		SetTheaterLetter(file);
-		int nMix = SearchFile(file);
-		if (!CMixFile::HasFile(file, nMix)) {
-			SetGenericTheaterLetter(file);
-			nMix = SearchFile(file);
-			if (!CMixFile::HasFile(file, nMix)) {
-				file = name + ".SHP";
-				int nMix = SearchFile(file);
-				if (!CMixFile::HasFile(file, nMix))
-					return false;
-			}
-		}
-
-		ShapeHeader header;
-		unsigned char* pBuffer;
-		CMixFile::LoadSHP(file, nMix);
-		CShpFile::GetSHPHeader(&header);
-		CShpFile::LoadFrame(nFrame, 1, &pBuffer);
-
-		UnionSHP_Add(pBuffer, header.Width, header.Height, deltaX, deltaY);
-
-		return true;
-	};
 
 	auto const ppPowerUpBld = INIMeta::GetRules().GetString(ID, "PowersUpBuilding");
 	if (ppPowerUpBld.GetLength()) // Early load
@@ -215,18 +236,18 @@ void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 			LoadBuilding(*ppPowerUpBld);
 	}
 
-	auto loadAnimFrame = [&loadSingleFrameShape, &ArtID, &ID](const char* key, const char* controlKey) {
+	auto loadAnimFrame = [this, &ArtID, &ID](const char* key, const char* controlKey) {
 		auto const imageID = GlobalVars::INIFiles::Art->GetString(ArtID, key);
 		if (imageID.GetLength() > 0) {
 			if (!GlobalVars::INIFiles::FAData->GetBool(controlKey, ID)) {
 				int nStartFrame = GlobalVars::INIFiles::Art->GetInteger(imageID, "LoopStart");
-				loadSingleFrameShape(GlobalVars::INIFiles::Art->GetString(imageID, "Image", imageID), nStartFrame);
+				LoadSingleFrameShape(GlobalVars::INIFiles::Art->GetString(imageID, "Image", imageID), nStartFrame);
 			}
 		}
 	};
 
 	int nBldStartFrame = GlobalVars::INIFiles::Art->GetInteger(ArtID, "LoopStart", 0);
-	if (loadBuildingFrameShape(ImageID, nBldStartFrame)) {
+	if (LoadBuildingFrameShape(ImageID, nBldStartFrame)) {
 		loadAnimFrame("IdleAnim", "IgnoreIdleAnim");
 		loadAnimFrame("ActiveAnim", "IgnoreActiveAnim1");
 		loadAnimFrame("ActiveAnimTwo", "IgnoreActiveAnim2");
@@ -238,7 +259,7 @@ void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 		loadAnimFrame("SuperAnimFour", "IgnoreSuperAnim4");
 		auto bibImageName = GlobalVars::INIFiles::Art->GetString(ArtID, "BibShape");
 		if (bibImageName.GetLength()) {
-			loadSingleFrameShape(GlobalVars::INIFiles::Art->GetString(bibImageName, "Image", bibImageName));
+			LoadSingleFrameShape(GlobalVars::INIFiles::Art->GetString(bibImageName, "Image", bibImageName));
 		}
 
 		FA2::CString PaletteName = GlobalVars::INIFiles::Art->GetString(ArtID, "Palette", "unit");
@@ -357,7 +378,7 @@ void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 				auto const turImageName = GlobalVars::INIFiles::Art->GetString(TurName, "Image", TurName);
 				auto const frameCount = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopEnd", 32);
 				auto const frameInterval = frameCount / 8;
-				loadSingleFrameShape(turImageName, nStartFrame + seqIdx * frameInterval, deltaX, deltaY);
+				LoadSingleFrameShape(turImageName, nStartFrame + seqIdx * frameInterval, deltaX, deltaY);
 
 				unsigned char* pImage;
 				int width1, height1;

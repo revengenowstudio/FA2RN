@@ -49,6 +49,9 @@ private:
 
 	void SetValidBuffer(ImageDataClass* pData, int Width, int Height);
 
+	bool LoadBuildingFrameShape(const FA2::CString& name, int nFrame = 0, int deltaX = 0, int deltaY = 0);
+	bool LoadSingleFrameShape(const FA2::CString& name, int nFrame = 0, int deltaX = 0, int deltaY = 0);
+
 	enum class ObjectType
 	{
 		Unknown = -1,
