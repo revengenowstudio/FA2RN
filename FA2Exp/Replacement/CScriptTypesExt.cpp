@@ -848,7 +848,7 @@ void CScriptTypesExt::OnActionLineCloneExt()
 	FA2::CString scriptTypeId = getCurrentTypeID();
 	idxStr.Format("%d", curSel);
 	auto value = doc.GetString(scriptTypeId, idxStr, "0,0");
-	insertAction(isInsert ? curSel : this->ListActions.GetCount(), scriptTypeId, value);
+	insertAction(isInsert ? curSel : this->ListActions.GetCount() - 1, scriptTypeId, value);
 }
 
 void LoadScriptTemplates() {
