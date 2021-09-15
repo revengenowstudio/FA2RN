@@ -44,6 +44,19 @@ DEFINE_HOOK(41FDDB, FA2Main_GetFilePath_2, 6)
 	return 0x41FDE9;
 }
 
+DEFINE_HOOK(4C61C5, CMapData_ResizeMap_SyncLocation, 5)
+{
+	GET(CellData*, pCell, EAX);
+	auto const pSrc = CONTAINING_RECORD(R->ECX(), CellData, LAT);
+
+	pCell->Smudge = pSrc->Smudge;
+	pCell->SmudgeType = pSrc->SmudgeType;
+	pCell->BaseNode = pSrc->BaseNode;
+
+	return 0;
+}
+
+
 DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 {
 	auto& rules = GlobalVars::INIFiles::Rules();
