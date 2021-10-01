@@ -17,30 +17,15 @@ std::map<int, CScriptTypeParam> CScriptTypesExt::ExtParams;
 
 int scriptTypeIndexToComboBoxIndex(FA2::CComboBox& comboBox, int scriptTypeIndex)
 {
-	// As we know, the data sequence is acending(¡ü)
-	// So use lowerbound search
-	int selectIndex = 0;
-	auto L = 0;
-	auto R = comboBox.GetCount() - 1;
-	auto M = (L + R) / 2;
-	while (R > L) {
-		const int MData = comboBox.GetItemData(M);
+	auto const totalCount = comboBox.GetCount();
+	for (auto idx = 0; idx < totalCount; ++idx) {
+		const int MData = comboBox.GetItemData(idx);
 		if (MData == scriptTypeIndex) {
-			break;
+			return idx;
 		}
-		if (MData > scriptTypeIndex) {
-			R = M;
-		} else {
-			L = M;
-		}
-		M = (L + R) / 2;
 	}
-	if (R > L) {
-		selectIndex = M;
-	} else {
-		selectIndex = 0;
-	}
-	return selectIndex;
+
+	return 0;
 }
 
 void CScriptTypesExt::ProgramStartupInit()
