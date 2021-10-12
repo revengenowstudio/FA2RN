@@ -438,8 +438,14 @@ void CLoadingExt::LoadTerrainOrSmudge(const FA2::CString& ID)
 		CShpFile::LoadFrame(0, 1, &FramesBuffers[0]);
 		FA2::CString DictName;
 		DictName.Format("%s%d", ImageID, 0);
-		FA2::CString PaletteName = GlobalVars::INIFiles::Art->GetString(ArtID, "Palette", "iso");
-		GetFullPaletteName(PaletteName);
+		FA2::CString PaletteName;
+
+		if (ID.GetLength() >= 6 && *(DWORD*)ID.operator LPCTSTR() == *(DWORD*)("TIBT")) {
+			PaletteName = "unitsno.pal";
+		} else {
+			PaletteName = GlobalVars::INIFiles::Art->GetString(ArtID, "Palette", "iso");
+			GetFullPaletteName(PaletteName);
+		}
 		SetImageData(FramesBuffers[0], DictName, header.Width, header.Height, Palettes::LoadPalette(PaletteName));
 	}
 }
