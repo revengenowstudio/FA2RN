@@ -3,3 +3,5 @@
 *.dll
 Release/
 Debug/
+FA2Exp/LayoutRelease
+LayoutRelease
