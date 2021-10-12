@@ -182,6 +182,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <LanguageStandard>stdcpp14</LanguageStandard>
       <DisableSpecificWarnings>4731;</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
