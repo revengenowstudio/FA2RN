@@ -2,6 +2,11 @@
 #include <CTaskForce.h>
 #include <GlobalVars.h>
 #include <ObjectOptions.h>
+#include <Drawing.h>
+#include <CMapData.h>
+#include "../Meta/INIMeta.h"
+#include "../Replacement/CLoadingExt.h"
+#include "../Utilities/HackHelper.h"
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -195,6 +200,54 @@ DEFINE_HOOK(4834C7, CIsoView_LoadImage_TurretIsVoxel, 5)
 	return 0;
 }
 
+DEFINE_HOOK(470986, CIsoView_Draw_BuildingImageDataQuery_1, 8)
+{
+	REF_STACK(ImageDataClass, image, STACK_OFFS(0xD18, 0xAFC));
+	REF_STACK(StructureData, structure, STACK_OFFS(0xD18, 0xC0C));
+
+	int nFacing = 0;
+	if (INIMeta::GetRules().GetBool(structure.ID, "Turret")) {
+		nFacing = 7 - (structure.Facing / 32) % 8;
+	}
+	image = *ImageDataMapHelper::GetImageDataFromMap(CLoadingExt::GetImageName(structure.ID, nFacing));
+
+	return 0x4709E1;
+}
+
+DEFINE_HOOK(470AE3, CIsoView_Draw_BuildingImageDataQuery_2, 7)
+{
+	REF_STACK(ImageDataClass, image, STACK_OFFS(0xD18, 0xAFC));
+	REF_STACK(StructureData, structure, STACK_OFFS(0xD18, 0xC0C));
+
+	int nFacing = 0;
+	if (INIMeta::GetRules().GetBool(structure.ID, "Turret")) {
+		nFacing = (7 - structure.Facing / 32) % 8;
+	}
+	image = *ImageDataMapHelper::GetImageDataFromMap(CLoadingExt::GetImageName(structure.ID, nFacing));
+
+	return 0x470B4D;
+}
+
+//DEFINE_HOOK(5564FC, operator_delete, 9)
+//{
+//	if (R->Stack<DWORD>(0x0) > 0x70000000) {
+//		HackHelper::DumpStack(R, 0x100);
+//	}
+//	auto const val = R->Stack<DWORD>(0x4);
+//	PUSH_VAR32(val);
+//	CALL(0x536106);
+//	ADD_ESP(4);
+//	return 0x556506;
+//}
+
+//Free image buffer
+//DEFINE_HOOK(491F36, sub_00491F36, 8)
+//{
+//	//_DumpStack(R, 0x100);
+//	LogDebug("");
+//	return 0;
+//}
+
 #if 0 //GetBoolean do not work
 DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 {
@@ -214,6 +267,7 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 #endif
 
 // Fix the bug of SHP turret draws only one face
+#if defined(DIRECT_FIX)
 DEFINE_HOOK(483EA4, CLoading_LoadObjects_SHPTurretFix_1, 7)
 {
 	REF_STACK(int, nFacingCount, STACK_OFFS(0x868, 0x4C));
@@ -221,6 +275,7 @@ DEFINE_HOOK(483EA4, CLoading_LoadObjects_SHPTurretFix_1, 7)
 	GET_STACK(FA2::CString, pRegName, STACK_OFFS(0x868, -0x4));
 
 	if (GlobalVars::INIFiles::Rules->GetBool(pRegName, "Turret")) {
+		LogDebug("pRegName = %s", pRegName);
 		nFacingCount = 8;
 	}
 	else {
@@ -241,7 +296,9 @@ DEFINE_HOOK(483F9D, CLoading_LoadObjects_SHPTurretFix_2, 5)
 	
 	return 0x483FC2;
 }
+#endif
 
+//
 DEFINE_HOOK(4ACD28, sub_4ACB60_BuildingInitData, E)
 {
 	REF_STACK(BuildingOptionValues, Option, STACK_OFFS(0x194, 0x184));

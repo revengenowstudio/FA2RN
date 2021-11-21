@@ -44,9 +44,7 @@ public:
 	static CWnd* PASCAL FromHandle(HWND hWnd) { JMP_THIS(0x55273E); }
 };
 
-FA2MFC_END
-
-class NOVTABLE FA2CDialog : public FA2::CWnd /*CDialog*/
+FA2MFC_CLASS(CDialog) : public FA2::CWnd
 {
 public:
 	//CWnd
@@ -75,6 +73,7 @@ protected:
 	virtual void PreInitDialog();
 
 };
+FA2MFC_END
 
 class NOVTABLE CTreeView : public CCtrlView
 {

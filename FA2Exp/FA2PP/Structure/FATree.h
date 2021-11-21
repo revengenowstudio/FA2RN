@@ -66,6 +66,7 @@ namespace std {
     public:
         class iterator;
         friend class iterator;
+        using TreeNode = FATreeNode;
         class iterator : public _Bidit<value_type, ptrdiff_t> {
         public:
             iterator() {}
@@ -749,15 +750,15 @@ namespace std {
         }
         void _Consval(value_type* _P, const value_type& _V)
         {
-            _P = GameCreate<value_type>(_V);
+            _P = FACreate<value_type>(_V);
         }
         void _Destval(value_type* _P)
         {
-            GameDelete<value_type>(_P);
+            FADelete<value_type>(_P);
         }
         void _Freenode(FATreeNode* _S)
         {
-            GameDelete<FATreeNode>(_S);
+            FADelete<FATreeNode>(_S);
             //_Allocator.deallocate(_S, 1);
         }
 

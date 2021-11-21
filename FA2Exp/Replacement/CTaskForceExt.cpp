@@ -49,7 +49,7 @@ BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
 		}
 	}
 
-	return this->FA2CDialog::PreTranslateMessage(pMsg);
+	return this->FA2::CDialog::PreTranslateMessage(pMsg);
 }
 
 //inline hook methods:

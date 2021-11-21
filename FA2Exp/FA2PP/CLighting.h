@@ -2,7 +2,7 @@
 
 #include <FA2PP.h>
 
-class NOVTABLE CLighting : public FA2CDialog
+class NOVTABLE CLighting : public FA2::CDialog
 {
 public:
 	CLighting() = default;

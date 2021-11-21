@@ -2,7 +2,7 @@
 
 #include <FA2PP.h>
 
-class NOVTABLE CSpecialFlags : public FA2CDialog
+class NOVTABLE CSpecialFlags : public FA2::CDialog
 {
 public:
 	CSpecialFlags() = default;

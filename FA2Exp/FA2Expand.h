@@ -10,6 +10,7 @@ class FA2Expand
 {
 public:
 	static void __stdcall ExeRun();
+	static void __stdcall ExeTerminate();
 
 	FA2Expand();
 	~FA2Expand();

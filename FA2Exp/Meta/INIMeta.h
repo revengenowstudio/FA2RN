@@ -19,6 +19,8 @@ public:
 
 
 	FA2::CString GetString(const char* pSection, const char* pKey, const char* pDefault = "") const;
+	bool GetBool(const char* pSection, const char* pKey, bool def = false) const;
+	int GetInteger(const char* pSection, const char* pKey, int def = 0) const;
 
 	IndiceStorage GetIndices(const char* pSection, bool bParseIntoValue = false) const;
 	SequencedSection GetSectionItems(const char* pSection) const;

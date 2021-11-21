@@ -89,7 +89,7 @@ BOOL CScriptTypesExt::PreTranslateMessageHook(MSG* pMsg)
 		ret = onMessageKeyUp(pMsg);
 	}
 
-	return ret < 0 ? this->FA2CDialog::PreTranslateMessage(pMsg) : ret;
+	return ret < 0 ? this->FA2::CDialog::PreTranslateMessage(pMsg) : ret;
 }
 
 BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
@@ -97,7 +97,7 @@ BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 	int ret = -1;
 	auto const msgType = HIWORD(wParam);
 	auto const nID = LOWORD(wParam);
-	LogDebug(__FUNCTION__" nID %d, msgType %X", nID, msgType);
+	LogDebug(" nID %d, msgType %X", nID, msgType);
 
 	if (nID == WND_Script::ComboBoxExtParameter) {
 		if (msgType == CBN_SELCHANGE || msgType == CBN_EDITCHANGE) {
@@ -105,7 +105,7 @@ BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	return ret < 0 ? this->FA2CDialog::OnCommand(wParam, lParam) : ret;
+	return ret < 0 ? this->FA2::CDialog::OnCommand(wParam, lParam) : ret;
 }
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
@@ -303,7 +303,7 @@ void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 //
 BOOL CScriptTypesExt::OnInitDialogHook()
 {
-	if (!FA2CDialog::OnInitDialog()) {
+	if (!FA2::CDialog::OnInitDialog()) {
 		return FALSE;
 	}
 
@@ -557,7 +557,7 @@ int CScriptTypesExt::getExtraValue()
 	auto const extParamType = getExtraParamType(paramType);
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
 	auto& curExtParamContent = extParamCmbBox.GetText();
-	LogDebug(__FUNCTION__" curExtParamContent = %s", curExtParamContent);
+	LogDebug(" curExtParamContent = %s", curExtParamContent);
 	return atoi(curExtParamContent);
 }
 

@@ -25,6 +25,34 @@ using INIDict = std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0>;
 using INIStringDict = std::FAMap<FA2::CString, FA2::CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator>;
 using INIIndiceDict = std::FAMap<FA2::CString, unsigned int, 0x5D8CA8, 0x5D8CA4, INISectionEntriesComparator>;
 
+class INIHelper
+{
+public:
+	static bool StingToBool(const FA2::CString& str, bool def)
+	{
+		switch (toupper(static_cast<unsigned char>(*str))) {
+			case '1':
+			case 'T':
+			case 'Y':
+				return true;
+			case '0':
+			case 'F':
+			case 'N':
+				return false;
+			default:
+				return def;
+		}
+	}
+	static int StringToInteger(const FA2::CString& str, int def)
+	{
+		int ret = 0;
+		if (sscanf_s(str, "%d", &ret) == 1) {
+			return ret;
+		}
+		return def;
+	}
+};
+
 class INIMapFieldUpdate
 {
 private:
@@ -214,11 +242,7 @@ public:
 	}
 
 	int GetInteger(const char* pSection, const char* pKey, int nDefault = 0) {
-		FA2::CString& pStr = this->GetString(pSection, pKey, "");
-		int ret = 0;
-		if (sscanf_s(pStr, "%d", &ret) == 1)
-			return ret;
-		return nDefault;
+		return INIHelper::StringToInteger(this->GetString(pSection, pKey, ""), nDefault);
 	}
 
 	float GetSingle(const char* pSection, const char* pKey, float nDefault = 0) {
@@ -238,20 +262,7 @@ public:
 	}
 
 	bool GetBool(const char* pSection, const char* pKey, bool nDefault = false) {
-		FA2::CString& pStr = this->GetString(pSection, pKey, "");
-		switch (toupper(static_cast<unsigned char>(*pStr)))
-		{
-		case '1':
-		case 'T':
-		case 'Y':
-			return true;
-		case '0':
-		case 'F':
-		case 'N':
-			return false;
-		default:
-			return nDefault;
-		}
+		return INIHelper::StingToBool(this->GetString(pSection, pKey, ""), nDefault);
 	}
 private:
 		INIDict data; // no idea about the nilrefs

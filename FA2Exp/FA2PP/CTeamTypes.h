@@ -2,7 +2,7 @@
 
 #include <FA2PP.h>
 
-class NOVTABLE CTeamTypes : public FA2CDialog
+class NOVTABLE CTeamTypes : public FA2::CDialog
 {
 public:
 	CTeamTypes() { JMP_THIS(0x4E5860); }
