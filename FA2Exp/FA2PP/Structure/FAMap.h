@@ -6,6 +6,21 @@
 #pragma pack(push,8)
 #endif  /* _MSC_VER */
 
+template<class _A, class _R>
+struct unary_function
+{
+	using argument_type = _A;
+	using result_type = _R;
+};
+// TEMPLATE STRUCT binary_function
+template<class _A1, class _A2, class _R>
+struct binary_function
+{
+	using first_argument_type = _A1;
+	using second_argument_type = _A2;
+	using result_type = _R;
+};
+
 namespace std{
 	template<class _K, class _Ty, DWORD nil_addr = 0, DWORD nilrefs_addr = 0,
 		class _Pr = less<_K>,class _A = allocator<_Ty> >
