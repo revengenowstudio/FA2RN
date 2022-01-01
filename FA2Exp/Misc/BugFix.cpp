@@ -4,6 +4,7 @@
 #include <ObjectOptions.h>
 #include <Drawing.h>
 #include <CMapData.h>
+#include <Helper/Template.h>
 #include "../Meta/INIMeta.h"
 #include "../Replacement/CLoadingExt.h"
 #include "../Utilities/HackHelper.h"
@@ -355,3 +356,112 @@ DEFINE_HOOK(452D18, INIClass_ReadFile_GuessEncoding, 7)
 
 	return 0;
 }
+
+#if 1
+DEFINE_HOOK(452CC0, INIClass_ReadFile, 8)
+{
+	enum { OK, NotFound, Failed };
+	retfunc<int> ret(R, 0x4534C2u);
+
+	GET(INIClass*, pThis, ECX);
+	GET_STACK(const char*, pFileName, 0x4);
+	GET_STACK(bool, TrimSpace, 0x8);
+	//GET_STACK(int, unused, 0xC);
+
+	if (!pFileName || !strlen(pFileName)) {
+		return ret(NotFound);
+	}
+
+	auto const encoding = getFileEncodeType(pFileName);
+	std::string fileContent;
+	std::ifstream iniFile(pFileName);
+
+	if (!iniFile.is_open()) {
+		return ret(NotFound);
+	}
+
+	if (encoding == Encoding::UTF8) {
+		iniFile.seekg(0, std::ios::end);
+		fileContent.resize(static_cast<size_t>(iniFile.tellg()) - 3);
+		iniFile.seekg(3, std::ios::beg);
+		iniFile.read(fileContent.data(), fileContent.size());
+		Utf8ToGbk(fileContent);
+	} else {
+		iniFile.seekg(0, std::ios::end);
+		fileContent.resize(static_cast<size_t>(iniFile.tellg()));
+		iniFile.seekg(0, std::ios::beg);
+		iniFile.read(fileContent.data(), fileContent.size());
+	}
+	iniFile.close();
+
+	if (fileContent.empty()) {
+		return ret(OK);
+	}
+
+
+	char* pLineStart = fileContent.data();
+	auto const fileEnd = fileContent.data() + fileContent.size();
+	char* lBracketPos = nullptr;
+	bool inSection = false;
+	FA2::CString ID;
+	for (;;) {
+		if (!pLineStart[0]) {
+			//no more line
+			break;
+		}
+		auto pEndOfLine = strchr(pLineStart, '\n');
+		if (!pEndOfLine) {
+			//no more line
+			if (pLineStart >= fileEnd) {
+				break;
+			}
+			pEndOfLine = fileEnd;
+		} else {
+			*pEndOfLine = '\0';
+		}
+
+		//skip blank
+		while (pLineStart[0] == ' ') {
+			pLineStart++;
+		}
+		if (auto pLineSwitch = strchr(pLineStart, '\r')) {
+			*pLineSwitch = '\0';
+		}
+		if (auto pSemicolon = strchr(pLineStart, ';')) {
+			*pSemicolon = '\0';
+		}
+		if (auto pDoubleSlash = strstr(pLineStart, "//")) {
+			*pDoubleSlash = '\0';
+		}
+		if (pLineStart[0]) {
+			LogDebug("Got line:%s", pLineStart);
+			//now check ID scope
+			if (auto pLBracket = strchr(pLineStart, '[')) {
+				std::string_view line(pLineStart, pEndOfLine - pLineStart);
+				auto const pRBracket = strchr(pLBracket, ']');
+				if (!pRBracket) {
+					LogError("Init parsing failed, right bracket mismatched");
+					break;
+				}
+				auto const pIDStart = pLBracket + 1;
+				auto const pIDEnd = pRBracket - 1;
+				auto const IDLen = pIDEnd - pIDStart + 1;
+				ID = { pIDStart, IDLen };
+				//pThis->Insert(ID, {});
+			} else if (ID.GetLength() && pLineStart[0]) {
+				auto const pEqualer = strchr(pLineStart, '=');
+				if (pEqualer) {
+					*pEqualer = '\0';
+					pThis->WriteString(ID, pLineStart, pEqualer + 1);
+					pThis->SetIndice(ID, pLineStart, pThis->GetKeyCount(ID));
+				}
+			}
+		}
+
+		//iterating to next line
+		pLineStart = pEndOfLine + 1;
+	}
+
+	return ret(OK);
+}
+#endif
