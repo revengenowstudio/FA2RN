@@ -6,10 +6,10 @@
 #pragma pack(push,8)
 #endif  /* _MSC_VER */
 
-template<class _A, class _R>
+template<class TAllocator, class _R>
 struct unary_function
 {
-	using argument_type = _A;
+	using argument_type = TAllocator;
 	using result_type = _R;
 };
 // TEMPLATE STRUCT binary_function
@@ -21,22 +21,22 @@ struct binary_function
 	using result_type = _R;
 };
 
-namespace std{
-	template<class _K, class _Ty, DWORD nil_addr = 0, DWORD nilrefs_addr = 0,
-		class _Pr = less<_K>,class _A = allocator<_Ty> >
+namespace std {
+	template<class TKey, class TValue, DWORD nil_addr = 0, DWORD nilrefs_addr = 0,
+		class TPredicator = less<TKey>, class TAllocator = allocator<pair<const TKey, TValue>> >
 		class FAMap {
 		public:
-			typedef FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A> _Myt;
-			typedef pair<const _K, _Ty> value_type;
-			struct _Kfn : public unary_function<value_type, _K> {
-				const _K& operator()(const value_type& _X) const
+			typedef FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator> _MyType;
+			typedef pair<const TKey, TValue> value_type;
+			struct _Kfn : public unary_function<value_type, TKey> {
+				const TKey& operator()(const value_type& _X) const
 				{
 					return (_X.first);
 				}
 			};
 			class value_compare
 				: public binary_function<value_type, value_type, bool> {
-				friend class FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>;
+				friend class FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>;
 			public:
 				bool operator()(const value_type& _X,
 					const value_type& _Y) const
@@ -44,16 +44,16 @@ namespace std{
 					return (comp(_X.first, _Y.first));
 				}
 			public:
-				value_compare(_Pr _Pred)
+				value_compare(TPredicator _Pred)
 					: comp(_Pred) {}
-				_Pr comp;
+				TPredicator comp;
 			};
-			typedef _K key_type;
-			typedef _Ty referent_type;
-			typedef _Pr key_compare;
-			typedef _A allocator_type;
-			typedef _Ty& _Tref;
-			typedef FATree<_K, value_type, _Kfn, _Pr, _A, nil_addr, nilrefs_addr> _Imp;
+			typedef TKey key_type;
+			typedef TValue referent_type;
+			typedef TPredicator key_compare;
+			typedef TAllocator allocator_type;
+			typedef TValue& _Tref;
+			typedef FATree<TKey, value_type, _Kfn, TPredicator, TAllocator, nil_addr, nilrefs_addr> _Imp;
 			typedef size_t size_type;
 			typedef ptrdiff_t difference_type;
 			typedef value_type& reference;
@@ -61,19 +61,20 @@ namespace std{
 			typedef typename _Imp::iterator iterator;
 			typedef pair<iterator, bool> _Pairib;
 			typedef pair<iterator, iterator> _Pairii;
-			explicit FAMap(const _Pr& _Pred = _Pr(), const _A& _Al = _A())
-				: _Tr(_Pred, false, _Al) {}
-			typedef const value_type* _It;
-			FAMap(_It _F, _It _L, const _Pr& _Pred = _Pr(),
-				const _A& _Al = _A())
-				: _Tr(_Pred, false, _Al)
+			FAMap(noinit_t) : _Tree(noinit_t()) {}
+			explicit FAMap(const TPredicator& _Pred = TPredicator(), const TAllocator& _Al = TAllocator())
+				: _Tree(_Pred, false, _Al) {}
+			typedef const value_type* pValue;
+			FAMap(pValue first, pValue last, const TPredicator& pred = TPredicator(),
+				const TAllocator& alloc = TAllocator())
+				: _Tree(pred, false, alloc)
 			{
-				for (; _F != _L; ++_F)
-					_Tr.insert(*_F);
+				for (; first != last; ++first)
+					_Tree.insert(*first);
 			}
 			iterator begin()
 			{
-				return (_Tr.begin());
+				return (_Tree.begin());
 			}
 			const iterator begin() const
 			{
@@ -81,7 +82,7 @@ namespace std{
 			}
 			iterator end()
 			{
-				return (_Tr.end());
+				return (_Tree.end());
 			}
 			const iterator end() const
 			{
@@ -89,135 +90,135 @@ namespace std{
 			}
 			size_t size() const
 			{
-				return (_Tr.size());
+				return (_Tree.size());
 			}
 			size_t max_size() const
 			{
-				return (_Tr.max_size());
+				return (_Tree.max_size());
 			}
 			bool empty() const
 			{
-				return (_Tr.empty());
+				return (_Tree.empty());
 			}
-			_A get_allocator() const
+			TAllocator get_allocator() const
 			{
-				return (_Tr.get_allocator());
+				return (_Tree.get_allocator());
 			}
 			_Tref operator[](const key_type& _Kv)
 			{
-				iterator _P = insert(value_type(_Kv, _Ty())).first;
+				iterator _P = insert(value_type(_Kv, TValue())).first;
 				return ((*_P).second);
 			}
 			_Pairib insert(const value_type& _X)
 			{
-				_Imp::_Pairib _Ans = _Tr.insert(_X);
+				_Imp::_Pairib _Ans = _Tree.insert(_X);
 				return (_Pairib(_Ans.first, _Ans.second));
 			}
 			iterator insert(iterator _P, const value_type& _X)
 			{
-				return (_Tr.insert((_Imp::iterator&)_P, _X));
+				return (_Tree.insert((_Imp::iterator&)_P, _X));
 			}
-			void insert(_It _F, _It _L)
+			void insert(pValue _F, pValue _L)
 			{
 				for (; _F != _L; ++_F)
-					_Tr.insert(*_F);
+					_Tree.insert(*_F);
 			}
 			iterator erase(iterator _P)
 			{
-				return (_Tr.erase((_Imp::iterator&)_P));
+				return (_Tree.erase((_Imp::iterator&)_P));
 			}
 			iterator erase(iterator _F, iterator _L)
 			{
-				return (_Tr.erase((_Imp::iterator&)_F,
-					(_Imp::iterator&)_L));
+				return (_Tree.erase((_Imp::iterator&)first,
+					(_Imp::iterator&)last));
 			}
-			size_type erase(const _K& _Kv)
+			size_type erase(const TKey& _Kv)
 			{
-				return (_Tr.erase(_Kv));
+				return (_Tree.erase(_Kv));
 			}
 			void clear()
 			{
-				_Tr.clear();
+				_Tree.clear();
 			}
-			void swap(_Myt& _X)
+			void swap(_MyType& _X)
 			{
-				std::swap(_Tr, _X._Tr);
+				std::swap(_Tree, _X._Tree);
 			}
-			friend void swap(_Myt& _X, _Myt& _Y)
+			friend void swap(_MyType& _X, _MyType& _Y)
 			{
 				_X.swap(_Y);
 			}
 			key_compare key_comp() const
 			{
-				return (_Tr.key_comp());
+				return (_Tree.key_comp());
 			}
 			value_compare value_comp() const
 			{
-				return (value_compare(_Tr.key_comp()));
+				return (value_compare(_Tree.key_comp()));
 			}
-			iterator find(const _K& _Kv)
+			iterator find(const TKey& _Kv)
 			{
-				return (_Tr.find(_Kv));
+				return (_Tree.find(_Kv));
 			}
-			const iterator find(const _K& _Kv) const
+			const iterator find(const TKey& _Kv) const
 			{
 				return const_cast<FAMap*>(this)->find(_Kv);
 			}
-			size_t count(const _K& _Kv) const
+			size_t count(const TKey& _Kv) const
 			{
-				return (_Tr.count(_Kv));
+				return (_Tree.count(_Kv));
 			}
-			iterator lower_bound(const _K& _Kv)
+			iterator lower_bound(const TKey& _Kv)
 			{
-				return (_Tr.lower_bound(_Kv));
+				return (_Tree.lower_bound(_Kv));
 			}
-			iterator upper_bound(const _K& _Kv)
+			iterator upper_bound(const TKey& _Kv)
 			{
-				return (_Tr.upper_bound(_Kv));
+				return (_Tree.upper_bound(_Kv));
 			}
-			_Pairii equal_range(const _K& _Kv)
+			_Pairii equal_range(const TKey& _Kv)
 			{
-				return (_Tr.equal_range(_Kv));
+				return (_Tree.equal_range(_Kv));
 			}
 		protected:
-			_Imp _Tr;
+			_Imp _Tree;
 	};
 	// map TEMPLATE OPERATORS
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator==(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator==(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (_X.size() == _Y.size()
 			&& equal(_X.begin(), _X.end(), _Y.begin()));
 	}
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator!=(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator!=(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (!(_X == _Y));
 	}
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator<(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator<(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (lexicographical_compare(_X.begin(), _X.end(),
 			_Y.begin(), _Y.end()));
 	}
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator>(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator>(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (_Y < _X);
 	}
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator<=(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator<=(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (!(_Y < _X));
 	}
-	template<class _K, class _Ty, DWORD nil_addr, DWORD nilrefs_addr, class _Pr, class _A> inline
-		bool operator>=(const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _X,
-			const FAMap<_K, _Ty, nil_addr, nilrefs_addr, _Pr, _A>& _Y)
+	template<class TKey, class TValue, DWORD nil_addr, DWORD nilrefs_addr, class TPredicator, class TAllocator> inline
+		bool operator>=(const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _X,
+			const FAMap<TKey, TValue, nil_addr, nilrefs_addr, TPredicator, TAllocator>& _Y)
 	{
 		return (!(_X < _Y));
 	}

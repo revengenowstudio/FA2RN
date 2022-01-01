@@ -9,24 +9,24 @@
 #endif  /* _MSC_VER */
 
 // TEMPLATE CLASS vector
-template<class _Ty, class _A = std::allocator<_Ty> >
+template<class TValue, class TAllocator = std::allocator<TValue> >
 class FAVector {
 public:
-	typedef FAVector<_Ty, _A> _Myt;
-	typedef typename _A allocator_type;
-	typedef typename _A::size_type size_type;
-	typedef typename _A::difference_type difference_type;
-	typedef typename _A::pointer _Tptr;
-	typedef typename _A::const_pointer _Ctptr;
-	typedef typename _A::reference reference;
-	typedef typename _A::const_reference const_reference;
-	typedef typename _A::value_type value_type;
+	typedef FAVector<TValue, TAllocator> _MyType;
+	typedef typename TAllocator allocator_type;
+	typedef typename TAllocator::size_type size_type;
+	typedef typename TAllocator::difference_type difference_type;
+	typedef typename TAllocator::pointer _Tptr;
+	typedef typename TAllocator::const_pointer _Ctptr;
+	typedef typename TAllocator::reference reference;
+	typedef typename TAllocator::const_reference const_reference;
+	typedef typename TAllocator::value_type value_type;
 	typedef typename _Tptr iterator;
 	typedef typename _Ctptr const_iterator;
-	explicit FAVector(const _A& _Al = _A())
+	explicit FAVector(const TAllocator& _Al = TAllocator())
 		: allocator(_Al), _First(0), _Last(0), _End(0) {}
-	explicit FAVector(size_type _N, const _Ty& _V = _Ty(),
-		const _A& _Al = _A())
+	explicit FAVector(size_type _N, const TValue& _V = TValue(),
+		const TAllocator& _Al = TAllocator())
 		: allocator(_Al)
 	{
 		_First = allocator.allocate(_N, (void*)0);
@@ -34,15 +34,15 @@ public:
 		_Last = _First + _N;
 		_End = _Last;
 	}
-	FAVector(const _Myt& _X)
+	FAVector(const _MyType& _X)
 		: allocator(_X.allocator)
 	{
 		_First = allocator.allocate(_X.size(), (void*)0);
 		_Last = _Ucopy(_X.begin(), _X.end(), _First);
 		_End = _Last;
 	}
-	typedef const_iterator _It;
-	FAVector(_It _F, _It _L, const _A& _Al = _A())
+	typedef const_iterator pValue;
+	FAVector(pValue _F, pValue _L, const TAllocator& _Al = TAllocator())
 		: allocator(_Al), _First(0), _Last(0), _End(0)
 	{
 		insert(begin(), _F, _L);
@@ -53,7 +53,7 @@ public:
 		allocator.deallocate(_First, _End - _First);
 		_First = 0, _Last = 0, _End = 0;
 	}
-	_Myt& operator=(const _Myt& _X)
+	_MyType& operator=(const _MyType& _X)
 	{
 		if (this == &_X)
 			;
@@ -114,7 +114,7 @@ public:
 	{
 		return ((const_iterator)_Last);
 	}
-	void resize(size_type _N, const _Ty& _X = _Ty())
+	void resize(size_type _N, const TValue& _X = TValue())
 	{
 		if (size() < _N)
 			insert(end(), _N - size(), _X);
@@ -133,7 +133,7 @@ public:
 	{
 		return (size() == 0);
 	}
-	_A get_allocator() const
+	TAllocator get_allocator() const
 	{
 		return (allocator);
 	}
@@ -173,7 +173,7 @@ public:
 	{
 		return (*(end() - 1));
 	}
-	void push_back(const _Ty& _X)
+	void push_back(const TValue& _X)
 	{
 		insert(end(), _X);
 	}
@@ -181,23 +181,23 @@ public:
 	{
 		erase(end() - 1);
 	}
-	void assign(_It _F, _It _L)
+	void assign(pValue _F, pValue _L)
 	{
 		erase(begin(), end());
 		insert(begin(), _F, _L);
 	}
-	void assign(size_type _N, const _Ty& _X = _Ty())
+	void assign(size_type _N, const TValue& _X = TValue())
 	{
 		erase(begin(), end());
 		insert(begin(), _N, _X);
 	}
-	iterator insert(iterator _P, const _Ty& _X = _Ty())
+	iterator insert(iterator _P, const TValue& _X = TValue())
 	{
 		size_type _O = _P - begin();
 		insert(_P, 1, _X);
 		return (begin() + _O);
 	}
-	void insert(iterator _P, size_type _M, const _Ty& _X)
+	void insert(iterator _P, size_type _M, const TValue& _X)
 	{
 		if (_End - _Last < _M)
 		{
@@ -227,7 +227,7 @@ public:
 			_Last += _M;
 		}
 	}
-	void insert(iterator _P, _It _F, _It _L)
+	void insert(iterator _P, pValue _F, pValue _L)
 	{
 		size_type _M = 0;
 		_Distance(_F, _L, _M);
@@ -277,33 +277,33 @@ public:
 	{
 		erase(begin(), end());
 	}
-	bool operator==(const _Myt& _X) const
+	bool operator==(const _MyType& _X) const
 	{
 		return (size() == _X.size()
 			&& equal(begin(), end(), _X.begin()));
 	}
-	bool operator!=(const _Myt& _X) const
+	bool operator!=(const _MyType& _X) const
 	{
 		return (!(*this == _X));
 	}
-	bool operator<(const _Myt& _X) const
+	bool operator<(const _MyType& _X) const
 	{
 		return (lexicographical_compare(begin(), end(),
 			_X.begin(), _X.end()));
 	}
-	bool operator>(const _Myt& _X) const
+	bool operator>(const _MyType& _X) const
 	{
 		return (_X < *this);
 	}
-	bool operator<=(const _Myt& _X) const
+	bool operator<=(const _MyType& _X) const
 	{
 		return (!(_X < *this));
 	}
-	bool operator>=(const _Myt& _X) const
+	bool operator>=(const _MyType& _X) const
 	{
 		return (!(*this < _X));
 	}
-	void swap(_Myt& _X)
+	void swap(_MyType& _X)
 	{
 		if (allocator == _X.allocator)
 		{
@@ -313,10 +313,10 @@ public:
 		}
 		else
 		{
-			_Myt _Ts = *this; *this = _X, _X = _Ts;
+			_MyType _Ts = *this; *this = _X, _X = _Ts;
 		}
 	}
-	friend void swap(_Myt& _X, _Myt& _Y)
+	friend void swap(_MyType& _X, _MyType& _Y)
 	{
 		_X.swap(_Y);
 	}
@@ -333,7 +333,7 @@ protected:
 			allocator.construct(_P, *_F);
 		return (_P);
 	}
-	void _Ufill(iterator _F, size_type _N, const _Ty& _X)
+	void _Ufill(iterator _F, size_type _N, const TValue& _X)
 	{
 		for (; 0 < _N; --_N, ++_F)
 			allocator.construct(_F, _X);
@@ -342,7 +342,7 @@ protected:
 	{
 		_THROW("out_of_range - invalid FAVector<T> subscript");
 	}
-	_A allocator;
+	TAllocator allocator;
 	iterator _First, _Last, _End;
 };
 

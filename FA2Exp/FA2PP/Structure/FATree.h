@@ -9,9 +9,9 @@
 #endif  /* _MSC_VER */
 
 namespace std {
-    template<class _Ty, class _D>
+    template<class TValue, class _D>
     struct _Bidit : public iterator<bidirectional_iterator_tag,
-        _Ty, _D> {};
+        TValue, _D> {};
 
     template<
         typename key_type,
@@ -25,7 +25,7 @@ namespace std {
     class FATree
     {
     protected:
-        using _Myt =
+        using _MyType =
             FATree<
             key_type,
             value_type,
@@ -67,6 +67,7 @@ namespace std {
         class iterator;
         friend class iterator;
         using TreeNode = FATreeNode;
+        using _Alnode = _Rebind_alloc_t<allocator_type, FATreeNode>;
         class iterator : public _Bidit<value_type, ptrdiff_t> {
         public:
             iterator() {}
@@ -152,28 +153,38 @@ namespace std {
         using _Pairib = pair<iterator, bool>;
         using _Pairii = pair<iterator, iterator>;
 
+        FATree(noinit_t) {}
         explicit FATree(const comparator_type& _Parg, bool _Marg = true,
-            const allocator_type& _Al = _A())
+            const allocator_type& _Al = allocator_type())
             : _Allocator(_Al),
             _Comparator(_Parg), _Multi(_Marg)
         {
             _Init();
         }
-        FATree(const value_type* _F, const value_type* _L,
+        FATree(const value_type* _first, const value_type* _last,
             const comparator_type& _Parg, bool _Marg = true,
-            const allocator_type& _Al = _A())
+            const allocator_type& _Al = allocator_type())
             : _Allocator(_Al),
             _Comparator(_Parg), _Multi(_Marg)
         {
             _Init();
-            insert(_F, _L);
+            insert(_first, _last);
         }
-        FATree(const _Myt& _X)
+        FATree(const _MyType& _X)
             : _Allocator(_X._Allocator),
             _Comparator(_X._Comparator), _Multi(_X._Multi)
         {
             _Init();
             _Copy(_X);
+        }
+        FATree(_MyType&& _X)
+            : _Allocator(_X._Allocator),
+            _Comparator(_X._Comparator), 
+            _Multi(_X._Multi),
+            _Size(_X._Size)
+        {
+            _Head = std::exchange(_X._Head, nullptr);
+            _X._Init();
         }
         ~FATree()
         {
@@ -188,7 +199,7 @@ namespace std {
                 *_Nil() = 0;
             }}
         }
-        _Myt& operator=(const _Myt& _X)
+        _MyType& operator=(const _MyType& _X)
         {
             if (this != &_X)
             {
@@ -445,7 +456,7 @@ namespace std {
         {
             _Pairii _P = equal_range(_X);
             size_t _N = 0;
-            for (iterator itr = _P.first(); itr != _P.second; ++itr)
+            for (iterator itr = _P.first; itr != _P.second; ++itr)
                 ++_N;
             erase(_P.first, _P.second);
             return (_N);
@@ -486,7 +497,7 @@ namespace std {
         {
             return (_Pairii(lower_bound(_Kv), upper_bound(_Kv)));
         }
-        void swap(_Myt& _X)
+        void swap(_MyType& _X)
         {
             std::swap(_Comparator, _X._Comparator);
             if (_Allocator == _X._Allocator)
@@ -497,10 +508,10 @@ namespace std {
             }
             else
             {
-                _Myt _Ts = *this; *this = _X, _X = _Ts;
+                _MyType _Ts = *this; *this = _X, _X = _Ts;
             }
         }
-        friend void swap(_Myt& _X, _Myt& _Y)
+        friend void swap(_MyType& _X, _MyType& _Y)
         {
             _X.swap(_Y);
         }
@@ -517,7 +528,7 @@ namespace std {
         //static FATreeNode* _Nil;
         //static size_t _Nilrefs;
 
-        void _Copy(const _Myt& _X)
+        void _Copy(const _MyType& _X)
         {
             _Lockit _Lk;
             _Root() = _Copy(_X._Root(), _Head);
@@ -742,24 +753,26 @@ namespace std {
         }
         FATreeNode* _Buynode(FATreeNode* _Parg, FATreeNodeColor _Carg)
         {
-            FATreeNode* _S =
-                (FATreeNode*)_Allocator.allocate(sizeof FATreeNode);
-            _Parent(_S) = _Parg;
-            _Color(_S) = _Carg;
-            return (_S);
+            auto&& realAloc =_Alnode(_Allocator);
+            //_Alloc_construct_ptr<allocator_type> _Newnode(_Allocator);
+            FATreeNode* _Newnode = realAloc.allocate(1);
+            _Parent(_Newnode) = _Parg;
+            _Color(_Newnode) = _Carg;
+            return (_Newnode);
         }
         void _Consval(value_type* _P, const value_type& _V)
         {
-            _P = FACreate<value_type>(_V);
+            new (_P) value_type( _V);
         }
         void _Destval(value_type* _P)
         {
-            FADelete<value_type>(_P);
+            _P->~value_type();
         }
         void _Freenode(FATreeNode* _S)
         {
-            FADelete<FATreeNode>(_S);
-            //_Allocator.deallocate(_S, 1);
+            auto&& realAloc = _Alnode(_Allocator);
+            //allocator_traits<allocator_type>::deallocate(realAloc, _S, 1);
+            realAloc.deallocate(_S, 1);
         }
 
     public:
