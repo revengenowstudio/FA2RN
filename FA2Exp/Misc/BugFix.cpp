@@ -273,3 +273,85 @@ DEFINE_HOOK(4ACD28, sub_4ACB60_BuildingInitData, E)
 	Option.Facing = "0";
 	return 0x4ACD36;
 }
+
+enum class Encoding
+{
+	Unicode = 0,
+	UTF8,//we support BOM UTF8 only
+	UnicodeBig,
+};
+
+Encoding getFileEncodeType(const char* filePath)
+{
+	unsigned char headBuf[3] = { 0 };
+	Encoding type = Encoding::Unicode;
+
+	auto const pFile = _fsopen(filePath, "r", _SH_DENYWR);
+
+	if (!pFile) { 
+		return type; 
+	}
+
+	fseek(pFile, 0, SEEK_SET);
+	fread(headBuf, 3, 1, pFile);
+	//utf8-bom ：FF BB BF
+	if (headBuf[0] == 0xEF && headBuf[1] == 0xBB && headBuf[2] == 0xBF) {
+		type = Encoding::UTF8;
+	}//little Endian Unicode：FF FE  intel x86 default
+	else if (headBuf[0] == 0xFF && headBuf[1] == 0xFE) {
+		type = Encoding::Unicode;
+	}//big Endian Unicode：FE FF
+	else if (headBuf[0] == 0xFE && headBuf[1] == 0xFF) {
+		type = Encoding::UnicodeBig;
+	}
+	//force unicode
+	return type;
+}
+
+void Utf8ToGbk(std::string& szGBK)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, szGBK.c_str(), -1, NULL, 0);
+
+	std::wstring wszGBK;
+	wszGBK.resize(len);
+
+	MultiByteToWideChar(CP_UTF8, 0, szGBK.c_str(), -1, wszGBK.data(), len);
+	len = WideCharToMultiByte(CP_ACP, 0, wszGBK.data(), -1, NULL, 0, NULL, NULL);
+	//reuse input as output, and override
+	szGBK.resize(len);
+	WideCharToMultiByte(CP_ACP, 0, wszGBK.data(), -1, szGBK.data(), len, NULL, NULL);
+}
+
+char tmpMapPath[MAX_PATH];
+
+DEFINE_HOOK(452D18, INIClass_ReadFile_GuessEncoding, 7)
+{
+	GET_STACK(const char*, pFileName, STACK_OFFS(0x22FC, -0x4));
+
+	auto const encoding = getFileEncodeType(pFileName);
+
+	if (encoding == Encoding::UTF8) {
+		sprintf_s(tmpMapPath, "%s\\tmp.map", GlobalVars::ExePath());
+		std::string fileContent;
+		std::ifstream iniFile(pFileName);
+
+		if (iniFile.is_open()) {
+			iniFile.seekg(0, std::ios::end);
+			fileContent.resize(static_cast<size_t>(iniFile.tellg()) - 3);
+			iniFile.seekg(3, std::ios::beg);
+			iniFile.read(fileContent.data(), fileContent.size());
+			iniFile.close();
+			Utf8ToGbk(fileContent);
+		}
+		std::ofstream tmpFile(tmpMapPath);
+		if (tmpFile.is_open()) {
+			tmpFile.write(fileContent.c_str(), fileContent.size());
+			tmpFile.flush();
+			tmpFile.close();
+			//R->Stack(STACK_OFFS(0x22FC, -0x4), tmpMapPath);
+			R->ESI(tmpMapPath);
+		}
+	}
+
+	return 0;
+}
