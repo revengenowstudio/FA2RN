@@ -21,9 +21,56 @@
 class INISectionEntriesComparator;
 class INISection;
 
+template<typename T>
+class FA2Allocater
+{
+public:
+	using value_type = T;
+	constexpr FA2Allocater() noexcept {}
+
+	constexpr FA2Allocater(const FA2Allocater&) noexcept = default;
+	template <class _Other>
+	constexpr FA2Allocater(const FA2Allocater<_Other>&) noexcept {}
+
+	_NODISCARD __declspec(allocator) T* allocate(const size_t size)
+	{
+		return reinterpret_cast<T*>(FAMemory::Allocate(sizeof(T) * size));
+	}
+
+	void deallocate(T* const _Ptr, const size_t _Count)
+	{
+		// no overflow check on the following multiply; we assume _Allocate did that check
+		FAMemory::Deallocate(_Ptr);
+	}
+
+	template <class _Objty, class... _Types>
+	void construct(_Objty* const _Ptr, _Types&&... _Args)
+	{
+		::new (_Voidify_iter(_Ptr)) _Objty(std::forward<_Types>(_Args)...);
+	}
+
+	template <class Ty>
+	void destroy(Ty* const ptr)
+	{
+		ptr->~Ty();
+	}
+
+	_NODISCARD size_t max_size() const noexcept
+	{
+		return static_cast<size_t>(-1) / sizeof(T);
+	}
+};
+
 using INIDict = std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0>;
-using INIStringDict = std::FAMap<FA2::CString, FA2::CString, 0x5D8CB0, 0x5D8CAC, INISectionEntriesComparator>;
-using INIIndiceDict = std::FAMap<FA2::CString, unsigned int, 0x5D8CA8, 0x5D8CA4, INISectionEntriesComparator>;
+using INIStringDict 
+	= std::FAMap<FA2::CString, FA2::CString, 0x5D8CB0, 0x5D8CAC, 
+		INISectionEntriesComparator, 
+		FA2Allocater<std::pair<FA2::CString, FA2::CString>>
+		>;
+using INIIndiceDict 
+	= std::FAMap<FA2::CString, unsigned int, 0x5D8CA8, 0x5D8CA4,
+		INISectionEntriesComparator, FA2Allocater<std::pair<FA2::CString, unsigned int>>
+		>;
 
 class INIHelper
 {
@@ -89,27 +136,54 @@ FA2::CString& INIStringDict::operator[](const FA2::CString& Key) { JMP_THIS(0x40
 
 class NOVTABLE INISection {
 public:
-	INISection() { JMP_THIS(0x452880); }
+	INISection() noexcept : INISection(noinit_t()) { JMP_THIS(0x452880); }
 	INISection(const INISection& another) { JMP_THIS(0x4021C0); }
+	INISection(INISection&& another) :
+		EntriesDictionary(std::move(another.EntriesDictionary)),
+		IndicesDictionary(std::move(another.IndicesDictionary))
+	{
+	}
 
 	virtual ~INISection()
 		{ JMP_THIS(0x452B20); }
 
-	int GetItemCount(FA2::CString Key) const//0 means section exists but no content, -1 means section not exists
+	int GetItemCount(const FA2::CString& Key) const//0 means section exists but no content, -1 means section not exists
 		{ JMP_THIS(0x4023B0); }
+
+	size_t Size() const { return EntriesDictionary.size(); }
 
 	FA2::CString& operator[](const FA2::CString& Key)
 	{ return this->EntriesDictionary[Key]; }
 
+	void Insert(const FA2::CString& key, const FA2::CString& value)
+	{
+		EntriesDictionary.insert({ key, value });
+		IndicesDictionary.insert({ key, EntriesDictionary.size() });
+	}
+
+private:
+	explicit __forceinline INISection(noinit_t) noexcept {}
+
+public:
 //private:
-	INIStringDict EntriesDictionary;
-	INIIndiceDict IndicesDictionary;
+		// In fact we can use a union here. However, to make it
+	// being more secured, just use a char array here and 
+	// access it by using functions.
+	union
+	{
+		BYTE _EntriesDictionary[sizeof(INIStringDict)];
+		INIStringDict EntriesDictionary;
+	};
+	union {
+		BYTE _IndicesDictionary[sizeof(INIIndiceDict)];
+		INIIndiceDict IndicesDictionary;
+	};
 };
 
 class NOVTABLE INIClass
 {
 public:
-	INIClass() 
+	INIClass(noinit_t())
 		{ JMP_THIS(0x452880); }
 
 	virtual ~INIClass() = default;
@@ -172,8 +246,9 @@ public:
 	int GetKeyCount(const char* pSection)
 	{
 		auto itr = data.find(pSection);
-		if (itr != data.end())
+		if (itr != data.end()) {
 			return itr->second.EntriesDictionary.size();
+		}
 		return 0;
 	}
 
@@ -187,19 +262,56 @@ public:
 		INIDict::value_type ins{ ID, section };
 		auto const& ret = data.insert(ins);
 		return ret.first;
+	}	
+	//typename INIDict::iterator Insert(const FA2::CString& ID, INISection&& section)
+	//{
+	//	INIDict::value_type ins{ ID, std::move(section) };
+	//	auto const& ret = data.insert(ins);
+	//	return ret.first;
+	//}
+
+	void Remove(const FA2::CString& pSection)
+	{
+		data.erase(pSection);
 	}
 
-	bool WriteString(const char* pSection, const char* pKey, const char* pValue)
+	void WriteString(const char* pSection, const char* pKey, const char* pValue)
 	{
 		auto itr = data.find(pSection);
 		if (itr == data.end()) { 
-			return false; 
+			itr = Insert(pSection, {});
 		}
 		auto& dict = itr->second.EntriesDictionary;
 		auto pair = Insert(dict, pKey, pValue);
 		if (!pair.second) {
 			pair.first->second = pValue;
 		}
+	}
+
+	void SetIndice(const char* pSection, const char* pKey, unsigned index)
+	{
+		auto it = data.find(pSection);
+		if (it != data.end()) {
+			it->second.IndicesDictionary.insert({ pKey, index });
+		}
+	}
+
+	bool Save(const char* pFilePath)
+	{
+		std::ofstream fout(pFilePath);
+		if (!fout.is_open()) {
+			return false;
+		}
+		for (auto const& section : data) {
+			fout << "[" << section.first << "]\n";
+			for (auto const& pair : section.second.EntriesDictionary) {
+				fout << pair.first << "=" << pair.second << "\n";
+			}
+			fout << "\n";
+		}
+
+		fout.flush();
+		fout.close();
 		return true;
 	}
 
