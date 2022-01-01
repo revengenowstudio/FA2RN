@@ -323,6 +323,88 @@ void Utf8ToGbk(std::string& szGBK)
 	WideCharToMultiByte(CP_ACP, 0, wszGBK.data(), -1, szGBK.data(), len, NULL, NULL);
 }
 
+bool Parse(INIClass* pINI, char* buffer, int size)
+{
+	char* ptr = buffer;
+	char* pend = buffer + size;
+
+	auto get_line = [pend](char* ptr) -> int {
+		int counter = 0;
+		while (*ptr != '\n' && ptr < pend) {
+			++counter;
+			++ptr;
+		}
+		return counter;
+	};
+
+	FA2::CString strbuf;
+
+	while (ptr < pend) {
+		int line_len = get_line(ptr);
+		if (ptr + line_len >= pend)
+			return false;
+
+		ptr[line_len] = '\0';
+		strbuf = ptr;
+		ptr += line_len + 1;
+		strbuf.Trim();
+
+		if (strbuf[0] == '[' && strbuf.Find(']') != -1) {
+			break;
+		}
+	}
+
+	while (ptr < pend) {
+		auto last = strbuf.Find(']');
+		if (last != -1) {
+			strbuf = strbuf.Mid(1, last - 1);
+		}
+		FA2::CString sectionName = strbuf;
+		auto& section = INISection();
+
+		while (ptr < pend) {
+			int line_len = get_line(ptr);
+			if (ptr + line_len < pend) {
+				ptr[line_len] = '\0';
+			}
+			strbuf = ptr;
+			ptr += line_len + 1;
+
+			strbuf.Trim();
+			if (strbuf[0] == '[' && strbuf.Find(']') != -1) {
+				break;
+			}
+
+			int comment_flag = strbuf.Find(';');
+			if (comment_flag != -1) {
+				strbuf = strbuf.Mid(0, comment_flag);
+				strbuf.Trim();
+			}
+
+			if (!strbuf.GetLength() || strbuf[0] == ';' || strbuf[0] == '=') {
+				continue;
+			}
+
+			auto divider = strbuf.Find('=');
+			if (divider == -1) {
+				continue;
+			}
+
+			FA2::CString key = strbuf.Mid(0, divider);
+			FA2::CString value = strbuf.Mid(divider + 1);
+			section.Insert(key, value);
+		}
+
+		if (!section.Size()) {
+			pINI->Remove(sectionName);
+		} else {
+			pINI->Insert(sectionName, section);
+		}
+	}
+
+	return true;
+}
+
 char tmpMapPath[MAX_PATH];
 
 DEFINE_HOOK(452D18, INIClass_ReadFile_GuessEncoding, 7)
@@ -398,12 +480,16 @@ DEFINE_HOOK(452CC0, INIClass_ReadFile, 8)
 		return ret(OK);
 	}
 
-
+	if (!Parse(pThis, fileContent.data(), fileContent.size())) {
+		return ret(Failed);
+	}
+	if (strstr(pFileName, ".map")) {
+		pThis->Save(R"(G:\tmp\test.map)");
+	}
+	#if 0
+	FA2::CString ID;
 	char* pLineStart = fileContent.data();
 	auto const fileEnd = fileContent.data() + fileContent.size();
-	char* lBracketPos = nullptr;
-	bool inSection = false;
-	FA2::CString ID;
 	for (;;) {
 		if (!pLineStart[0]) {
 			//no more line
