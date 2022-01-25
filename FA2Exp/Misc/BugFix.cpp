@@ -304,6 +304,7 @@ Encoding getFileEncodeType(const char* filePath)
 	else if (headBuf[0] == 0xFE && headBuf[1] == 0xFF) {
 		type = Encoding::UnicodeBig;
 	}
+	fclose(pFile);
 	//force unicode
 	return type;
 }
