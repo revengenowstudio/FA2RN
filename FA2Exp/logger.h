@@ -6,6 +6,7 @@
 #define LogWithLevel(level, format, ...) logger::g_logger.WriteLine(#level ## " (" __FUNCTION__ ") ", format, __VA_ARGS__);
 
 #define LogDebug(Format, ...) LogWithLevel([Debug],  Format, __VA_ARGS__);
+#define LogInfo(Format, ...) LogWithLevel([Info],  Format, __VA_ARGS__);
 #define LogError(Format, ...) LogWithLevel([Error],  Format, __VA_ARGS__);
 
 class logger
