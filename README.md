@@ -1,28 +1,18 @@
-## About FA2Copy - RN Specific Version
-FA2Copy is an extension DLL which provide some fixes for FinalAlert 2. With it, you can use FA2 more conveniently.
+## 关于 FA2Ext About 
+FA2Ext是 @secsome的FA2Copy适配RN的专门版本，并且结合了后续发展的FA2sp的许多调整，但是依旧沿用FA2Copy的代码结构，并且对RN的个性需求进行定制开发。
 
-FA2Copy uses message hook and Windows API to achieve its functions, and Zero Fanker introduced inline hook method from YR-Ares syringe way .
+程序架构为Ares使用的Syringe那套
 
-## How to use
-1. Prepare the dll. Simply, you can pull this project and compile it with X86. I had compiled one, you can just find it in the **examples** folder.
-2. Not ready for the public to use yet, currently designed for YRMOD - Revenge Now only .
-3. Work along with **FA2Ext.dll** properly, which is developed by AlexB.
-5. You should configure 'FA2CopyData.ini' correctly, as FA2Copy uses functions like FindWindow and will get window's handle by its name, it's really necessary. Also I will provide you a sample ini file just in the **examples** folder, if something works wrong while using FA2Copy, always remember to check your configure file before reporting the bug.
+## 使用方式
+目前RN地编仍然属于内部开发者使用的范畴，因此请按照内部文档指引使用地编。
 
-## More information
-I put a text file(controls.txt) in **samples** as well, you can find all controls need modifying from it.
+## 变更情况
+* 修复FA2本身对建筑炮塔显示的缺陷
+* 优化特遣小队、脚本、小队类型、触发事件等界面输入参数实时刷新窗口导致的操作响应迟钝
+* 增加对UTF-8编码的带有中文字符的地图的兼容，但是仍然会保存为GBK编码
 
-It's a little bit complex for me to add an accelerate without MFC, now I'm working on it. But for know, FA2Copy will only use a GlobalAtom to realize the hotkey. It means you cannot use Ctrl+S/O/N with FinalAlert2 open for now. You can help to me fix or improve FA2Copy if you like and have time to do it. I'll be very happy for your help. (Maybe we can just focus on working on a map instead of editing something at the same time?)
+## 友情链接
 
-Also, in the future I will consider to use an injector instead of modify it by hand. However, as it's not necessary as I have to modify the program anyway to add and adjust the controls, I'm not sure this will be really realized in the future.
+[secsome blog](https://secsome.github.io/post/00002/)
 
-My code style maybe not standard and have some mistake through the code, so I'd be happy to get your suggestions if it's good to improve my skills. In fact, it's my first project, after no longer working on the algorithm competition.
-
-## Links
-[Stuffhost, you can get FA2Ext from here.](http://www.stuffhost.de/ares/)
-
-[A version migrated to FinalAlert2 by Caco, download password is 'caco'.](https://pan.baidu.com/s/1KiJFochCFo9JJpCBYCRDIg)
-
-[The version for Mental Omega use can be easily found in my personal blog.](https://secsome.github.io/post/00002/)
-
-[My bilibili space.](https://space.bilibili.com/143748001)
+[复仇时刻官网](https://home.revengenow.top)
