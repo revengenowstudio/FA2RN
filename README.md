@@ -1,4 +1,4 @@
-## 关于 FA2Ext About 
+## 关于 FA2RN
 FA2Ext是 @secsome的FA2Copy适配RN的专门版本，并且结合了后续发展的FA2sp的许多调整，但是依旧沿用FA2Copy的代码结构，并且对RN的个性需求进行定制开发。
 
 程序架构为Ares使用的Syringe那套
