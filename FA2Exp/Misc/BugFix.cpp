@@ -4,6 +4,7 @@
 #include <ObjectOptions.h>
 #include <Drawing.h>
 #include <CMapData.h>
+#include <CScriptTypes.h>
 #include "../Meta/INIMeta.h"
 #include "../Replacement/CLoadingExt.h"
 #include "../Utilities/HackHelper.h"
@@ -355,4 +356,16 @@ DEFINE_HOOK(452D18, INIClass_ReadFile_GuessEncoding, 7)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(4D87BB, CScriptTypeClass_OnScriptTypeDelete_Tip, 5)
+{
+	GET(CScriptTypes* const, pThis, ESI);
+
+	R->EAX(
+		pThis->MessageBoxA(
+		"确定要删除这个脚本么？不要忘了删除脚本出现的地方。", 
+		"删除脚本", 0x24)
+	);
+	return 0x4D87CE;
 }
