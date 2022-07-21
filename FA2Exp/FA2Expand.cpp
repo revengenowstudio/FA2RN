@@ -93,7 +93,7 @@ void __stdcall FA2Expand::ExeRun()
 	CScriptTypesExt::ProgramStartupInit();
 	CTeamTypesExt::ProgramStartupInit();
 	//auto const pStr = reinterpret_cast<const char*>(0x5CD808);
-	//logger::g_logger.Info(__FUNCTION__" " + std::string(pStr));
+	//LogInfo(" " + std::string(pStr));
 	//DWORD oldProtect, newProtect = 0;
 	//auto ret = VirtualProtectEx(process, &pplContent[offset], size, PAGE_READWRITE, &oldProtect);
 	//g_FA2FindResourceProc = *reinterpret_cast<FindResourceProc*>(0x5911D8);

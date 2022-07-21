@@ -71,7 +71,7 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	GET_STACK(int, overlayIdx, 0x24);
 	// GET(CString, name, ECX);
 
-	//LogWarn(__FUNCTION__" overlayIdx:" + std::to_string(overlayIdx));
+	//LogWarn(" overlayIdx:" + std::to_string(overlayIdx));
 
 	if (overlayIdx > 255) {
 		return 0x4F1695;
@@ -117,7 +117,7 @@ DEFINE_HOOK(43CE79, sub_43CE50_SkipHack, B)
 {
 	//GET(const FA2::CString*, string, ECX);
 
-	//LogWarn(std::string(__FUNCTION__" :") + string->c_str());
+	//LogWarn(std::string(" :") + string->c_str());
 	return  reinterpret_cast<DWORD>(ret_func);
 }
 
@@ -134,7 +134,7 @@ DEFINE_HOOK(473E46, CIsoView_UpdatePaint_InfantryFacing, 9)
 	GET(int, Facing, EAX);
 
 	//GET_STACK(const CString, ID, 0x590);
-	//LogInfo(std::string(__FUNCTION__" : item ") + static_cast<const char*>(ID) + " facing : " + std::to_string(Facing));
+	//LogInfo(std::string(" : item ") + static_cast<const char*>(ID) + " facing : " + std::to_string(Facing));
 
 	R->EAX(7 - Facing / 32);
 
@@ -275,12 +275,12 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 	GET_BASE(const CString, ImageID, -0x1C);
 	GET_BASE(const FA2::CString, ID, 0x8);
 
-	LogInfo(std::string(__FUNCTION__" "));
+	LogInfo(std::string(" "));
 
 
 	bool hasTurret = GlobalVars::INIFiles::Rules->GetBoolean(ID, "Turret", false);
-	LogInfo(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
-	LogInfo(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(hasTurret));
+	LogInfo(std::string(" : ID ") + static_cast<const char*>(ID));
+	LogInfo(std::string(" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(hasTurret));
 
 	R->AL(hasTurret);
 	return 0x483491;

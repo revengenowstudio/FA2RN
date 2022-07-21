@@ -18,10 +18,10 @@ BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
 	if (pMsg->message == WM_KEYDOWN)
 	{
 #if 0
-		logger::g_logger.Info(__FUNCTION__" WM_KEYDOWN received, value = " + std::to_string(pMsg->wParam));
-		logger::g_logger.Info(__FUNCTION__" pMsg->hwnd = " + std::to_string((DWORD)pMsg->hwnd));
-		logger::g_logger.Info(__FUNCTION__" child hwnd = " + std::to_string((DWORD)this->CCBMemberType.GetWindow(GW_CHILD)->m_hWnd));
-		logger::g_logger.Info(__FUNCTION__" this->CCBMemberType.m_hWnd= " + std::to_string((DWORD)this->CCBMemberType.m_hWnd));
+		LogInfo(" WM_KEYDOWN received, value = " + std::to_string(pMsg->wParam));
+		LogInfo(" pMsg->hwnd = " + std::to_string((DWORD)pMsg->hwnd));
+		LogInfo(" child hwnd = " + std::to_string((DWORD)this->CCBMemberType.GetWindow(GW_CHILD)->m_hWnd));
+		LogInfo(" this->CCBMemberType.m_hWnd= " + std::to_string((DWORD)this->CCBMemberType.m_hWnd));
 #endif
 		switch (pMsg->wParam)
 		{
@@ -73,8 +73,8 @@ DEFINE_HOOK(4E44C7, CTaskForce_OnMemberEditChanged, 7)
 	GET(CTaskForce* const, pThis, ESI);
 	GET_STACK(const char*, pStr, 0x28);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info(pStr);
+	LogInfo("");
+	LogInfo(pStr);
 
 	pThis->UpdateMemberType();
 	pThis->CCBMemberType.SetWindowTextA(pStr);
@@ -88,7 +88,7 @@ DEFINE_HOOK(4E4540, CTaskForce_OnMemberSelectChanged, 7)
 {
 	GET(CTaskForce* const, pThis, ECX);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
+	LogInfo("");
 	pThis->OnMemberEditChanged();
 
 	return 0x4E489A;
@@ -99,8 +99,8 @@ DEFINE_HOOK(4E4846, CTaskForce_OnMemberSelectChanged_Update, 7)
 	GET(CTaskForce* const, pThis, ESI);
 	GET_STACK(const char*, pStr, 0x20);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info(pStr);
+	LogInfo("");
+	LogInfo(pStr);
 
 	pThis->UpdateMemberType();
 	//pThis->CCBMemberType.SetWindowTextA(pStr);
@@ -113,8 +113,8 @@ DEFINE_HOOK(4E358D, CTaskForce_OnItemListSelect_MemberType, C)
 {
 	GET(const char*, pStr, EAX);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info(pStr);
+	LogInfo("");
+	LogInfo(pStr);
 
 	return 0;
 }
@@ -125,8 +125,8 @@ DEFINE_HOOK(4E1F7A, CTaskForce_UpdateMemberType, 8)
 	GET(const char*, pStr, EDX);
 	char buffer[0x20];
 	sprintf_s(buffer, "%08X", caller);
-	logger::g_logger.Info(__FUNCTION__" caller = " + std::string(buffer));
-	logger::g_logger.Info(pStr);
+	LogInfo(" caller = " + std::string(buffer));
+	LogInfo(pStr);
 
 	return 0;
 }
