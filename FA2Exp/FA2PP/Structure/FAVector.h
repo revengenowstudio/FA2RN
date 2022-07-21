@@ -16,10 +16,10 @@ public:
 	typedef typename TAllocator allocator_type;
 	typedef typename TAllocator::size_type size_type;
 	typedef typename TAllocator::difference_type difference_type;
-	typedef typename TAllocator::pointer _Tptr;
-	typedef typename TAllocator::const_pointer _Ctptr;
-	typedef typename TAllocator::reference reference;
-	typedef typename TAllocator::const_reference const_reference;
+	typedef typename std::allocator_traits<TAllocator>::pointer _Tptr;
+	typedef typename const _Tptr _Ctptr;
+	typedef typename TValue& reference;
+	typedef typename const reference const_reference;
 	typedef typename TAllocator::value_type value_type;
 	typedef typename _Tptr iterator;
 	typedef typename _Ctptr const_iterator;

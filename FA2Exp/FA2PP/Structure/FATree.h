@@ -10,8 +10,11 @@
 
 namespace std {
     template<class TValue, class _D>
-    struct _Bidit : public iterator<bidirectional_iterator_tag,
-        TValue, _D> {};
+    struct _Bidit {
+        using iterator_category = bidirectional_iterator_tag;
+        using value_type = TValue;
+        using difference_type = _D;
+    };
 
     template<
         typename key_type,
