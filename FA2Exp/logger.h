@@ -7,6 +7,7 @@
 
 #define LogDebug(Format, ...) LogWithLevel([Debug],  Format, __VA_ARGS__);
 #define LogInfo(Format, ...) LogWithLevel([Info],  Format, __VA_ARGS__);
+#define LogWarn(Format, ...) LogWithLevel([Warn],  Format, __VA_ARGS__);
 #define LogError(Format, ...) LogWithLevel([Error],  Format, __VA_ARGS__);
 
 class logger
@@ -14,20 +15,12 @@ class logger
 public:
 	static void Init(const std::string& path = "FA2Ext.log");
 
-	static inline void debug(const std::string& message) { return g_logger.Debug(message); }
-	static inline void info(const std::string& message) { return g_logger.Info(message); }
-	static inline void warn(const std::string& message) { return g_logger.Warn(message); }
-	static inline void error(const std::string& message) { return g_logger.Error(message); }
-
 	static logger g_logger;
 
 	logger() = default;
 	logger(const std::string& Name);
 	~logger();
-	void Debug(const std::string& Reason);
-	void Warn(const std::string& Reason);
-	void Info(const std::string& Reason);
-	void Error(const std::string& Reason);
+
 	void WriteLine(const char* Prefix, const char* Format, ...);
 
 private:

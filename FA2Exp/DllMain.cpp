@@ -103,13 +103,13 @@ BOOL EndHook()
 // Hook Proc
 LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	//logger::g_logger.Info("nCode = " + std::to_string(nCode));
+	//LogInfo("nCode = " + std::to_string(nCode));
 
 	if (nCode >= 0)
 	{
 		CWPSTRUCT* cwps = (CWPSTRUCT*)lParam;
 
-		//logger::g_logger.Info("CallWndProc : message = " + std::to_string(cwps->message) 
+		//LogInfo("CallWndProc : message = " + std::to_string(cwps->message) 
 		//	+ ", wParam =  " + std::to_string(cwps->wParam)
 		//	+ ", lParam =  " + std::to_string(cwps->lParam)
 		//);
@@ -118,8 +118,8 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		{
 			INT wmId = LOWORD(cwps->wParam);
 			INT wmHi = HIWORD(cwps->wParam);
-			//logger::g_logger.Info("nCode = " + std::to_string(nCode));
-			//logger::g_logger.Info("wmId = " + std::to_string(wmId));
+			//LogInfo("nCode = " + std::to_string(nCode));
+			//LogInfo("wmId = " + std::to_string(wmId));
 			switch (wmId)
 			{
 			//Used ID
@@ -132,7 +132,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					g_FindWindowConfig.HouseWnd.c_str()
 				);
 				if (HouseWnd == NULL) {
-					logger::g_logger.Error("Cannot locate the House window.");
+					LogError("Cannot locate the House window.");
 					MessageBox(
 						NULL,
 						MessageBoxConfig::Instance.Message.HouseWndNotFound.c_str(),
@@ -141,7 +141,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					);
 					break;
 				}
-				logger::g_logger.Info("Successfully located the House window.");
+				LogInfo("Successfully located the House window.");
 
 				HWND ComboBox, Edit;
 				ComboBox = GetDlgItem(HouseWnd, 1091);
@@ -203,7 +203,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			//Tree View Debug
 			/*case 9974: {
-				logger::g_logger.Info("Tree View Debug");
+				LogInfo("Tree View Debug");
 				break;
 			}*/
 			//Terrain Group
@@ -230,7 +230,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case IDC_TerrainListWindow::Button_Reload: {//Reload Button
-				logger::g_logger.Info(" wmHi:" + std::to_string(wmHi));
+				LogInfo(" wmHi:%d", wmHi);
 				CTileSetDialogBarExt::ReloadTileSets(g_TerrainTheater);
 				break;
 			}
@@ -271,7 +271,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9982: {//Override the Add Button
-				logger::g_logger.Info("Add INI Section");
+				LogInfo("Add INI Section");
 				HWND INIWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.IniWnd.c_str()
@@ -288,7 +288,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					SendMessage(ComboBox, CB_GETLBTEXT, i, (LPARAM)KeyDictionary[i]);
 				}
 
-				logger::g_logger.Info(std::to_string(SectionCount) + "INI section loaded");
+				LogInfo("%d INI section loaded", SectionCount);
 
 				//New Section
 				SendMessage(BtnAdd, WM_LBUTTONDOWN, 1037, NULL);
@@ -354,7 +354,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			//Trigger
 			case 9987: {
-				logger::g_logger.Info("Copy Repeat Type");
+				LogInfo("Copy Repeat Type");
 				HWND TriggerWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TriggerWnd.c_str()
@@ -390,7 +390,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					CurType = 0;
 					break;
 				}
-				logger::g_logger.Info("Current trigger repeat type: " + str[0]);
+				LogInfo("Current trigger repeat type: " + str[0]);
 				SendMessage(BtnCopy, WM_LBUTTONDOWN, 1403, NULL);
 				SendMessage(BtnCopy, WM_LBUTTONUP, 1403, NULL);
 				SendMessage(ComboBox, CB_SETCURSEL, CurType, NULL);
@@ -399,7 +399,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9988: {
-				logger::g_logger.Info("Add Event Member");
+				LogInfo("Add Event Member");
 				HWND TriggerTabWnd = GetDlgItem(
 					FindWindow(
 						g_FindWindowConfig.DialogClass.c_str(),
@@ -424,7 +424,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					DesIndex = CurrEventCount - 8;
 				}
 				if (CurrEventCount > 19) {
-					logger::g_logger.Warn("Current trigger's event is full");
+					LogWarn("Current trigger's event is full");
 					MessageBox(
 						NULL,
 						MessageBoxConfig::Instance.Message.TriggerEventFull.c_str(),
@@ -441,7 +441,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9989: {
-				logger::g_logger.Info("Add Action Member");
+				LogInfo("Add Action Member");
 				HWND TriggerTabWnd = GetDlgItem(
 					FindWindow(
 						g_FindWindowConfig.DialogClass.c_str(),
@@ -466,7 +466,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					DesIndex = CurrActionCount - 8;
 				}
 				if (CurrActionCount > 19) {
-					logger::g_logger.Warn("Current trigger's action is full");
+					LogWarn("Current trigger's action is full");
 					MessageBox(
 						NULL,
 						MessageBoxConfig::Instance.Message.TriggerActionFull.c_str(),
@@ -483,7 +483,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9990: {//Copy Event Member
-				logger::g_logger.Info("Copy Event Member");
+				LogInfo("Copy Event Member");
 				HWND TriggerTabWnd = GetDlgItem(
 					FindWindow(
 						g_FindWindowConfig.DialogClass.c_str(),
@@ -502,7 +502,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				HWND EventPara = GetDlgItem(EventWnd, 1402);
 				int CurrEventCount = SendMessage(CurrEventHandle, CB_GETCOUNT, NULL, NULL);
 				if (CurrEventCount > 19) {
-					logger::g_logger.Warn("Current trigger's event is full");
+					LogWarn("Current trigger's event is full");
 					MessageBox(
 						NULL,
 						MessageBoxConfig::Instance.Message.TriggerEventFull.c_str(),
@@ -554,7 +554,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9991: {//Copy Action Member
-				logger::g_logger.Info("Copy Action Member");
+				LogInfo("Copy Action Member");
 				HWND TriggerTabWnd = GetDlgItem(
 					FindWindow(
 						g_FindWindowConfig.DialogClass.c_str(),
@@ -573,7 +573,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				HWND ActionPara = GetDlgItem(ActionWnd, 1402);
 				int CurrEventCount = SendMessage(CurrActionHandle, CB_GETCOUNT, NULL, NULL);
 				if (CurrEventCount > 19) {
-					logger::g_logger.Warn("Current trigger's action is full");
+					LogWarn("Current trigger's action is full");
 					MessageBox(
 						NULL,
 						MessageBoxConfig::Instance.Message.TriggerActionFull.c_str(),
@@ -625,7 +625,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			//Taskforces
 			case 9995: {//Copy Taskforce Member
-				logger::g_logger.Info("Copy Taskforce Member");
+				LogInfo("Copy Taskforce Member");
 				HWND TaskforceWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TaskforceWnd.c_str()
@@ -637,7 +637,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				TCHAR CurNum[0x10], CurType[0x20];
 				GetWindowText(ComboType, CurType, sizeof(CurType) - 1);
 				GetWindowText(EditNum, CurNum, sizeof(CurNum) - 1);
-				logger::g_logger.Info("Currect (Type,Number) :[" + (std::string)CurType + ',' + CurNum + "]");
+				LogInfo("Currect (Type,Number) :[%s,%s]", CurType, CurNum);
 				//safe guard
 				if (strlen(CurType)  && strlen(CurType)) {
 					SendMessage(BtnAdd, WM_LBUTTONDOWN, 1146, 0);
@@ -652,7 +652,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9998: {//Copy Taskforce
-				logger::g_logger.Info("Copy Taskforce");
+				LogInfo("Copy Taskforce");
 				HWND TaskforceWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TaskforceWnd.c_str()
@@ -683,7 +683,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					GetWindowText(ComboType, UnitType[i], typeLen);
 					GetWindowText(EditNum, UnitNum[i], numLen);
 				}
-				logger::g_logger.Info(std::to_string(ListBoxCount) + " taskforce members saved");
+				LogInfo("%d taskforce members saved", ListBoxCount);
 
 				//New Taskforce
 				HWND BtnNew = GetDlgItem(TaskforceWnd, 1151);
@@ -713,7 +713,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			//Scripts
 #if defined(OldScript)
 			case 9992: {//Add Script Member (Override 1173)
-				logger::g_logger.Info("Add Script Member");
+				LogInfo("Add Script Member");
 				HWND ScriptWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.ScriptWnd.c_str()
@@ -727,7 +727,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				int ScriptCount = SendMessage(ListBox, LB_GETCOUNT, 0, 0);
 				int CurSelIndex = SendMessage(ListBox, LB_GETCURSEL, 0, 0);
 				if (IsChecked != BST_CHECKED) {
-					logger::g_logger.Info("Script Member - Insert Mode OFF");
+					LogInfo("Script Member - Insert Mode OFF");
 					SendMessage(BtnAdd, WM_LBUTTONDOWN, 1173, NULL);
 					SendMessage(BtnAdd, WM_LBUTTONUP, 1173, NULL);
 					SendMessage(ListBox, LB_SETCURSEL, ScriptCount, NULL);
@@ -741,7 +741,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					SendMessage(ScriptWnd, WM_COMMAND, MAKEWPARAM(1170, LBN_SELCHANGE), (LPARAM)ListBox);
 					break;
 				}
-				logger::g_logger.Info("Script Member - Insert Mode ON");
+				LogInfo("Script Member - Insert Mode ON");
 				std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
 				std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
 				for (int i = CurSelIndex; i < ScriptCount; ++i) {
@@ -775,7 +775,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9996: {//Copy Script Member
-				logger::g_logger.Info("Copy Script Member");
+				LogInfo("Copy Script Member");
 				HWND ScriptWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.ScriptWnd.c_str()
@@ -796,7 +796,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 				if (IsChecked != BST_CHECKED) {
-					logger::g_logger.Info("Script Member - Insert Mode OFF");
+					LogInfo("Script Member - Insert Mode OFF");
 					int t_Type = SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
 					TCHAR t_Para[256];
 					GetWindowText(ComboPara, t_Para, 256);
@@ -813,7 +813,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				int CopyType = SendMessage(ComboType, CB_GETCURSEL, NULL, NULL);
 				TCHAR CopyPara[256];
 				GetWindowText(ComboPara, CopyPara, 256);
-				logger::g_logger.Info("Script Member - Insert Mode ON");
+				LogInfo("Script Member - Insert Mode ON");
 				std::vector<int> CurType(ScriptCount - CurSelIndex + 1);
 				std::vector<TCHAR*> CurPara(ScriptCount - CurSelIndex + 1);
 				for (int i = CurSelIndex; i < ScriptCount; ++i) {
@@ -847,7 +847,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9999: {//Copy Script
-				logger::g_logger.Info("Copy Script");
+				LogInfo("Copy Script");
 				HWND ScriptWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.ScriptWnd.c_str()
@@ -882,7 +882,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 					SendMessage(AllScriptCombo, CB_GETLBTEXT, i, (LPARAM)ScriptDictionary[i]);
 				}
 
-				logger::g_logger.Info(std::to_string(ScriptCount) + " Script Members Stored");
+				LogInfo(std::to_string(ScriptCount) + " Script Members Stored");
 
 				//New Script
 				HWND BtnNew = GetDlgItem(ScriptWnd, 1154);
@@ -932,7 +932,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 #endif
 			//Teams
 			case 9979: {//Override New Team for Templates
-				logger::g_logger.Info("New Team");
+				LogInfo("New Team");
 				HWND TeamWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TeamWnd.c_str()
@@ -956,7 +956,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				}
 				int curTemplateIndex = SendMessage(ComboTeamTemplate, CB_GETCURSEL, NULL, NULL);
 				TeamTemplate& curTemplate = g_TeamTemplates[curTemplateIndex];
-				logger::g_logger.Info("Now using Team Template " + *curTemplate[0]);
+				LogInfo("Now using Team Template %s", curTemplate[0]->c_str());
 				HWND BtnNew = GetDlgItem(TeamWnd, 1110);
 				SendMessage(BtnNew, WM_LBUTTONDOWN, 1151, 0);
 				SendMessage(BtnNew, WM_LBUTTONUP, 1151, 0);
@@ -988,7 +988,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9981: {//Load Templates
-				logger::g_logger.Info("Load Team Templates");
+				LogInfo("Load Team Templates");
 				LoadTeamTemplates();
 				HWND TeamWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
@@ -1004,7 +1004,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			case 9997: {//Copy Team
-				logger::g_logger.Info("Copy Team");
+				LogInfo("Copy Team");
 				HWND TeamWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
 					g_FindWindowConfig.TeamWnd.c_str()
@@ -1130,7 +1130,7 @@ LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			//AI Triggers
 			case 9994: {
-				logger::g_logger.Info("Copy AI Trigger");
+				LogInfo("Copy AI Trigger");
 				//Initialize Handles
 				HWND AITriggerWnd = FindWindow(
 					g_FindWindowConfig.DialogClass.c_str(),
@@ -1236,7 +1236,7 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	}
 
 	//MSG curMsg = *(MSG*)lParam;
-	//logger::g_logger.Info("GetMsgProc : message = " + std::to_string(curMsg.message) + ", lParam =  " + std::to_string(curMsg.lParam));
+	//LogInfo("GetMsgProc : message = " + std::to_string(curMsg.message) + ", lParam =  " + std::to_string(curMsg.lParam));
 	return CallNextHookEx(g_GetMsgHook, nCode, wParam, lParam);
 }
 
@@ -1299,16 +1299,16 @@ BOOL CALLBACK HouseDlgProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 			SetWindowText(EDIT2, std::to_string((int)(StringParam->first)).c_str());
 			std::string &EditShowStr = *(StringParam->second);
-			logger::g_logger.Info("Now processing house " + EditShowStr);
+			LogInfo("Now processing house %s", EditShowStr.c_str());
 			SetWindowText(EDIT, EditShowStr.c_str());
-			logger::g_logger.Info("Successfully done initialization of allie editor dialog box.");
+			LogInfo("Successfully done initialization of allie editor dialog box.");
 			return TRUE;
 		}
 		case WM_COMMAND:{
 			switch (wParam)
 			{
 				case IDOK:{
-					logger::g_logger.Info("Allie editor confirmed.");
+					LogInfo("Allie editor confirmed.");
 					HWND LBA = GetDlgItem(hwnd, IDC_LIST2);//Allies ListBox
 					HWND EDIT = GetDlgItem(hwnd, IDC_EDIT1);
 					HWND EDIT2 = GetDlgItem(hwnd, IDC_EDIT2);
@@ -1330,7 +1330,7 @@ BOOL CALLBACK HouseDlgProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 					return TRUE;
 				}
 				case IDCANCEL: {
-					logger::g_logger.Info("Allie editor cancelled.");
+					LogInfo("Allie editor cancelled.");
 					EndDialog(hwnd, NULL);
 					return TRUE;
 				}
@@ -1387,7 +1387,7 @@ std::string GetPath() {
 	if (path != NULL)
 		ret = path;
 	delete[] path;
-	logger::g_logger.WriteLine("", "Dll Path : %s", ret.c_str());
+	LogDebug("Dll Path : %s", ret.c_str());
 	return ret;
 }
 
@@ -1408,7 +1408,7 @@ void LoadTeamTemplates() {
 	}
 	if (TeamTemplatesCount < 0)	TeamTemplatesCount = 0;
 
-	logger::g_logger.Info(std::to_string(TeamTemplatesCount) + " Team Templates Loading");
+	LogInfo("%d Team Templates Loading", TeamTemplatesCount);
 
 	g_TeamTemplates.resize(TeamTemplatesCount + 1);
 	*g_TeamTemplates[0][0] = ini.Read("TeamTemplates", "DefaultName");
@@ -1427,14 +1427,14 @@ void LoadTeamTemplates() {
 	return;
 }
 void GetTreeViewHwnd() {
-	logger::g_logger.Info("Tree View Handle has gotten");
+	LogInfo("Tree View Handle has gotten");
 	HWND Hwnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
 	HWND Hwnd2 = FindWindowEx(Hwnd1, NULL, "AfxMDIFrame42s", NULL);
 	g_SysTreeView = FindWindowEx(Hwnd2, NULL, "SysTreeView32", NULL);
 	return;
 }
 void LoadINI() {
-	logger::g_logger.Info("INI is loading...");
+	LogInfo("INI is loading...");
 	std::string FA2CopyDataPath = g_Path;
 	FA2CopyDataPath += "\\FA2CopyData.ini";
 	Ini::ConfigIni = FA2CopyDataPath;
@@ -1449,7 +1449,7 @@ void LoadINI() {
 	}
 }
 void LoadFA2CopyConfig() {
-	logger::g_logger.Info("Loading FA2Copy Config");
+	LogInfo("Loading FA2Copy Config");
 
 	//g_FindWindowConfig
 	g_FindWindowConfig.AITriggerWnd = Ini::ConfigIni.Read("FindWindowConfig", "AITriggerWnd");
@@ -1497,14 +1497,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	{
 	case DLL_PROCESS_ATTACH:{
 		g_hModule = hModule;
-		logger::g_logger.WriteLine(
-			"[Global]",
-			"FA2Copy.dll is attaching...",
-			true
-		);
+		LogInfo("FA2Copy.dll is attaching...");
 		if (!StartHook())
 		{
-			logger::g_logger.Error("Failed to set hooks!");
+			LogError("Failed to set hooks!");
 			MessageBox(
 				NULL,
 				MessageBoxConfig::Instance.Message.HookFailed.c_str(),
@@ -1516,17 +1512,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 		break;
 	}
 	case DLL_PROCESS_DETACH:{
-		logger::g_logger.WriteLine(
-			"[Global]",
-			"FA2Copy.dll is detaching...",
-			true
-		);
+		LogInfo("FA2Copy.dll is detaching...");
 		if (g_GetMsgHooked) {
-			logger::g_logger.Info("Unregistering hot keys...");
+			LogInfo("Unregistering hot keys...");
 		}
 		if (EndHook() == FALSE)
 		{
-			logger::g_logger.Error("Failed to release hooks!");
+			LogError("Failed to release hooks!");
 			MessageBox(
 				NULL,
 				MessageBoxConfig::Instance.Message.UnHookFailed.c_str(),
@@ -1587,10 +1579,10 @@ DEFINE_HOOK(551B07, CWnd_CreateDlg_FetchResource, 6)
 	const LPCTSTR lpType = RT_DIALOG;
 
 	if (IS_INTRESOURCE(lpName)) {
-		logger::g_logger.Info(__FUNCTION__" lpName ID = " + std::to_string(LOWORD(lpName)));
+		LogInfo(" lpName ID = %d", lpName);
 	}
 	else {
-		logger::g_logger.Info(__FUNCTION__" lpName = " + std::string(lpName));
+		LogInfo(" lpName = %s", lpName);
 	}
 
 	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
@@ -1607,8 +1599,7 @@ DEFINE_HOOK(551E57, sub_551E20_LoadResource, 5)
 {
 	const LPCSTR lpName = *(LPCSTR*)(R->ESI() + 0x40);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
+	LogInfo("lpName = %d", lpName);
 
 	const HMODULE hModule = g_hModule;
 	const LPCTSTR lpType = RT_DIALOG;
@@ -1628,8 +1619,7 @@ DEFINE_HOOK(552147, sub_55212E, 5)
 {
 	const LPCSTR lpName = *(LPCSTR*)(R->EDI() + 0x40);
 
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
+	LogInfo("lpName = %d", lpName);
 
 	const HMODULE hModule = g_hModule;
 	const LPCTSTR lpType = RT_DIALOG;
@@ -1650,8 +1640,8 @@ DEFINE_HOOK(552147, sub_55212E, 5)
 DEFINE_HOOK(554C8A, CWnd_ExecuteDlgInit, 9)
 {
 	GET_STACK(LPCSTR, lpName, STACK_OFFS(0xC, -4));
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
+	LogInfo(std::string());
+	LogInfo("lpName = " + std::to_string((DWORD)lpName));
 
 	if (IS_INTRESOURCE(lpName)) {
 		if ((DWORD)lpName) {
@@ -1665,8 +1655,8 @@ DEFINE_HOOK(554C8A, CWnd_ExecuteDlgInit, 9)
 DEFINE_HOOK(56537B, sub_56536A, 5)
 {
 	GET_BASE(LPCSTR, lpName, 0x8);
-	logger::g_logger.Info(std::string(__FUNCTION__));
-	logger::g_logger.Info("lpName = " + std::to_string((DWORD)lpName));
+	LogInfo("");
+	LogInfo("lpName = %d", lpName);
 
 	return 0;
 }
@@ -1675,15 +1665,15 @@ DEFINE_HOOK(551A82, sub_551A5B, 5)
 {
 	GET(LPCSTR, lpName, EBX);
 
-	//logger::g_logger.Info(std::string(__FUNCTION__));
+	//LogInfo(std::string());
 
 	const HMODULE hModule = g_hModule;
 	const LPCTSTR lpType = RT_DIALOG;
 
 	if (IS_INTRESOURCE(lpName)) {
-		logger::g_logger.Info(__FUNCTION__" lpName ID = " + std::to_string(LOWORD(lpName)));
+		LogInfo(" lpName ID = %d", lpName);
 	} else {
-		logger::g_logger.Info(__FUNCTION__" lpName = " + std::string(lpName));
+		LogInfo(" lpName = %s", lpName);
 	}
 
 	if (HRSRC hResInfo = FindResource(hModule, lpName, lpType)) {
@@ -1700,7 +1690,7 @@ DEFINE_HOOK(551A82, sub_551A5B, 5)
 
 DEFINE_HOOK(426B77, sub_426AC0, 5)
 {
-	logger::g_logger.Info(std::string(__FUNCTION__));
+	LogInfo("");
 
 	return 0;
 }
@@ -1713,7 +1703,7 @@ DEFINE_HOOK(49EDC9, LoadMap_Initialize, 9)
 	auto const theater = mapFile.GetString("Map", "Theater", "TEMPERATE");
 
 	g_TerrainTheater = theater;
-	//logger::g_logger.Warn(__FUNCTION__" Value:" + std::string(static_cast<LPCTSTR>(theater)));
+	//LogWarn(" Value:" + std::string(static_cast<LPCTSTR>(theater)));
 
 	return 0;
 }

@@ -20,7 +20,7 @@ DEFINE_HOOK(428829, FA2Main_SaveMap_MinPlayer, 7)
 {
 	GET(int const, count, EAX);
 
-	logger::g_logger.Warn(__FUNCTION__" " + std::to_string(count));
+	LogWarn(" %d", count);
 
 	return 0;
 }
@@ -29,7 +29,7 @@ DEFINE_HOOK(42B13F, FA2Main_SaveMap_MinPlayer_Debug2, 7)
 {
 	GET_STACK(int const, count, 0x28);
 
-	logger::g_logger.Warn(__FUNCTION__" " + std::to_string(count));
+	LogDebug(" %d" + count);
 
 	return 0;
 }
@@ -71,7 +71,7 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	GET_STACK(int, overlayIdx, 0x24);
 	// GET(CString, name, ECX);
 
-	//logger::g_logger.Warn(__FUNCTION__" overlayIdx:" + std::to_string(overlayIdx));
+	//LogWarn(__FUNCTION__" overlayIdx:" + std::to_string(overlayIdx));
 
 	if (overlayIdx > 255) {
 		return 0x4F1695;
@@ -80,8 +80,8 @@ DEFINE_HOOK(4F1670, CTileSetBrowserView_ReloadComboboxes, 6)
 	char buf[8];
 	_itoa_s(overlayIdx, buf, 10);
 	auto const& overlayName = rules.GetString("OverlayTypes", buf);
-	//logger::g_logger.Warn(std::string("overlay ") + pOvlName->Value.c_str() + " entries : " + (entries ? "true" : "false"));
-	//logger::g_logger.Warn("value: " + std::string(entries ? entries->Items.GetItem("Wall.HasConnection")->Value.c_str() : "null"));
+	//LogWarn(std::string("overlay ") + pOvlName->Value.c_str() + " entries : " + (entries ? "true" : "false"));
+	//LogWarn("value: " + std::string(entries ? entries->Items.GetItem("Wall.HasConnection")->Value.c_str() : "null"));
 	if (!rules.GetBool(overlayName, "Wall.HasConnection", true)) {
 		return 0x4F1695;
 	}
@@ -117,7 +117,7 @@ DEFINE_HOOK(43CE79, sub_43CE50_SkipHack, B)
 {
 	//GET(const FA2::CString*, string, ECX);
 
-	//logger::g_logger.Warn(std::string(__FUNCTION__" :") + string->c_str());
+	//LogWarn(std::string(__FUNCTION__" :") + string->c_str());
 	return  reinterpret_cast<DWORD>(ret_func);
 }
 
@@ -134,7 +134,7 @@ DEFINE_HOOK(473E46, CIsoView_UpdatePaint_InfantryFacing, 9)
 	GET(int, Facing, EAX);
 
 	//GET_STACK(const CString, ID, 0x590);
-	//logger::g_logger.Info(std::string(__FUNCTION__" : item ") + static_cast<const char*>(ID) + " facing : " + std::to_string(Facing));
+	//LogInfo(std::string(__FUNCTION__" : item ") + static_cast<const char*>(ID) + " facing : " + std::to_string(Facing));
 
 	R->EAX(7 - Facing / 32);
 
@@ -275,12 +275,12 @@ DEFINE_HOOK(48345B, CIsoView_LoadImage_Turret, 5)
 	GET_BASE(const CString, ImageID, -0x1C);
 	GET_BASE(const FA2::CString, ID, 0x8);
 
-	logger::g_logger.Info(std::string(__FUNCTION__" "));
+	LogInfo(std::string(__FUNCTION__" "));
 
 
 	bool hasTurret = GlobalVars::INIFiles::Rules->GetBoolean(ID, "Turret", false);
-	logger::g_logger.Info(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
-	logger::g_logger.Info(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(hasTurret));
+	LogInfo(std::string(__FUNCTION__" : ID ") + static_cast<const char*>(ID));
+	LogInfo(std::string(__FUNCTION__" : ImageID ") + static_cast<const char*>(ImageID) + " hasTurret : " + std::to_string(hasTurret));
 
 	R->AL(hasTurret);
 	return 0x483491;

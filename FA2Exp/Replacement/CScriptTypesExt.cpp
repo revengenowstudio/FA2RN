@@ -110,7 +110,7 @@ BOOL CScriptTypesExt::OnCommandHook(WPARAM wParam, LPARAM lParam)
 
 void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int value)
 {
-	//LogDebug(__FUNCTION__" type = %d", type);
+	//LogDebug(" type = %d", type);
 	HWND text = ::GetDlgItem(this->m_hWnd, WND_Script::TextExtParameter);
 	ControlMeta::ComboBoxWrapper extParamCmbBox(::GetDlgItem(this->m_hWnd, WND_Script::ComboBoxExtParameter));
 	switch (type) {
@@ -133,7 +133,7 @@ void CScriptTypesExt::updateExtraParamComboBox(ExtraParameterType type, int valu
 			char buffer[0x20];
 			_itoa_s(value, buffer, 10);
 			extParamCmbBox.SetWindowTextA(buffer);
-			//LogDebug(__FUNCTION__" [%X] window enabled", extParamCmbBox.GetHWND());
+			//LogDebug(" [%X] window enabled", extParamCmbBox.GetHWND());
 		}
 			break;
 		case ExtraParameterType::Counter: {
@@ -200,7 +200,7 @@ void CScriptTypesExt::updateExtraValue(ParameterType paramType, FA2::CString& pa
 		paramNumStr.Format("%d", LOWORD(rawNum));
 		extraValue = HIWORD(rawNum);
 	}
-	logger::debug(__FUNCTION__" paramType = %d" + std::to_string(paramType));
+	LogDebug("paramType = %d", paramType);
 	updateExtraParamComboBox(getExtraParamType(paramType), extraValue);
 }
 
@@ -212,7 +212,7 @@ void CScriptTypesExt::UpdateParams(int actionIndex, FA2::CString& paramNumStr)
 	auto const paramType = paramDefinition.Type_;
 	auto const lastActionID = std::exchange(LastActionID, actionIndex);
 	
-	//logger::g_logger.Debug(__FUNCTION__
+	//LogDebug(
 	//	" LastActionID = " + std::to_string(lastActionID) +
 	//	" actionIndex = " + std::to_string(actionIndex) +
 	//	" paramType = " + std::to_string(paramType)
@@ -480,7 +480,7 @@ void _showCStr(const FA2::CString& str)
 {
 	char buffer[0x20];
 	sprintf_s(buffer, "Len : %d, Str : %s", str.GetLength(), str.operator LPCTSTR());
-	logger::g_logger.Debug(buffer);
+	LogDebug(buffer);
 	//MessageBoxA(NULL, buffer, "", MB_OK);
 }
 
@@ -583,7 +583,7 @@ void CScriptTypesExt::OnActionParameterEditChangedExt()
 		//paramStr = this->ComboBoxActionParameter.GetText();
 		utilities::trim_index(paramStr);
 		//
-		//LogDebug(__FUNCTION__" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
+		//LogDebug(" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
 		if (auto const extValue = getExtraValue()) {
 			auto const paramInt = MAKEWPARAM(atoi(paramStr), extValue);
 			paramStr.Format("%d", paramInt);
@@ -604,7 +604,7 @@ void CScriptTypesExt::OnActionParameterSelectChangedExt()
 	const int actionData = this->ComboBoxActionType.GetItemData(curActionSel);
 	auto const paramType = getParameterType(actionData);
 	auto const extParamType = getExtraParamType(paramType);
-	LogDebug(__FUNCTION__" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
+	LogDebug(" actionData = %d, paramType = %d, extParamType = %d", actionData, paramType, extParamType);
 	if (extParamType == ExtraParameterType::None) {
 		this->OnActionParameterSelectChanged();
 		return;
@@ -665,7 +665,7 @@ FA2::CString CScriptTypesExt::getCurrentTypeID()
 
 void CScriptTypesExt::OnActionTypeAddExt()
 {
-	logger::g_logger.Debug("Add Script Member");
+	LogDebug("Add Script Member");
 	HWND ScriptWnd = this->GetSafeHwnd();
 	HWND CheckBox = ::GetDlgItem(ScriptWnd, WND_Script::CheckBoxToggleInsert);
 	bool isInsert = ::SendMessageA(CheckBox, BM_GETCHECK, NULL, NULL) == BST_CHECKED;
@@ -688,7 +688,7 @@ void CScriptTypesExt::OnActionTypeAddExt()
 //}
 void CScriptTypesExt::OnScriptTypeAddExt()
 {
-	logger::g_logger.Info("Add Script");
+	LogInfo("Add Script");
 	HWND ScriptWnd = this->m_hWnd;
 	HWND ComboScriptTemplate = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxTemplate);
 	HWND EditName = ::GetDlgItem(ScriptWnd, WND_Script::EditScriptName);
@@ -703,7 +703,7 @@ void CScriptTypesExt::OnScriptTypeAddExt()
 	}
 	int curTemplateIndex = ::SendMessageA(ComboScriptTemplate, CB_GETCURSEL, NULL, NULL);
 	ScriptTemplate& curTemplate = g_ScriptTemplates[curTemplateIndex];
-	logger::g_logger.Info("Now using Script Template " + curTemplate[0].first);
+	LogInfo("Now using Script Template %s", curTemplate[0].first.c_str());
 
 	HWND AllScriptCombo = ::GetDlgItem(ScriptWnd, WND_Script::ComboBoxScriptType);
 	int ScriptCount = ::SendMessageA(AllScriptCombo, CB_GETCOUNT, 0, 0);
@@ -747,7 +747,7 @@ void CScriptTypesExt::OnScriptTypeAddExt()
 		this->OnActionLineSelectChangedExt();
 		//::SendMessageA(ComboType, CB_SETCURSEL, atoi(templateItem->first.c_str()), NULL);
 		auto const scripIndex = atoi(templateItem.first.c_str());
-		logger::g_logger.Debug(__FUNCTION__" ComboBoxActionType cur idx : " + std::to_string(atoi(templateItem.first.c_str())));
+		LogDebug(" ComboBoxActionType cur idx %d: ", atoi(templateItem.first.c_str()));
 		this->ComboBoxActionType.SetCurSel(scriptTypeIndexToComboBoxIndex(this->ComboBoxActionType, scripIndex));
 		//::SendMessageA(ScriptWnd, WM_COMMAND, MAKEWPARAM(WND_Script::ComboBoxActionType, CBN_SELCHANGE), (LPARAM)ComboType);
 		this->OnActionTypeSelectChangedExt();
@@ -781,23 +781,23 @@ void CScriptTypesExt::OnScriptTypeCloneExt()
 		name = copied.EntriesDictionary["Name"];
 		name += " Clone";
 		copied.EntriesDictionary["Name"].AssignCopy(strlen(name), name);
-		//Logger::Debug("new name = %s\n", name);
+		//LogDebug("new name = %s\n", name);
 		FA2::CString id;
 		id = INIClass::GetAvailableIndex();
-		//Logger::Debug("available index get, id = %s\n", id);
+		//LogDebug("available index get, id = %s\n", id);
 		doc.Insert(id, copied);
-		/*Logger::Debug("section inserted!\n");
-		Logger::Debug("section detail:\n");
+		/*LogDebug("section inserted!\n");
+		LogDebug("section detail:\n");
 		for (auto& x : copied.EntitiesDictionary)
-			Logger::Debug("%s %s\n", x.first, x.second);*/
+			LogDebug("%s %s\n", x.first, x.second);*/
 		FA2::CString key;
 		key = INIClass::GetAvailableKey("ScriptTypes");
-		//Logger::Debug("available section get, key = %s\n", key);
+		//LogDebug("available section get, key = %s\n", key);
 		doc.WriteString("ScriptTypes", key, id);
-		//Logger::Debug("key inserted!\n");
+		//LogDebug("key inserted!\n");
 		/*INISection& scripttypes = doc.GetSectionItems("ScriptTypes");
 		for (auto& x : scripttypes.EntitiesDictionary)
-			Logger::Debug("%s %s\n", x.first, x.second);*/
+			LogDebug("%s %s\n", x.first, x.second);*/
 
 			// objective : reload combobox
 		auto& scripts = this->ComboBoxScriptType;
@@ -817,7 +817,7 @@ void CScriptTypesExt::OnScriptTypeCloneExt()
 
 void CScriptTypesExt::OnActionLineCloneExt()
 {
-	logger::g_logger.Debug(__FUNCTION__);
+	LogDebug("");
 
 	HWND ScriptWnd = this->GetSafeHwnd();
 	HWND CheckBox = ::GetDlgItem(ScriptWnd, WND_Script::CheckBoxToggleInsert);
@@ -855,7 +855,7 @@ void LoadScriptTemplates() {
 		ScriptTemplatesCount = 0; 
 	}
 
-	logger::g_logger.Info(std::to_string(ScriptTemplatesCount) + " Script Templates Loading");
+	LogInfo("%d Script Templates Loading", ScriptTemplatesCount);
 
 	g_ScriptTemplates.resize(ScriptTemplatesCount + 1);
 	g_ScriptTemplates[0].Resize(1);
@@ -873,7 +873,7 @@ void LoadScriptTemplates() {
 
 void CScriptTypesExt::OnTemplateLoadExt()
 {
-	logger::g_logger.Debug("Load Script Templates");
+	LogDebug("Load Script Templates");
 	LoadScriptTemplates();
 	HWND ScriptWnd = this->m_hWnd;
 	HWND ComboScriptTemplate;

@@ -36,26 +36,6 @@ void logger::reopen()
 	}
 }
 
-void logger::Debug(const std::string& Reason)
-{
-	WriteLine("[Debug] ", Reason.c_str());
-}
-
-void logger::Warn(const std::string& Reason)
-{
-	WriteLine("[Warn] ", Reason.c_str());
-}
-
-void logger::Info(const std::string& Reason)
-{
-	WriteLine("[Info] ", Reason.c_str());
-}
-
-void logger::Error(const std::string& Reason)
-{
-	WriteLine("[Error] ", Reason.c_str());
-}
-
 void logger::output(const char* pMessage, size_t Length)
 {
 	reopen();

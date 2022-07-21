@@ -18,7 +18,7 @@ void RunTime::ResetMemoryContentAt(ptr_type addr, const void* content, size_t si
 	DWORD oldProtect, newProtect = 0;
 	auto ret = VirtualProtectEx(process, &pplContent[offset], size, PAGE_READWRITE, &oldProtect);
 	if (ret != TRUE) {
-		logger::g_logger.Info("ResetMemoryContentAt , addr = %x" + std::to_string(addr) +  std::string(", PAGE_READWRITE set failure, ret = ") + std::to_string(ret));
+		LogDebug("ResetMemoryContentAt , addr = %x, PAGE_READWRITE set failure, ret = %d", addr, ret);
 	}
 	memcpy(&pplContent[offset], content, size);
 	ret = VirtualProtectEx(process, &pplContent[offset], size, oldProtect, &newProtect);
