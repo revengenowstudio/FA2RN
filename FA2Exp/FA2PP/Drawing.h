@@ -94,8 +94,8 @@ private:
 public:
     static void SetSomeData(FA2::CString name, bool value)
     {
-        SomeDataMap& someDatas = *reinterpret_cast<SomeDataMap*>(0x72A870);
-        *((SomeDataMapHelper*)&someDatas)->GetSomeDataFromMap_(&name) = value;
+        SomeDataMap& someData = *reinterpret_cast<SomeDataMap*>(0x72A870);
+        *((SomeDataMapHelper*)&someData)->GetSomeDataFromMap_(&name) = value;
     }
 };
 
