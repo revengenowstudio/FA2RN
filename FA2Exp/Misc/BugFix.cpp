@@ -15,7 +15,7 @@ DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
 	return 0x42708D;
 }
 
-
+#if 0
 DEFINE_HOOK(428829, FA2Main_SaveMap_MinPlayer, 7)
 {
 	GET(int const, count, EAX);
@@ -33,6 +33,7 @@ DEFINE_HOOK(42B13F, FA2Main_SaveMap_MinPlayer_Debug2, 7)
 
 	return 0;
 }
+#endif
 
 DEFINE_HOOK(421BCE, CWinApp_InitInstance_EasyMode, 6)
 {
