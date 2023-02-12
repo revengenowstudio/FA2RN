@@ -230,6 +230,25 @@ DEFINE_HOOK(470AE3, CIsoView_Draw_BuildingImageDataQuery_2, 7)
 	return 0x470B4D;
 }
 
+DEFINE_HOOK(47292E, CIsoView_Draw_BaseNodeImageCrashFix, 8)
+{
+	GET(const FA2::CString*, pKey, EAX);
+
+	auto const defKey = FA2::CString("GAPOWR");
+	auto const& key = pKey ? *pKey : defKey;
+
+	auto const imageLoaded = ImageCacheFlag::Global()[key];
+
+	if (pKey) {
+		pKey->~CString();
+	} else {
+		R->Stack(0xD8, 0);// first item
+	}
+	R->ECX(imageLoaded);
+
+	return 0x472978;
+}
+
 //DEFINE_HOOK(5564FC, operator_delete, 9)
 //{
 //	if (R->Stack<DWORD>(0x0) > 0x70000000) {
