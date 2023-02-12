@@ -7,6 +7,7 @@
 #include <ddraw.h>
 
 class Palette;
+class ImageCacheFlag;
 
 enum class ImageDataFlag : unsigned int
 {
@@ -63,7 +64,6 @@ struct BuildingData
 };
 
 using ImageDataMap = std::FAMap<FA2::CString, ImageDataClass, 0x5E7C18, 0>; // DrawDataMap& tmp = *reinterpret_cast<DrawDataMap*>(0x72CBC8);
-using SomeDataMap = std::FAMap<FA2::CString, bool, 0x5D8CD0, 0>;
 
 class ImageDataMapHelper
 {
@@ -87,16 +87,30 @@ public:
     }
 };
 
-class SomeDataMapHelper
+class NOVTABLE ImageCacheFlag : public std::FAMap<FA2::CString, bool, 0x5D8CD0, 0>
 {
-private:
-    bool* GetSomeDataFromMap_(FA2::CString* ppName) { JMP_THIS(0x4767B0); }
 public:
-    static void SetSomeData(FA2::CString name, bool value)
+    static ImageCacheFlag& Global()
     {
-        SomeDataMap& someData = *reinterpret_cast<SomeDataMap*>(0x72A870);
-        *((SomeDataMapHelper*)&someData)->GetSomeDataFromMap_(&name) = value;
+        return *reinterpret_cast<ImageCacheFlag*>(0x72A870);
     }
+
+    iterator find(const FA2::CString& name) { JMP_THIS(0x4767B0); }
+
+    _Pairib insert(const FA2::CString& key, const bool& value)
+    {
+        _Pairib ret;
+        insert(&ret, value_type{ key, value });
+        return ret;
+    }
+
+    _Pairib* insert(_Pairib* ret, const value_type& value) { JMP_THIS(0x476BE0); }
+
+    //static void SetSomeData(FA2::CString name, bool value)
+    //{
+    //    CStringBoolMap& someData = *reinterpret_cast<CStringBoolMap*>(0x72A870);
+    //    *((SomeDataMapHelper*)&someData)[name] = value;
+    //}
 };
 
 class HSVClass;
