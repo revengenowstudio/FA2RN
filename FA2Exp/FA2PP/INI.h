@@ -196,10 +196,8 @@ public:
 	}
 
 	// Debug function
-	std::FAMap<FA2::CString, INISection, 0x5D8CB4, 0>& GetMap()
-	{
-		return data;
-	}
+	auto& Data() { return data; }
+
 	#if 0
 	bool DebugToFile(const char* path)
 	{
@@ -270,9 +268,18 @@ public:
 	//	return ret.first;
 	//}
 
-	void Remove(const FA2::CString& pSection)
+	void Remove(const FA2::CString& section)
 	{
-		data.erase(pSection);
+		data.erase(section);
+	}
+
+	void Remove(const FA2::CString& section, const FA2::CString& key)
+	{
+		auto it = data.find(section);
+		if (it != data.end()) {
+			it->second.EntriesDictionary.erase(key);
+			it->second.IndicesDictionary.erase(key);
+		}
 	}
 
 	void WriteString(const char* pSection, const char* pKey, const char* pValue)
