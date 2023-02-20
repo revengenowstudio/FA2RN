@@ -22,7 +22,10 @@ FA2::CString INIMetaGroup::GetString(const char* pSection, const char* pKey, con
 {
 	bool found = false;
 	FA2::CString ret;
-	for (auto const& ini : group) {
+	for (auto it = this->group.rbegin();
+		it != this->group.rend();
+		++it) {
+		auto const& ini = *it;
 		if (ini->TryGetString(pSection, pKey, ret)) {
 			found = true;
 			break;
