@@ -8,7 +8,6 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DbgSt|x86 = DbgSt|x86
-		Debug|x86 = Debug|x86
 		LayoutRelease|x86 = LayoutRelease|x86
 		Release|x86 = Release|x86
 		Release19|x86 = Release19|x86
@@ -17,8 +16,6 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.DbgSt|x86.ActiveCfg = DbgSt|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.DbgSt|x86.Build.0 = DbgSt|Win32
-		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.Debug|x86.ActiveCfg = Debug|Win32
-		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.Debug|x86.Build.0 = Debug|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.LayoutRelease|x86.ActiveCfg = LayoutRelease|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.LayoutRelease|x86.Build.0 = LayoutRelease|Win32
 		{6F901551-EAE7-4869-96A3-AAB97B0B6386}.Release|x86.ActiveCfg = Release|Win32
