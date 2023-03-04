@@ -93,6 +93,12 @@
     <ClCompile Include="Misc\Exception.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Enhancement\CMapData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Enhancement\CMapData.Buildings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -363,6 +369,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Misc\Exception.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Enhancement\CMapData.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

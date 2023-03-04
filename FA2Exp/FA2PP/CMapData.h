@@ -7,6 +7,32 @@
 
 #include <Structure/FAVector.h>
 
+class Direction
+{
+public:
+    typedef unsigned int Value;
+    enum
+    {
+        N = 0x0,
+        North = 0x0,
+        NE = 0x1,
+        NorthEast = 0x1,
+        E = 0x2,
+        East = 0x2,
+        SE = 0x3,
+        SouthEast = 0x3,
+        S = 0x4,
+        South = 0x4,
+        SW = 0x5,
+        SouthWest = 0x5,
+        W = 0x6,
+        West = 0x6,
+        NW = 0x7,
+        NorthWest = 0x7,
+        Count,
+    };
+};
+
 struct CellData_BaseNodeData
 {
     int BuildingID;
@@ -38,6 +64,14 @@ struct CellData
     unsigned char TubeDataIndex;
     unsigned char StatusFlag;
     unsigned char LAT; // uses high 4 bit, see https://modenc.renegadeprojects.com/images/ConnectingLATSetSubTileSelection.png
+};
+
+struct MapCoord
+{
+    static const MapCoord Facings[Direction::Count];
+
+    int X{};
+    int Y{};
 };
 
 #pragma pack(push, 1)
@@ -98,6 +132,12 @@ public:
     void UnpackData() { JMP_THIS(0x49EE50); } // called in LoadMap
 
     void InitializeBuildingTypes(const char* ID) { JMP_THIS(0x4B5460); } // use nullptr to reload all
+    void UpdateTypeData() { JMP_THIS(0x4AD930); }
+    void UpdateMapPreviewAt(int X, int Y) { JMP_THIS(0x4A23A0); }
+
+    int GetBuildingTypeID(const char* ID) { JMP_THIS(0x4AE910); }
+    inline CellData* GetCellAt(int nIndex) { return &this->CellData[nIndex]; }
+    inline CellData* GetCellAt(int X, int Y) { return this->GetCellAt(this->GetCoordIndex(X, Y)); }
 
     // FA2 magics
     int GetCoordIndex(int X, int Y) { return Y + X * MapWidthPlusHeight; }  
@@ -122,7 +162,7 @@ public:
     INIClass INI;
     RECT Size;
     RECT LocalSize;
-    CellData* CellDatas; // see 4BB920 validate the map, dtor at 416FC0
+    CellData* CellData; // see 4BB920 validate the map, dtor at 416FC0
     int CellDataCount; // see 4BB920 validate the map
     void* UndoRedoData;
     int UndoRedoDataCount; // undo redo count related

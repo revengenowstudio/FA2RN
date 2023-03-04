@@ -8,6 +8,7 @@
 #include "../Meta/INIMeta.h"
 #include "../Replacement/CLoadingExt.h"
 #include "../Utilities/HackHelper.h"
+#include "../Enhancement/CMapData.h"
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)
@@ -212,6 +213,8 @@ DEFINE_HOOK(470986, CIsoView_Draw_BuildingImageDataQuery_1, 8)
 		nFacing = 7 - (structure.Facing / 32) % 8;
 	}
 	image = *ImageDataMapHelper::GetImageDataFromMap(CLoadingExt::GetImageName(structure.ID, nFacing));
+
+	CMapDataExt::BuildingIndex = R->ESI();
 
 	return 0x4709E1;
 }
