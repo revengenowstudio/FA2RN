@@ -433,7 +433,6 @@ DEFINE_HOOK(4685EA, CIsoView_DrawText, 9)
 	return 0;
 }
 
-
 DEFINE_HOOK(4709EE, CIsoView_Draw_ShowBuildingOutline, 6)
 {
 	GET(CIsoView*, pThis, EDI);
@@ -451,16 +450,32 @@ DEFINE_HOOK(4709EE, CIsoView_Draw_ShowBuildingOutline, 6)
         return backAddr;
     }
     auto const& bldData = it->second;
-	if (bldData.IsCustomFoundation())
-		CIsoViewExt::DrawLockedLines(pThis, *bldData.LinesToDraw, X, Y, dwColor, false, false, lpDesc);
-	else
-        CIsoViewExt::DrawLockedCellOutline(pThis, X, Y, W, H, dwColor, false, false, lpDesc);
-
+    if (bldData.IsCustomFoundation()) {
+        CIsoViewExt::DrawLockedLines(pThis, *bldData.LinesToDraw, X, Y, dwColor, false, false, lpDesc);
+        return backAddr;
+    }
+	
+    CIsoViewExt::DrawLockedCellOutline(pThis, X, Y, W, H, dwColor, false, false, lpDesc);
 	return backAddr;
 }
 
 DEFINE_HOOK(4727B2, CIsoView_Draw_BasenodeOutline_CustomFoundation, B)
 {
-    CMapDataExt::BuildingIndex = R->ESI();
-	return 0;
+    GET_STACK(CIsoView*, pThis, STACK_OFFS(0xD18, 0xCD4));
+    GET(int, X, EBX);
+    GET(int, Y, EBP);
+    GET_STACK(int, W, STACK_OFFS(0xD18, 0xCFC));
+    GET_STACK(int, H, STACK_OFFS(0xD18, 0xD00));
+    GET_STACK(COLORREF, dwColor, STACK_OFFS(0xD18, 0xB94));
+    LEA_STACK(LPDDSURFACEDESC2, lpDesc, STACK_OFFS(0xD18, 0x92C));
+
+    const auto& DataExt = CMapDataExt::BuildingDataExts[CMapDataExt::BuildingIndex];
+    if (DataExt.IsCustomFoundation()) {
+        CIsoViewExt::DrawLockedLines(pThis, *DataExt.LinesToDraw, X, Y, dwColor, true, false, lpDesc);
+        CIsoViewExt::DrawLockedLines(pThis, *DataExt.LinesToDraw, X + 1, Y, dwColor, true, false, lpDesc);
+    } else {
+        CIsoViewExt::DrawLockedCellOutline(pThis, X, Y, W, H, dwColor, true, false, lpDesc);
+        CIsoViewExt::DrawLockedCellOutline(pThis, X + 1, Y, W, H, dwColor, true, false, lpDesc);
+    }
+    return 0x472884;
 }
