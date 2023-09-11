@@ -1,14 +1,17 @@
-#include "CMapData.h"
-
+#include "MapDataExtra.h"
 
 #include "../Macro.h"
-
 #include "../FA2Expand.h"
 #include "../Meta/INIMeta.h"
 
 #include <CFinalSunDlg.h>
 #include <CMapData.h>
 #include <memory>
+
+const char* retriveLowChar(const TCHAR* raw)
+{
+	return reinterpret_cast<const char*>(raw);
+}
 
 DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 {
@@ -31,9 +34,9 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 			if (foundation.GetLength() < 3) {
 				return;
 			}
-			auto const rawStr = foundation.operator LPCTSTR();
-			DataExt.Width = std::min(atoi(rawStr), 1);
-			DataExt.Height = std::min(atoi(rawStr + 2), 1);
+			auto const rawStr = reinterpret_cast<const char*>(foundation.operator LPCTSTR());
+			DataExt.Width = std::max(atoi(&rawStr[0]), 1);
+			DataExt.Height = std::max(atoi(&rawStr[2]), 1);
 			return;
 		}
 		// Custom, code reference Ares
@@ -69,7 +72,7 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 
 		// Build outline draw data
 		DataExt.LinesToDraw = std::make_unique<BuildingDataExt::FoundationLineStorage>();
-		std::vector<std::vector<BOOL>> LinesX, LinesY;
+		std::vector<std::vector<bool>> LinesX, LinesY;
 
 		LinesX.resize(DataExt.Width);
 		for (auto& l : LinesX) {
@@ -152,7 +155,7 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 
 	CMapDataExt::BuildingDataExts.clear();
 	const auto Types = INIMeta::GetRules().GetSectionItems("BuildingTypes");
-	CMapDataExt::BuildingDataExts.resize(Types.size());
+	//CMapDataExt::BuildingDataExts.resize(Types.size());
 	for (auto& Type : Types) {
 		ProcessType(Type);
 	}
@@ -166,9 +169,9 @@ DEFINE_HOOK(4A5089, CMapData_UpdateMapFieldData_Structures_CustomFoundation, 6)
 	GET_STACK(const int, Y, STACK_OFFS(0x16C, 0x94));
 
 
-	if (BuildingIndex >= CMapDataExt::BuildingDataExts.size()) {
-		return 0x4A57CD;
-	}
+	//if (BuildingIndex >= CMapDataExt::BuildingDataExts.size()) {
+	//	return 0x4A57CD;
+	//}
 
 	const auto& DataExt = CMapDataExt::BuildingDataExts[BuildingIndex];
 	if (!DataExt.IsCustomFoundation()) {

@@ -8,7 +8,7 @@
 #include "../Meta/INIMeta.h"
 #include "../Replacement/CLoadingExt.h"
 #include "../Utilities/HackHelper.h"
-#include "../Enhancement/CMapData.h"
+#include "../Enhancement/MapDataExtra.h"
 
 //fix FA2 would automatically convert file saving prefix
 DEFINE_HOOK(42703A, FA2Main_SaveMap_Extension, 9)

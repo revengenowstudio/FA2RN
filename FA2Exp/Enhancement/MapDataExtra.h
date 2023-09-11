@@ -1,7 +1,7 @@
 #pragma once
 #include <CMapData.h>
-#include <vector>
 #include <memory>
+#include <unordered_map>
 
 struct BuildingDataExt
 {
@@ -21,9 +21,11 @@ struct BuildingDataExt
 
 class CMapDataExt
 {
+    using BuildingDataMap = std::unordered_map<int, BuildingDataExt>;
+
 public:
     void InitializeBuildingTypesExt(const char* ID);
 
-    static std::vector<BuildingDataExt> BuildingDataExts;//building extra data valt
+    static BuildingDataMap BuildingDataExts;//building extra data valt
     static int BuildingIndex;
 };

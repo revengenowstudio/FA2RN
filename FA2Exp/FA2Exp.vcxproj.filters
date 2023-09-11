@@ -374,7 +374,7 @@
     <ClInclude Include="Misc\Exception.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Enhancement\CMapData.h">
+    <ClInclude Include="Enhancement\MapDataExtra.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

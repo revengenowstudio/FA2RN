@@ -1,4 +1,4 @@
-#include "CMapData.h"
+#include "MapDataExtra.h"
 
-std::vector<BuildingDataExt> CMapDataExt::BuildingDataExts;
+CMapDataExt::BuildingDataMap CMapDataExt::BuildingDataExts;
 int CMapDataExt::BuildingIndex = -1;
