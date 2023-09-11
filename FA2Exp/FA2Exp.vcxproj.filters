@@ -362,15 +362,9 @@
     <ClInclude Include="Utilities\HackHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Enhancement\CMapData.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Misc\Exception.h">
       <Filter>头文件</Filter>
     </ClInclude>
->>>>>>> 094a72b (exception handler implemented .)
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">

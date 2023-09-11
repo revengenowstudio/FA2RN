@@ -79,6 +79,7 @@ struct TubeData
 class NOVTABLE CMapData
 {
 public:
+    static constexpr reference<CMapData, 0x72CBF8> const Instance{};
 
     void UpdateMapFieldData(bool bFlag) { JMP_THIS(0x49C280); }
     INIClass* UpdateCurrentDocument() { JMP_THIS(0x49C260); }
