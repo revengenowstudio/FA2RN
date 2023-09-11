@@ -25,7 +25,6 @@ public:
 
 private:
 	void reopen();
-	static std::string currentTime();
 	static std::string prefixInfo();
 
 	void writeLine(const char* Prefix, const char* Format, const va_list Args);

@@ -2,6 +2,7 @@
 #include <FA2PP.h>
 #include <mutex>
 #include <sstream>
+#include <iomanip>
 
 logger logger::g_logger;//default initialization, do nothing, because syringe would also create such item
 FILE* pFile;
@@ -83,23 +84,27 @@ void logger::writeLine(const char* Prefix, const char* Format, const va_list Arg
 	}
 }
 
+void currentTime(std::stringstream& stream)
+{
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	using std::setw;
+	using std::setfill;
+	//auto const savedFmt(stream.flags());
+	stream << sys.wYear << '-' << setw(2) << setfill('0') << sys.wMonth << "-" << setw(2) << setfill('0') << sys.wDay << ' '
+		<< setw(2) << setfill('0') << sys.wHour << ':' << setw(2) << setfill('0') << sys.wMinute << ':' << setw(2) << setfill('0') << sys.wSecond << '.' << setw(3) << setfill('0') << sys.wMilliseconds
+		;
+	//stream.flags(savedFmt);
+}
+
 std::string logger::prefixInfo()
 {
 	std::stringstream ss;
+	currentTime(ss);
+	ss << ' ';
 	ss << '(';
 	ss << std::this_thread::get_id();
 	ss << ')';
-	return currentTime() + ss.str();
+	return ss.str();
 }
 
-std::string logger::currentTime() 
-{
-	SYSTEMTIME Sys;
-	GetLocalTime(&Sys);
-	std::string ret;
-	ret = (std::to_string(Sys.wYear) + '/' + std::to_string(Sys.wMonth) + '/'
-		+ std::to_string(Sys.wDay) + ' ' + std::to_string(Sys.wHour) + ':'
-		+ std::to_string(Sys.wMinute) + ':' + std::to_string(Sys.wSecond)) + '.'
-		+ std::to_string(Sys.wMilliseconds);
-	return ret;
-}
