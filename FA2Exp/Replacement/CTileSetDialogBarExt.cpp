@@ -78,7 +78,7 @@ void CTileSetDialogBarExt::LoadTerrainGroups(std::string Theater)
 	if (Count <= 0) {
 		return;
 	}
-	logger::g_logger.Info(std::to_string(Count) + " Terrain Groups Loading");
+	LogInfo("%d Terrain Groups Loading", Count);
 	TerrainSorts.reserve(Count);
 	for (int i = 0; i < Count; ++i) {
 		string str = ini.Read(IniSectionName, std::to_string(i + 1));
@@ -101,7 +101,7 @@ void CTileSetDialogBarExt::LoadTerrainGroups(std::string Theater)
 
 void CTileSetDialogBarExt::ReloadTileSets(const std::string& Theater)
 {
-	logger::g_logger.Info("Reload Terrain Group");
+	LogInfo("Reload Terrain Group");
 
 	HWND TerrainWnd = CTileSetDialogBarExt::Instance->GetSafeHwnd();
 
@@ -115,7 +115,7 @@ void CTileSetDialogBarExt::ReloadTileSets(const std::string& Theater)
 
 	const char* StandardTheater[] = { "TEMPERATE","SNOW","URBAN","NEWURBAN","LUNAR","DESERT" };
 	if (Theater.empty()) {
-		logger::g_logger.Info("No map has been loaded while reading");
+		LogInfo("No map has been loaded while reading");
 		::MessageBoxA(
 			NULL,
 			MessageBoxConfig::Instance.Message.TerrainMapUnloaded.c_str(),
@@ -132,7 +132,7 @@ void CTileSetDialogBarExt::ReloadTileSets(const std::string& Theater)
 	});
 
 	if (it == std::end(StandardTheater)) {
-		logger::g_logger.Error("Loaded unknown terrain threater");
+		LogError("Loaded unknown terrain threater");
 		::MessageBoxA(
 			NULL,
 			MessageBoxConfig::Instance.Message.TerrainMapUnknown.c_str(),
@@ -141,13 +141,13 @@ void CTileSetDialogBarExt::ReloadTileSets(const std::string& Theater)
 		);
 	}
 
-	logger::g_logger.Info("Start to load terrain groups: " + Theater);
+	LogInfo("Start to load terrain groups: %s", Theater.c_str());
 	CTileSetDialogBarExt::LoadTerrainGroups(Theater);
 }
 
 void CTileSetDialogBarExt::OnGroupComboboxSelectionChanged()
 {
-	//logger::g_logger.Info("Terrain Main SELCHANGE");
+	//LogInfo("Terrain Main SELCHANGE");
 	//HWND TerrainWnd1 = FindWindowEx(g_FA2Wnd, NULL, "AfxFrameOrView42s", NULL);
 	//HWND TerrainWnd2 = FindWindowEx(TerrainWnd1, NULL, "AfxMDIFrame42s", NULL);
 	//EnumChildWindows(TerrainWnd2, EnumChildWindowsProc, NULL);
@@ -179,7 +179,7 @@ void CTileSetDialogBarExt::OnGroupComboboxSelectionChanged()
 
 void CTileSetDialogBarExt::OnSubTypeComboboxSelectionChanged()
 {
-	//logger::g_logger.Info("Terrain Sub SELCHANGE");
+	//LogInfo("Terrain Sub SELCHANGE");
 	HWND TerrainWnd = CTileSetDialogBarExt::Instance->GetSafeHwnd();
 	HWND ComboMain = ::GetDlgItem(TerrainWnd, 9983);
 	HWND ComboSub = ::GetDlgItem(TerrainWnd, IDC_TerrainListWindow::ComboBox_Sub);

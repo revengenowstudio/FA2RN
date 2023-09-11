@@ -729,7 +729,7 @@ DEFINE_HOOK(51CD20, ObjectBrowserControl_Redraw, 7)
 //            CString spaces;
 //            for (int i = 0; i < depth; ++i)
 //                spaces += "    ";
-//            Logger::Debug("%s%s %d\n", spaces, pTree->GetItemText(hChildItem), pTree->GetItemData(hChildItem));
+//            LogDebug("%s%s %d\n", spaces, pTree->GetItemText(hChildItem), pTree->GetItemData(hChildItem));
 //            if (pTree->ItemHasChildren(hChildItem))
 //            {
 //                ++depth;
