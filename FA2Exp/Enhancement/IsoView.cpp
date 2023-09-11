@@ -469,13 +469,18 @@ DEFINE_HOOK(4727B2, CIsoView_Draw_BasenodeOutline_CustomFoundation, B)
     GET_STACK(COLORREF, dwColor, STACK_OFFS(0xD18, 0xB94));
     LEA_STACK(LPDDSURFACEDESC2, lpDesc, STACK_OFFS(0xD18, 0x92C));
 
-    const auto& DataExt = CMapDataExt::BuildingDataExts[CMapDataExt::BuildingIndex];
-    if (DataExt.IsCustomFoundation()) {
-        CIsoViewExt::DrawLockedLines(pThis, *DataExt.LinesToDraw, X, Y, dwColor, true, false, lpDesc);
-        CIsoViewExt::DrawLockedLines(pThis, *DataExt.LinesToDraw, X + 1, Y, dwColor, true, false, lpDesc);
+    auto constexpr backAddr = 0x472884u;
+    auto const it = CMapDataExt::BuildingDataExts.find(CMapDataExt::BuildingIndex);
+    if (it == CMapDataExt::BuildingDataExts.end()) {
+        return backAddr;
+    }
+    auto const& bldData = it->second;
+    if (bldData.IsCustomFoundation()) {
+        CIsoViewExt::DrawLockedLines(pThis, *bldData.LinesToDraw, X, Y, dwColor, true, false, lpDesc);
+        CIsoViewExt::DrawLockedLines(pThis, *bldData.LinesToDraw, X + 1, Y, dwColor, true, false, lpDesc);
     } else {
         CIsoViewExt::DrawLockedCellOutline(pThis, X, Y, W, H, dwColor, true, false, lpDesc);
         CIsoViewExt::DrawLockedCellOutline(pThis, X + 1, Y, W, H, dwColor, true, false, lpDesc);
     }
-    return 0x472884;
+    return backAddr;
 }

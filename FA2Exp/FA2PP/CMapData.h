@@ -135,7 +135,7 @@ public:
     void UpdateTypeData() { JMP_THIS(0x4AD930); }
     void UpdateMapPreviewAt(int X, int Y) { JMP_THIS(0x4A23A0); }
 
-    int GetBuildingTypeID(const char* ID) { JMP_THIS(0x4AE910); }
+    int GetFixedObjectTypeIndex(const char* ID) { JMP_THIS(0x4AE910); }// was GetBuildingTypeID
     inline CellData* GetCellAt(int nIndex) { return &this->CellData[nIndex]; }
     inline CellData* GetCellAt(int X, int Y) { return this->GetCellAt(this->GetCoordIndex(X, Y)); }
 
@@ -152,9 +152,9 @@ public:
     int MapWidthPlusHeight;
     CellData TempCellData;
     BOOL FieldDataAllocated;
-    FAVector<int> BuildingTypes;
-    FAVector<int> TerrainTypes;
-    FAVector<int> UnitTypes;
+    std::FAMap<FA2::CString, int, 0x5D8CD0, 0x5D8CCC> BuildingTypes;
+    std::FAMap<FA2::CString, int, 0x5D8CD0, 0x5D8CCC> TerrainTypes;
+    std::FAMap<FA2::CString, int, 0x5D8CD0, 0x5D8CCC> SmudgeTypes;
     unsigned char Overlay[0x40000];
     unsigned char OverlayData[0x40000];
     TileStruct* IsoPackData;
@@ -168,11 +168,11 @@ public:
     int UndoRedoDataCount; // undo redo count related
     int UndoRedoCurrentDataIndex; // undo redo count related, UndoRedoDataCount - 1
     int MoneyCount;
-    FAVector<StructureData> StructureDatas; // being used in 4C3C20
-    FAVector<TubeData> TubeDatas; // see 4753C0, might be TUBE related
+    FAVector<StructureData> StructureData; // being used in 4C3C20
+    FAVector<TubeData> TubeData; // see 4753C0, might be TUBE related
     FAVector<int> vector_801F8;
-    FAVector<CTerrainData> TerrainDatas;
-    FAVector<CInfantryData> InfantryDatas;
+    FAVector<CTerrainData> TerrainData;
+    FAVector<CInfantryData> InfantryData;
     FAVector<CUnitData> UnitDatas; // Seems never used except DTOR
     FAVector<int> vector_80238;    // Seems never used except DTOR
     unsigned char MapPreview[0x40000];

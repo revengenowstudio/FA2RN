@@ -19,7 +19,12 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 	GET_STACK(const char*, ID, 0x4);
 
 	auto ProcessType = [pThis](const char* ID) {
-		int idx = pThis->GetBuildingTypeID(ID);
+		auto const bldIt = pThis->BuildingTypes.find(ID);
+		if (bldIt == pThis->BuildingTypes.end()) {
+			LogError("Building %hs has no valid link to map data", ID);
+			return;
+		}
+		int idx = bldIt->second;
 		auto& DataExt = CMapDataExt::BuildingDataExts[idx];
 		FA2::CString ImageID = INIMeta::GetRules().GetString(ID, "Image");
 		if (ImageID.GetLength() == 0) {
@@ -146,7 +151,6 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 			}
 		}
 	};
-
 	pThis->UpdateTypeData();
 	if (ID) {
 		ProcessType(ID);
@@ -162,6 +166,7 @@ DEFINE_HOOK(4B5460, CMapData_InitializeBuildingTypes, 7)
 	return 0;
 }
 
+#if 0
 DEFINE_HOOK(4A5089, CMapData_UpdateMapFieldData_Structures_CustomFoundation, 6)
 {
 	GET(int, BuildingIndex, ESI);
@@ -199,3 +204,4 @@ DEFINE_HOOK(4A5089, CMapData_UpdateMapFieldData_Structures_CustomFoundation, 6)
 
 	return 0x4A57CD;
 }
+#endif
