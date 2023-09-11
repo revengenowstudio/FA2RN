@@ -73,12 +73,12 @@ void logger::writeLine(const char* Prefix, const char* Format, const va_list Arg
 	//real write
 	vsnprintf(pBuffer + prefixTotalLen, bufferWantedLen, Format, Args);
 	pBuffer[contentLen] = '\n';
-	//pBuffer[contentLen + 1] = '\0';
+	pBuffer[contentLen + 1] = '\0';
 
 	output(pBuffer, bufferWantedLen);
 
 	//deallocate resources
-	if (dynamicBufferRequired && pBuffer) {
+	if (pBuffer != Buffer) {
 		delete[] pBuffer;
 	}
 }
