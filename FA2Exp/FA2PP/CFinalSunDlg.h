@@ -32,20 +32,21 @@ class NOVTABLE ObjectBrowserControl : public FA2CTreeCtrl
 
 class NOVTABLE CFinalSunDlg : public FA2::CDialog
 {
-protected:
-	void UpdateDialogs_(int a2, int a3)
-		{ JMP_THIS(0x4261E0); }
 public:
-	static CFinalSunDlg& Instance() {
-		return *reinterpret_cast<CFinalSunDlg*>(0x7EDF24);
-	}
+	static constexpr reference<DWORD, 0x7EE084> const LastSucceededOperation{};
+	static constexpr reference<DWORD, 0x88403C> const LastSucceededLibraryOperation{};
+	static constexpr reference<BOOL, 0x7EE078> const SE2KMODE{};
+	static constexpr reference<CFinalSunDlg*, 0x7EDF24> const Instance{}; // CFinalSunApp->MainWnd
+
+	virtual int DoModal() { JMP_THIS(0x435270); }
+
+	void SaveMap(LPCSTR lpPath) { JMP_THIS(0x426E50); }
 
 	static void UpdateDialogs(int a2, int a3)
 	{
-		Instance().UpdateDialogs_(a2, a2);
+		Instance->UpdateDialogs_(a2, a2);
 	}
 
-public:
 	//member properties
 	CTileSetBrowserFrame TileSetBrowserFrame;
 	CToolBar ToolBar1;
@@ -74,4 +75,10 @@ public:
 	char gap[260];
 	ObjectBrowserControl ObjectBrowserView;
 	HICON hIcon;
+
+protected:
+	void UpdateDialogs_(int a2, int a3)
+	{
+		JMP_THIS(0x4261E0);
+	}
 };

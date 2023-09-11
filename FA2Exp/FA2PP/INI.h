@@ -183,10 +183,8 @@ public:
 class NOVTABLE INIClass
 {
 public:
-	INIClass(noinit_t())
-		{ JMP_THIS(0x452880); }
-
-	virtual ~INIClass() = default;
+	INIClass(noinit_t()) { JMP_THIS(0x452270); }
+	virtual ~INIClass() { JMP_THIS(0x4527E0); }
 
 	static INIClass* GetMapDocument(bool bUpdateMapField = false)
 	{

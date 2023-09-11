@@ -1,7 +1,7 @@
 #pragma once
 
-// #include "Helpers/CompileTime.h"
-#include "FA2PP.h"
+#include <FA2PP.h>
+#include <Helper/CompileTime.h>
 
 // #include "CMixFile.h"
 
@@ -47,6 +47,8 @@ class Palette;
 class NOVTABLE CLoading : public FA2::CDialog
 {
 public:
+	static constexpr reference<CLoading*, 0x7EE030> const Instance{};
+
 	CLoading() = default;
 
 	CLoading(CWnd* pParentWnd) { JMP_THIS(0x479A40) }

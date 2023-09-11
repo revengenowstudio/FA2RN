@@ -6,6 +6,8 @@
 #include "UI/Resource.h"
 #include <MFC/FA2CString.h>
 
+#define VERSION_STRVER "1.0.0"
+
 class FA2Expand
 {
 public:

@@ -190,7 +190,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;$(SolutionDir)Reference\Drawing\lib\$(Configuration)\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;legacy_stdio_definitions.lib;$(SolutionDir)Reference\Drawing\lib\$(Configuration)\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -254,7 +254,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;$(SolutionDir)Reference\Drawing\lib\Release\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;legacy_stdio_definitions.lib;$(SolutionDir)Reference\Drawing\lib\Release\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
@@ -342,6 +342,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="Meta\INIMeta.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
     <ClCompile Include="Misc\DrawStuff.cpp" />
+    <ClCompile Include="Misc\Exception.cpp" />
     <ClCompile Include="Misc\Palettes.cpp" />
     <ClCompile Include="Misc\RemapColors.cpp" />
     <ClCompile Include="Replacement\CFinalSunDlgExt.cpp" />
@@ -426,6 +427,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Meta\ControlMeta.h" />
     <ClInclude Include="Meta\INIMeta.h" />
     <ClInclude Include="Misc\DrawStuff.h" />
+    <ClInclude Include="Misc\Exception.h" />
     <ClInclude Include="Misc\Palettes.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Replacement\CFinalSunDlgExt.h" />

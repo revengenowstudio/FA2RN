@@ -90,6 +90,9 @@
     <ClCompile Include="FunctionInit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Misc\Exception.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ini.h">
@@ -359,6 +362,15 @@
     <ClInclude Include="Utilities\HackHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Enhancement\CMapData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Exception.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+>>>>>>> 094a72b (exception handler implemented .)
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FA2Exp.rc">

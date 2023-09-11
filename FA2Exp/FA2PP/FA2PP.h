@@ -47,13 +47,45 @@ public:
 FA2MFC_CLASS(CDialog) : public FA2::CWnd
 {
 public:
+	CDialog() {}
+	CDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr) JMP_THIS(0x551D6B);
+	virtual ~CDialog() override JMP_THIS(0x551A1D);
+
 	//CWnd
 	virtual BOOL DestroyWindow() override { JMP_THIS(0x552FB5); }
 
 	//CDialog
-	virtual BOOL OnInitDialog() { JMP_THIS(0x5520A8); }
-	 
 	virtual BOOL PreTranslateMessage(MSG* pMsg) override { JMP_THIS(0x5518E3); }
+
+	virtual CRuntimeClass* GetRuntimeClass() const override { return reinterpret_cast<CRuntimeClass*>(0x59A528); }
+
+	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override
+		JMP_THIS(0x55197C);
+
+	virtual const AFX_MSGMAP* GetMessageMap() const override JMP_THIS(0x5518DD);
+
+	virtual BOOL CheckAutoCenter() override JMP_THIS(0x55212E);
+
+	virtual int DoModal() JMP_THIS(0x551E20);
+
+	virtual BOOL OnInitDialog() JMP_THIS(0x5520A8);
+
+	virtual void OnSetFont(CFont* pFont) RX;
+
+	virtual void OnOK() JMP_THIS(0x55210D);
+
+	virtual void OnCancel() JMP_THIS(0x552126);
+
+	virtual void PreInitDialog() RX;
+
+	// normal functions
+	BOOL Create(LPCTSTR lpszTemplateName, CWnd* pParentWnd = nullptr)
+		JMP_THIS(0x551A5B);
+
+	BOOL Create(UINT nIDTemplate, CWnd* pParentWnd)
+		{ return Create(MAKEINTRESOURCE(nIDTemplate), pParentWnd); }
+
+	void EndDialog(int nResult) JMP_THIS(0x551F80);
 
 protected:
 	UINT m_nIDHelp;                 // Help ID (0 for none, see HID_BASE_RESOURCE)
@@ -70,8 +102,6 @@ protected:
 	_AFX_OCC_DIALOG_INFO* m_pOccDialogInfo;
 	virtual BOOL SetOccDialogInfo(_AFX_OCC_DIALOG_INFO* pOccDialogInfo) { JMP_THIS(0x551D5E); }
 #endif
-	virtual void PreInitDialog();
-
 };
 FA2MFC_END
 
