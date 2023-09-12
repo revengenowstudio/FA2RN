@@ -341,6 +341,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClCompile Include="Meta\ControlMeta.cpp" />
     <ClCompile Include="Meta\INIMeta.cpp" />
     <ClCompile Include="Misc\BugFix.cpp" />
+    <ClCompile Include="Misc\Debug.cpp" />
     <ClCompile Include="Misc\DrawStuff.cpp" />
     <ClCompile Include="Misc\Exception.cpp" />
     <ClCompile Include="Misc\Palettes.cpp" />
@@ -426,6 +427,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Meta\ControlMeta.h" />
     <ClInclude Include="Meta\INIMeta.h" />
+    <ClInclude Include="Misc\Debug.h" />
     <ClInclude Include="Misc\DrawStuff.h" />
     <ClInclude Include="Misc\Exception.h" />
     <ClInclude Include="Misc\Palettes.h" />

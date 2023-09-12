@@ -2,15 +2,6 @@
 #include "logger.h"
 #include <FA2PP.h>
 
-RunTime::RunTime()
-{
-}
-
-
-RunTime::~RunTime()
-{
-}
-
 void RunTime::ResetMemoryContentAt(ptr_type addr, const void* content, size_t size, size_t offset)
 {
 	BYTE* pplContent = (BYTE*)(addr);

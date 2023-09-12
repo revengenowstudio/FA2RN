@@ -7,6 +7,7 @@
 #include "Replacement/CScriptTypesExt.h"
 #include "Replacement/CTeamTypesExt.h"
 #include "Misc/DrawStuff.h"
+#include "Misc/Debug.h"
 
 typedef  HRSRC
 (WINAPI *FindResourceProc)(
@@ -55,9 +56,71 @@ void updateExecutionPath()
 	strrchr(GlobalVars::ExePath(), '\\')[1] = 0;
 }
 
+void preinit()
+{
+#if defined(ReplaceMemoryAllocate)
+	class MemoryHelper
+	{
+	public:
+		static void* __cdecl malloc(size_t sz)
+		{
+			return ::malloc(sz);
+		}
+
+		static void __cdecl free(void* ptr)
+		{
+			::free(ptr);
+		}
+	};
+
+	RunTime::ReplaceFunction(0x591110, ::HeapFree);
+	RunTime::ReplaceFunction(0x591128, ::HeapReAlloc);
+	RunTime::ReplaceFunction(0x59112C, ::HeapAlloc);
+	RunTime::ReplaceFunction(0x591138, ::HeapSize);
+	RunTime::ReplaceFunction(0x591154, ::HeapDestroy);
+	RunTime::ReplaceFunction(0x591158, ::HeapCreate);
+
+	RunTime::ReplaceFunction(0x59128C, ::GlobalAlloc);
+	RunTime::ReplaceFunction(0x5912FC, ::GlobalFree);
+	RunTime::ReplaceFunction(0x591254, ::GlobalReAlloc);
+
+	RunTime::ReplaceFunction(0x591270, ::LocalAlloc);
+	RunTime::ReplaceFunction(0x5912B8, ::LocalFree);
+	RunTime::ReplaceFunction(0x591248, ::LocalReAlloc);
+
+	RunTime::ReplaceFunction(0x591268, ::TlsAlloc);
+	RunTime::ReplaceFunction(0x59125C, ::TlsFree);
+
+	RunTime::ReplaceFunction(0x591160, ::VirtualAlloc);
+	RunTime::ReplaceFunction(0x59115C, ::VirtualFree);
+
+	//RunTime::SetRelativeCall(0x536106, reinterpret_cast<RunTime::ptr_type>(MemoryHelper::free));
+	//RunTime::SetRelativeCall(0x537CA0, reinterpret_cast<RunTime::ptr_type>(MemoryHelper::malloc));
+#endif
+}
+
+#if defined(ReplaceMemoryAllocate)
+DEFINE_HOOK(537CA0, Hook_malloc, 6)
+{
+	GET_STACK(const size_t, size, 0x4);
+	//Debug::DumpStack(R, 0x100);
+	R->EAX(malloc(size));
+	return 0x537CB1;
+}
+
+DEFINE_HOOK(536106, Hook_free, 5)
+{
+	GET_STACK(void*, ptr, 0x4);
+	//Debug::DumpStack(R, 0x100);
+	free(ptr);
+	return 0x5361D0;
+}
+#endif
+
 void __stdcall FA2Expand::ExeRun()
 {
 	logger::Init();
+	preinit();
 #if 0
 	auto const process = GetCurrentProcess();
 	DWORD_PTR const processAffinityMask = 1; // limit to first processor
@@ -97,7 +160,7 @@ void __stdcall FA2Expand::ExeRun()
 	//DWORD oldProtect, newProtect = 0;
 	//auto ret = VirtualProtectEx(process, &pplContent[offset], size, PAGE_READWRITE, &oldProtect);
 	//g_FA2FindResourceProc = *reinterpret_cast<FindResourceProc*>(0x5911D8);
-	//RunTime::ResetMemoryContentAt(0x5911D8, &FetchResource, sizeof(&FetchResource));
+	//RunTime::ReplaceFunction(0x5911D8, &FetchResource, sizeof(&FetchResource));
 
 	DrawStuff::init();
 }
