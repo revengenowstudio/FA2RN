@@ -214,6 +214,9 @@ bool CLoadingExt::LoadSingleFrameShape(const FA2::CString& name, int nFrame, int
 	if (!CShpFile::GetSHPHeader(&header)) {
 		return false;
 	}
+	if (nFrame >= header.FrameCount) {
+		nFrame = 0;
+	}
 	if (!CShpFile::LoadFrame(nFrame, 1, &pBuffer)) {
 		return false;
 	}
@@ -368,16 +371,16 @@ void CLoadingExt::LoadBuilding(const FA2::CString& ID)
 		} else {//SHP anim
 			FA2::CString TurName = INIMeta::GetRules().GetString(ID, "TurretAnim", ID + "tur");
 			int nStartFrame = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopStart");
+			int deltaX = INIMeta::GetRules().GetInteger(ID, "TurretAnimX", 0);
+			int deltaY = INIMeta::GetRules().GetInteger(ID, "TurretAnimY", 0);
+			auto const turImageName = GlobalVars::INIFiles::Art->GetString(TurName, "Image", TurName);
+			auto const frameCount = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopEnd", 32);
+			auto const frameInterval = frameCount / 8;
+
 			for (int seqIdx = 0; seqIdx < 8; ++seqIdx) {
 				auto pTempBuf = FACreateArray<unsigned char>(width * height);
 				memcpy_s(pTempBuf, width * height, pBuffer, width * height);
 				UnionSHP_Add(pTempBuf, width, height);
-
-				int deltaX = INIMeta::GetRules().GetInteger(ID, "TurretAnimX", 0);
-				int deltaY = INIMeta::GetRules().GetInteger(ID, "TurretAnimY", 0);
-				auto const turImageName = GlobalVars::INIFiles::Art->GetString(TurName, "Image", TurName);
-				auto const frameCount = GlobalVars::INIFiles::Art->GetInteger(TurName, "LoopEnd", 32);
-				auto const frameInterval = frameCount / 8;
 				LoadSingleFrameShape(turImageName, nStartFrame + seqIdx * frameInterval, deltaX, deltaY);
 
 				unsigned char* pImage;
@@ -744,8 +747,12 @@ void CLoadingExt::UnionSHP_GetAndClear(unsigned char*& pOutBuffer, int* OutWidth
 	int W = 0, H = 0;
 
 	for (auto& data : UnionSHP_Data[UseTemp]) {
-		if (W < data.Width + 2 * abs(data.DeltaX)) W = data.Width + 2 * abs(data.DeltaX);
-		if (H < data.Height + 2 * abs(data.DeltaY)) H = data.Height + 2 * abs(data.DeltaY);
+		if (W < data.Width + 2 * abs(data.DeltaX)) {
+			W = data.Width + 2 * abs(data.DeltaX);
+		}
+		if (H < data.Height + 2 * abs(data.DeltaY)) {
+			H = data.Height + 2 * abs(data.DeltaY);
+		}
 	}
 
 	// just make it work like unsigned char[W][H];
