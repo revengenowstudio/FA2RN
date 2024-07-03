@@ -57,8 +57,6 @@ public:
 	void OnActionTypeEditChangedExt();
 	void OnActionParameterEditChangedExt();
 	void OnActionParameterSelectChangedExt();
-	void OnActionExtraParameterSelectChangedExt();
-	void OnActionExtraParameterEditChangedExt();
 	void OnActionLineSelectChangedExt();
 	void OnActionTypeSelectChangedExt();
 

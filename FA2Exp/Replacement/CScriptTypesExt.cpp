@@ -43,24 +43,26 @@ void CScriptTypesExt::ProgramStartupInit()
 
 BOOL CScriptTypesExt::onMessageKeyDown(MSG* pMsg)
 {
-	int ret = -1;
 	switch (pMsg->wParam)
 	{
+
+		default:
+			return -1;
 		case VK_RETURN:
 		{
 			switch (::GetDlgCtrlID(pMsg->hwnd)) {
-				case DLG_ScriptTypes_Edit_Name: this->OnNameEditChanged();
-					ret = TRUE;
-					break;
 				default:
+					break;// never exist window (default -1) even nothing did
+				case DLG_ScriptTypes_Edit_Name: this->OnNameEditChanged();
+					break;
+				case WND_Script::ComboBoxParameter: this->OnActionParameterEditChangedExt();
+					break;
+				case WND_Script::ComboBoxExtParameter: this->OnActionParameterEditChangedExt();
 					break;
 			}
-
 		}
-		default:
-			break;
 	}
-	return -1;
+	return TRUE;
 }
 BOOL CScriptTypesExt::onMessageKeyUp(MSG* pMsg)
 {
