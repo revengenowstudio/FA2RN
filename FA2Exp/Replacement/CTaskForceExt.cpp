@@ -13,18 +13,16 @@ void CTaskForceExt::ProgramStarupInit()
 	HackHelper::ResetVirtualMemberFunction(VIRTUAL_TABLE_FUNC(0x596C88), &CTaskForceExt::PreTranslateMessageHook);
 }
 
-BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
+BOOL CTaskForceExt::PreTranslateMessageHook(MSG* pMsg)
 {
-	if (pMsg->message == WM_KEYDOWN)
-	{
+	if (pMsg->message == WM_KEYDOWN) {
 #if 0
 		LogInfo(" WM_KEYDOWN received, value = " + std::to_string(pMsg->wParam));
 		LogInfo(" pMsg->hwnd = " + std::to_string((DWORD)pMsg->hwnd));
 		LogInfo(" child hwnd = " + std::to_string((DWORD)this->CCBMemberType.GetWindow(GW_CHILD)->m_hWnd));
 		LogInfo(" this->CCBMemberType.m_hWnd= " + std::to_string((DWORD)this->CCBMemberType.m_hWnd));
 #endif
-		switch (pMsg->wParam)
-		{
+		switch (pMsg->wParam) {
 			case VK_RETURN:
 			{
 				auto pEdit = this->CCBMemberType.GetWindow(GW_CHILD);
@@ -33,19 +31,19 @@ BOOL CTaskForceExt::PreTranslateMessageHook(MSG * pMsg)
 				}
 
 				switch (::GetDlgCtrlID(pMsg->hwnd)) {
-					case DLG_TaskForce_Edit_Name: this->OnTaskForceNameChanged();
-					case DLG_TaskForce_Edit_MemberCount: this->OnMemberCountChanged();
-					case DLG_TaskForce_Edit_GroupID: this->OnGroupIDChanged();
-				default:
-					break;
+					case DLG_TaskForce_Edit_Name: this->OnTaskForceNameChanged(); break;
+					case DLG_TaskForce_Edit_MemberCount: this->OnMemberCountChanged(); break;
+					case DLG_TaskForce_Edit_GroupID: this->OnGroupIDChanged(); break;
+					default:
+						break;
 				}
 
 			}
 
 			//do not exit dialog when enter key pressed
 			return TRUE;
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 
