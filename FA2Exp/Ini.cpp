@@ -16,7 +16,7 @@ ScriptTemplate::ScriptTemplate(std::vector<std::string> init) {
 	Data.resize(count + 1);
 	Data[0].first = init[0];//UIName
 	Data[0].second = init[1];//Name
-	for (register int i = 1; i <= count; ++i) {
+	for (int i = 1; i <= count; ++i) {
 		Data[i].first = init[2 * i + 1];
 		Data[i].second = init[2 * i + 2];
 	}
@@ -44,12 +44,12 @@ const std::pair<std::string, std::string>& ScriptTemplate::operator[] (int index
 //Class TeamTemplate
 TeamTemplate::TeamTemplate(std::vector<std::string> init) {
 	
-	for (register int i = 0; i < 27; ++i)
+	for (int i = 0; i < 27; ++i)
 		Data[i] = init[i];
 }
 
 TeamTemplate::TeamTemplate() {
-	for (register int i = 0; i < 27; ++i)
+	for (int i = 0; i < 27; ++i)
 		Data[i] = "0";
 }
 
@@ -90,7 +90,7 @@ std::vector<std::string> Ini::Split(std::string str, char ch) {
 	int length = str.size();
 	std::vector<std::string> ret;
 	std::string cur;
-	for (register int i = 0; i < length; ++i) {
+	for (int i = 0; i < length; ++i) {
 		if (str[i] != ch)	cur += str[i];
 		else {
 			ret.push_back(cur);

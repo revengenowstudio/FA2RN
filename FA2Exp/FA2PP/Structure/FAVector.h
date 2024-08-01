@@ -9,7 +9,7 @@
 #endif  /* _MSC_VER */
 
 // TEMPLATE CLASS vector
-template<class TValue, class TAllocator = std::allocator<TValue> >
+template<class TValue, class TAllocator = std::allocator_traits<std::allocator<TValue>> >
 class FAVector {
 public:
 	typedef FAVector<TValue, TAllocator> _MyType;
