@@ -204,7 +204,6 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>Standalone;NOMINMAX;WIN32;NDEBUG;FA2COPY_EXPORTS;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -214,6 +213,7 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <DisableSpecificWarnings>4731;4530;4099</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\FA2PP;$(SolutionDir)Reference\MFC42\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -235,7 +235,6 @@ $(NETFXKitsDir)Lib\um\x86;D:\Program Files (x86)\Microsoft Visual Studio\2017\Pr
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>Standalone;DEBUG;NOMINMAX;WIN32;NDEBUG;FA2COPY_EXPORTS;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
